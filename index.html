@@ -2,207 +2,184 @@
 <html>
 <head>
   <title>BLACK ONE</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; }
-
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      color: #f5d76e;
-      overflow-x: hidden;
+      font-family: 'Arial', sans-serif;
       background: black;
+      color: gold;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: absolute;
+      top: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      box-sizing: border-box;
+      z-index: 10;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo img {
+      height: 50px;
+      filter: drop-shadow(0 0 20px rgba(245,215,110,0.7));
+    }
+
+    .menu {
+      display: flex;
+      gap: 40px;
+    }
+
+    .menu a {
+      color: gold;
+      text-decoration: none;
+      font-weight: bold;
     }
 
     /* HERO */
     .hero {
       height: 100vh;
-      background:
-        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
-        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70');
-      background-size: cover;
-      background-position: center;
-      position: relative;
+      background: url('https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1974&auto=format&fit=crop') center/cover no-repeat;
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    /* NAVBAR */
-    .navbar {
-      display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 25px 70px;
-    }
-
-    .brand-logo {
-      width: 170px;
-      filter: drop-shadow(0 0 18px rgba(245,215,110,0.4));
-    }
-
-    .menu a {
-      color: #f5d76e;
-      margin-left: 30px;
-      text-decoration: none;
-      font-size: 13px;
-      letter-spacing: 1px;
-    }
-
-    /* HERO CONTENT */
-    .center {
+      justify-content: center;
       text-align: center;
-      margin-top: -60px;
-      animation: fadeIn 1.8s ease;
+      position: relative;
+    }
+
+    .overlay {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.65);
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
     }
 
     h1 {
-      font-size: 80px;
-      letter-spacing: 8px;
+      font-size: 70px;
       margin: 0;
+      letter-spacing: 3px;
+      text-shadow: 0 0 30px rgba(245,215,110,0.5);
     }
 
     h2 {
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: 300;
-      color: #fff2b0;
     }
 
     p {
-      margin-top: 15px;
-      font-size: 16px;
-      color: #e8d88a;
+      opacity: 0.8;
     }
 
-    .btn {
-      margin-top: 30px;
-      padding: 14px 40px;
-      border: 1px solid #f5d76e;
-      color: #f5d76e;
-      text-decoration: none;
-      display: inline-block;
-      transition: 0.3s;
+    /* FORM */
+    .booking {
+      margin-top: 40px;
+      display: flex;
+      justify-content: center;
     }
 
-    .btn:hover {
-      background: #f5d76e;
-      color: black;
-    }
-
-    /* FORM ULTRA LUXURY */
-    .form-box {
-      position: absolute;
-      bottom: 40px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 85%;
-      max-width: 1000px;
-
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(245,215,110,0.3);
-      border-radius: 14px;
-
-      padding: 18px;
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
+    .booking-box {
+      display: flex;
       gap: 10px;
+      padding: 15px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid gold;
+      border-radius: 12px;
+      backdrop-filter: blur(10px);
     }
 
-    .form-box input,
-    .form-box select {
-      background: #0c0c0c;
-      border: 1px solid rgba(245,215,110,0.3);
-      color: white;
+    .booking-box input,
+    .booking-box select {
       padding: 10px;
+      border: none;
+      background: black;
+      color: gold;
+      border: 1px solid rgba(255,255,255,0.1);
       border-radius: 6px;
-      font-size: 12px;
     }
 
-    .form-box button {
-      background: #f5d76e;
-      border: none;
+    .booking-box button {
+      background: gold;
       color: black;
+      border: none;
+      padding: 10px 20px;
       font-weight: bold;
       border-radius: 6px;
       cursor: pointer;
     }
 
-    .form-box button:hover {
-      background: white;
+    /* MEMBERSHIP */
+    .membership {
+      margin-top: 30px;
+      font-size: 14px;
+      opacity: 0.8;
     }
 
-    /* ANIMATION */
-    @keyframes fadeIn {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
-
-    /* MOBILE */
-    @media (max-width: 900px) {
-      h1 { font-size: 40px; }
-
-      .form-box {
-        grid-template-columns: 1fr;
-        bottom: 10px;
-      }
-
-      .navbar {
-        padding: 20px;
-      }
-
-      .menu {
-        display: none;
-      }
-
-      .brand-logo {
-        width: 120px;
-      }
-    }
   </style>
 </head>
 
 <body>
 
-  <div class="hero">
-
-    <!-- NAVBAR -->
-    <div class="navbar">
-      <img src="logo.png" class="brand-logo" alt="BLACK ONE Logo">
-
-      <div class="menu">
-        <a href="#">Home</a>
-        <a href="#">Membership</a>
-        <a href="#">Fleet</a>
-        <a href="#">Reserve</a>
-      </div>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="logo">
+      <!-- CAMBIE ESTE NOMBRE SI SU ARCHIVO ES DIFERENTE -->
+      <img src="logo.png">
     </div>
 
-    <!-- HERO TEXT -->
-    <div class="center">
+    <div class="menu">
+      <a href="#">Home</a>
+      <a href="#">Membership</a>
+      <a href="#">Fleet</a>
+      <a href="#">Reserve</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="overlay"></div>
+
+    <div class="content">
       <h1>BLACK ONE</h1>
       <h2>Ultra Luxury Mobility</h2>
-      <p>Cadillac Escalade • Private Chauffeur • Miami Elite Transport</p>
+      <p>Experience the future of premium transportation</p>
 
-      <a href="#" class="btn">Reserve Now</a>
+      <!-- FORM -->
+      <div class="booking">
+        <div class="booking-box">
+          <select>
+            <option>Gold</option>
+            <option>Diamond</option>
+          </select>
+
+          <input type="text" placeholder="Name">
+          <input type="email" placeholder="Email">
+          <input type="date">
+          <input type="date">
+
+          <button>Reserve</button>
+        </div>
+      </div>
+
+      <div class="membership">
+        Membership unlocks priority booking, elite fleet access & VIP experiences.
+      </div>
+
     </div>
-
-    <!-- FORM -->
-    <div class="form-box">
-      <select>
-        <option>Gold</option>
-        <option>Diamond</option>
-      </select>
-
-      <input type="text" placeholder="Name">
-      <input type="email" placeholder="Email">
-      <input type="text" placeholder="From">
-      <input type="text" placeholder="To">
-
-      <button>Go</button>
-    </div>
-
   </div>
 
 </body>
