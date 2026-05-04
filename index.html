@@ -9,9 +9,7 @@
       margin: 0;
       font-family: Arial, sans-serif;
       color: gold;
-      text-align: center;
 
-      /* Fondo premium */
       background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
       url('https://images.unsplash.com/photo-1503376780353-7e6692767b70');
 
@@ -19,13 +17,42 @@
       background-position: center;
     }
 
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    .menu a {
+      color: gold;
+      margin-left: 20px;
+      text-decoration: none;
+      font-size: 14px;
+    }
+
+    /* CONTENIDO */
     .container {
-      padding-top: 140px;
+      padding-top: 180px;
+      text-align: center;
+
+      animation: fadeIn 2s ease;
     }
 
     h1 {
-      font-size: 56px;
-      letter-spacing: 4px;
+      font-size: 60px;
+      letter-spacing: 5px;
     }
 
     h2 {
@@ -54,10 +81,34 @@
       background: gold;
       color: black;
     }
+
+    /* ANIMACIÓN */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
   </style>
 </head>
 
 <body>
+
+  <div class="navbar">
+    <div class="logo">BLACK ONE</div>
+
+    <div class="menu">
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">Contact</a>
+    </div>
+  </div>
+
   <div class="container">
     <h1>BLACK ONE</h1>
     <h2>Ultra Luxury Mobility</h2>
@@ -65,5 +116,6 @@
 
     <a href="#" class="btn">Coming Soon</a>
   </div>
+
 </body>
 </html>
