@@ -5,75 +5,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       color: gold;
-
-      background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.9)),
-      url('https://images.unsplash.com/photo-1503376780353-7e6692767b70');
-
-      background-size: cover;
-      background-position: center;
+      background: black;
     }
 
-    /* NAVBAR */
+    .hero {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,0.70), rgba(0,0,0,0.90)),
+        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      flex-direction: column;
+    }
+
     .navbar {
-      position: fixed;
-      top: 0;
       width: 100%;
-      padding: 20px 40px;
+      padding: 24px 70px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.55);
       backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
     }
 
     .logo {
+      font-size: 18px;
       font-weight: bold;
-      letter-spacing: 2px;
+      letter-spacing: 3px;
+      color: gold;
+    }
+
+    .menu {
+      display: flex;
+      gap: 35px;
+      padding-right: 10px;
     }
 
     .menu a {
       color: gold;
-      margin-left: 20px;
       text-decoration: none;
       font-size: 14px;
+      letter-spacing: 1px;
     }
 
-    /* CONTENIDO */
-    .container {
-      padding-top: 180px;
-      text-align: center;
+    .menu a:hover {
+      color: white;
+    }
 
-      animation: fadeIn 2s ease;
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 120px 20px 40px;
+      animation: fadeIn 1.6s ease;
     }
 
     h1 {
-      font-size: 60px;
-      letter-spacing: 5px;
+      font-size: 72px;
+      letter-spacing: 7px;
+      margin: 0;
+      color: gold;
     }
 
     h2 {
+      font-size: 24px;
       font-weight: 300;
-      margin-top: 10px;
+      margin: 25px 0 0;
       color: #d4af37;
     }
 
     p {
-      margin-top: 20px;
       font-size: 18px;
-      opacity: 0.9;
+      margin: 18px 0 0;
+      color: #f1d77a;
     }
 
     .btn {
-      margin-top: 40px;
+      margin-top: 45px;
       display: inline-block;
-      padding: 14px 40px;
+      padding: 16px 46px;
       border: 1px solid gold;
       color: gold;
       text-decoration: none;
+      letter-spacing: 1px;
       transition: 0.3s;
     }
 
@@ -82,11 +112,10 @@
       color: black;
     }
 
-    /* ANIMACIÓN */
     @keyframes fadeIn {
       from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(25px);
       }
       to {
         opacity: 1;
@@ -94,28 +123,57 @@
       }
     }
 
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 18px 25px;
+      }
+
+      .menu {
+        gap: 14px;
+      }
+
+      .menu a {
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 44px;
+        letter-spacing: 4px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 15px;
+      }
+    }
   </style>
 </head>
 
 <body>
+  <section class="hero">
 
-  <div class="navbar">
-    <div class="logo">BLACK ONE</div>
+    <nav class="navbar">
+      <div class="logo">BLACK ONE</div>
 
-    <div class="menu">
-      <a href="#">Home</a>
-      <a href="#">Services</a>
-      <a href="#">Contact</a>
+      <div class="menu">
+        <a href="#">Home</a>
+        <a href="#">Services</a>
+        <a href="#">Fleet</a>
+        <a href="#">Contact</a>
+      </div>
+    </nav>
+
+    <div class="content">
+      <h1>BLACK ONE</h1>
+      <h2>Ultra Luxury Mobility</h2>
+      <p>Private executive transportation for those who move differently.</p>
+
+      <a href="#" class="btn">Reserve Soon</a>
     </div>
-  </div>
 
-  <div class="container">
-    <h1>BLACK ONE</h1>
-    <h2>Ultra Luxury Mobility</h2>
-    <p>Experience the future of premium transportation</p>
-
-    <a href="#" class="btn">Coming Soon</a>
-  </div>
-
+  </section>
 </body>
 </html>
