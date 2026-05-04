@@ -10,260 +10,194 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #050505;
       color: #f5d76e;
+      overflow-x: hidden;
     }
 
+    /* HERO */
     .hero {
-      min-height: 100vh;
+      height: 100vh;
       background:
-        linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.92)),
-        url('https://images.unsplash.com/photo-1542362567-b07e54358753');
+        linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
+        url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2'); /* SUV luxury night */
+
       background-size: cover;
       background-position: center;
-      padding: 28px 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
+    /* NAVBAR */
     .navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 30px 80px;
     }
 
     .logo {
-      font-size: 20px;
       font-weight: bold;
       letter-spacing: 4px;
+      font-size: 18px;
     }
 
     .menu a {
       color: #f5d76e;
+      margin-left: 30px;
       text-decoration: none;
-      margin-left: 28px;
-      font-size: 14px;
+      font-size: 13px;
+      letter-spacing: 1px;
     }
 
-    .main {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 50px;
-      align-items: center;
-      min-height: 85vh;
+    /* HERO CONTENT */
+    .center {
+      text-align: center;
+      margin-top: -60px;
+      animation: fadeIn 1.8s ease;
     }
 
-    .headline h1 {
-      font-size: 72px;
-      letter-spacing: 7px;
+    h1 {
+      font-size: 80px;
+      letter-spacing: 8px;
       margin: 0;
     }
 
-    .headline h2 {
-      font-size: 28px;
+    h2 {
+      margin-top: 15px;
       font-weight: 300;
-      margin-top: 20px;
-      color: #fff1a8;
+      color: #fff2b0;
     }
 
-    .headline p {
-      font-size: 18px;
-      max-width: 560px;
-      line-height: 1.6;
-      color: #f0e6b2;
-    }
-
-    .tag {
-      display: inline-block;
-      border: 1px solid #f5d76e;
-      padding: 10px 18px;
-      margin-bottom: 22px;
-      letter-spacing: 2px;
-      font-size: 12px;
-    }
-
-    .card {
-      background: rgba(0,0,0,0.72);
-      border: 1px solid rgba(245,215,110,0.45);
-      backdrop-filter: blur(12px);
-      padding: 30px;
-      border-radius: 18px;
-      box-shadow: 0 0 35px rgba(0,0,0,0.7);
-    }
-
-    .card h3 {
-      margin-top: 0;
-      font-size: 24px;
-      color: #fff1a8;
-    }
-
-    label {
-      display: block;
-      margin-top: 14px;
-      font-size: 13px;
+    p {
+      margin-top: 15px;
+      font-size: 16px;
       color: #e8d88a;
     }
 
-    input, select {
-      width: 100%;
-      padding: 13px;
-      margin-top: 6px;
-      background: #0e0e0e;
-      color: white;
-      border: 1px solid rgba(245,215,110,0.35);
-      border-radius: 8px;
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
     .btn {
-      width: 100%;
-      margin-top: 24px;
-      padding: 15px;
-      border: none;
-      background: #f5d76e;
-      color: black;
-      font-weight: bold;
-      letter-spacing: 1px;
-      cursor: pointer;
-      border-radius: 8px;
+      margin-top: 30px;
+      padding: 14px 40px;
+      border: 1px solid #f5d76e;
+      color: #f5d76e;
+      text-decoration: none;
+      display: inline-block;
+      transition: 0.3s;
     }
 
     .btn:hover {
+      background: #f5d76e;
+      color: black;
+    }
+
+    /* FLOATING FORM (LUXURY STYLE) */
+    .form-box {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 85%;
+      max-width: 950px;
+
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(245,215,110,0.3);
+      border-radius: 14px;
+
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+    }
+
+    .form-box input,
+    .form-box select {
+      background: #0c0c0c;
+      border: 1px solid rgba(245,215,110,0.3);
+      color: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .form-box button {
+      background: #f5d76e;
+      border: none;
+      color: black;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .form-box button:hover {
       background: white;
     }
 
-    .note {
-      font-size: 12px;
-      color: #cfc08a;
-      margin-top: 12px;
-      line-height: 1.5;
+    /* ANIMACIÓN */
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
     }
 
+    /* MOBILE */
     @media (max-width: 900px) {
-      .hero {
-        padding: 24px;
-      }
+      h1 { font-size: 40px; }
 
-      .main {
+      .form-box {
         grid-template-columns: 1fr;
-        padding-top: 60px;
+        bottom: 10px;
       }
 
-      .headline h1 {
-        font-size: 46px;
+      .navbar {
+        padding: 20px;
       }
 
       .menu {
         display: none;
-      }
-
-      .row {
-        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 
 <body>
-  <section class="hero">
 
-    <nav class="navbar">
+  <div class="hero">
+
+    <div class="navbar">
       <div class="logo">BLACK ONE</div>
+
       <div class="menu">
         <a href="#">Home</a>
         <a href="#">Membership</a>
         <a href="#">Fleet</a>
-        <a href="#">Reserve</a>
+        <a href="#">Contact</a>
       </div>
-    </nav>
-
-    <div class="main">
-
-      <div class="headline">
-        <span class="tag">MIAMI ULTRA LUXURY MOBILITY</span>
-        <h1>BLACK ONE</h1>
-        <h2>Cadillac Escalade. Private Chauffeur. Executive Experience.</h2>
-        <p>
-          Premium reservations for luxury transportation across Miami.
-          Designed for executives, VIP clients, airport transfers, private events,
-          and exclusive mobility experiences.
-        </p>
-      </div>
-
-      <div class="card">
-        <h3>Reserve Access</h3>
-
-        <label>Membership Level</label>
-        <select>
-          <option>Gold Membership</option>
-          <option>Diamond Membership</option>
-        </select>
-
-        <label>Full Name</label>
-        <input type="text" placeholder="Your name">
-
-        <label>Email</label>
-        <input type="email" placeholder="your@email.com">
-
-        <div class="row">
-          <div>
-            <label>From</label>
-            <input type="text" placeholder="Pickup location">
-          </div>
-
-          <div>
-            <label>To</label>
-            <input type="text" placeholder="Destination">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Date</label>
-            <input type="date">
-          </div>
-
-          <div>
-            <label>Time</label>
-            <input type="time">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label>Passengers</label>
-            <select>
-              <option>1 Passenger</option>
-              <option>2 Passengers</option>
-              <option>3 Passengers</option>
-              <option>4 Passengers</option>
-              <option>5+ Passengers</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Vehicle</label>
-            <select>
-              <option>Cadillac Escalade Black</option>
-              <option>Luxury SUV</option>
-              <option>Executive Sedan</option>
-              <option>Ultra Luxury</option>
-            </select>
-          </div>
-        </div>
-
-        <button class="btn">Request Reservation</button>
-
-        <p class="note">
-          This is an early access request. A BLACK ONE representative will confirm availability, membership benefits, and reservation details.
-        </p>
-      </div>
-
     </div>
 
-  </section>
+    <div class="center">
+      <h1>BLACK ONE</h1>
+      <h2>Ultra Luxury Mobility</h2>
+      <p>Cadillac Escalade • Private Chauffeur • Miami Elite Transport</p>
+
+      <a href="#" class="btn">Reserve Now</a>
+    </div>
+
+    <!-- FORM ULTRA LUXURY -->
+    <div class="form-box">
+      <select>
+        <option>Gold</option>
+        <option>Diamond</option>
+      </select>
+
+      <input type="text" placeholder="Name">
+      <input type="email" placeholder="Email">
+      <input type="text" placeholder="From">
+      <input type="text" placeholder="To">
+
+      <button>Go</button>
+    </div>
+
+  </div>
+
 </body>
 </html>
