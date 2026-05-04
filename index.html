@@ -12,6 +12,7 @@
       font-family: Arial, sans-serif;
       color: #f5d76e;
       overflow-x: hidden;
+      background: black;
     }
 
     /* HERO */
@@ -19,10 +20,10 @@
       height: 100vh;
       background:
         linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.9)),
-        url('https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2'); /* SUV luxury night */
-
+        url('https://images.unsplash.com/photo-1503376780353-7e6692767b70');
       background-size: cover;
       background-position: center;
+      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -33,13 +34,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 30px 80px;
+      padding: 25px 70px;
     }
 
-    .logo {
-      font-weight: bold;
-      letter-spacing: 4px;
-      font-size: 18px;
+    .brand-logo {
+      width: 170px;
+      filter: drop-shadow(0 0 18px rgba(245,215,110,0.4));
     }
 
     .menu a {
@@ -90,14 +90,14 @@
       color: black;
     }
 
-    /* FLOATING FORM (LUXURY STYLE) */
+    /* FORM ULTRA LUXURY */
     .form-box {
       position: absolute;
       bottom: 40px;
       left: 50%;
       transform: translateX(-50%);
       width: 85%;
-      max-width: 950px;
+      max-width: 1000px;
 
       background: rgba(0,0,0,0.6);
       backdrop-filter: blur(15px);
@@ -133,7 +133,7 @@
       background: white;
     }
 
-    /* ANIMACIÓN */
+    /* ANIMATION */
     @keyframes fadeIn {
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
@@ -155,6 +155,10 @@
       .menu {
         display: none;
       }
+
+      .brand-logo {
+        width: 120px;
+      }
     }
   </style>
 </head>
@@ -163,17 +167,19 @@
 
   <div class="hero">
 
+    <!-- NAVBAR -->
     <div class="navbar">
-      <div class="logo">BLACK ONE</div>
+      <img src="logo.png" class="brand-logo" alt="BLACK ONE Logo">
 
       <div class="menu">
         <a href="#">Home</a>
         <a href="#">Membership</a>
         <a href="#">Fleet</a>
-        <a href="#">Contact</a>
+        <a href="#">Reserve</a>
       </div>
     </div>
 
+    <!-- HERO TEXT -->
     <div class="center">
       <h1>BLACK ONE</h1>
       <h2>Ultra Luxury Mobility</h2>
@@ -182,7 +188,7 @@
       <a href="#" class="btn">Reserve Now</a>
     </div>
 
-    <!-- FORM ULTRA LUXURY -->
+    <!-- FORM -->
     <div class="form-box">
       <select>
         <option>Gold</option>
