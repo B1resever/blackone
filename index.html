@@ -1,1 +1,214 @@
-374332c0a8df0becbe59719d7f7fbd8ceb807ec8
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BLACK ONE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * { box-sizing: border-box; scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: black;
+      color: #f5d76e;
+    }
+
+    .hero {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.9)),
+        url('escalade-miami.jpg') center/cover no-repeat;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 25px 60px;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand-logo {
+      height: 60px;
+    }
+
+    .menu a {
+      color: gold;
+      margin-left: 30px;
+      text-decoration: none;
+      font-size: 13px;
+    }
+
+    .center {
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    h1 {
+      font-size: 80px;
+      letter-spacing: 8px;
+      margin: 0;
+      animation: glow 6s infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px gold; }
+      to { text-shadow: 0 0 50px gold; }
+    }
+
+    .membership-box {
+      margin: 40px auto;
+      max-width: 700px;
+      padding: 20px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid gold;
+      border-radius: 12px;
+    }
+
+    input, select {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: black;
+      color: gold;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 14px;
+      width: 100%;
+      background: gold;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .reserve-section {
+      padding: 60px 20px;
+      background: black;
+    }
+
+    .form {
+      max-width: 900px;
+      margin: auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .full { grid-column: span 2; }
+
+  </style>
+</head>
+
+<body>
+
+<div class="hero">
+
+  <div class="navbar">
+    <img src="logo.png" class="brand-logo">
+    <div class="menu">
+      <a href="#">Home</a>
+      <a href="#reserve">Reserve</a>
+    </div>
+  </div>
+
+  <div class="center">
+    <h1>BLACK ONE</h1>
+    <h2>Ultra Luxury Mobility</h2>
+  </div>
+
+  <div class="membership-box">
+    <h3>Membership Access</h3>
+
+    <select>
+      <option>Gold Membership ($200/month - 20% off)</option>
+      <option>Diamond Membership ($500/month - 35% off)</option>
+    </select>
+
+    <input type="text" placeholder="Full Name">
+    <input type="email" placeholder="Email">
+
+    <button onclick="document.getElementById('reserve').scrollIntoView()">Continue to Reserve</button>
+
+    <p>
+      Non-transferable membership. Rewards apply after completed trips.
+    </p>
+  </div>
+
+</div>
+
+<div class="reserve-section" id="reserve">
+
+  <h2 style="text-align:center;">Reservation Request</h2>
+
+  <div class="form">
+
+    <select>
+      <option>Service Type</option>
+      <option>Point to Point</option>
+      <option>Airport Transfer</option>
+      <option>Hourly (Min 3h / $450)</option>
+      <option>VIP Event</option>
+    </select>
+
+    <select>
+      <option>Vehicle</option>
+      <option>Cadillac Escalade Black</option>
+      <option>Luxury SUV</option>
+      <option>Executive Sedan</option>
+    </select>
+
+    <input type="text" placeholder="Pickup Location">
+    <input type="text" placeholder="Drop-off Location">
+
+    <input type="date">
+    <input type="time">
+
+    <select>
+      <option>Passengers</option>
+      <option>1</option>
+      <option>2</option>
+      <option>3</option>
+      <option>4+</option>
+    </select>
+
+    <select>
+      <option>Luggage</option>
+      <option>1-2</option>
+      <option>3+</option>
+    </select>
+
+    <select>
+      <option>Airport</option>
+      <option>MIA</option>
+      <option>FLL</option>
+      <option>PBI</option>
+      <option>OPF</option>
+      <option>MCO</option>
+    </select>
+
+    <input type="text" placeholder="Airline / Flight #" class="full">
+    <input type="text" placeholder="Terminal" class="full">
+
+    <select class="full">
+      <option>Add-ons</option>
+      <option>Baby Seat</option>
+      <option>Snacks / Water</option>
+      <option>Extra Stop</option>
+      <option>VIP Setup</option>
+    </select>
+
+    <textarea placeholder="Special request..." class="full" style="height:100px;"></textarea>
+
+    <button class="full">Submit Request</button>
+
+  </div>
+
+</div>
+
+</body>
+</html>
