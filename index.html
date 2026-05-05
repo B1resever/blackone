@@ -5,107 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; scroll-behavior: smooth; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      color: #f5d76e;
       background: black;
+      color: #f5d76e;
+      overflow-x: hidden;
     }
 
     .hero {
       min-height: 100vh;
       background:
-        linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9)),
+        linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.88)),
         url('escalade-miami.jpg') center/cover no-repeat;
+      position: relative;
     }
 
     .navbar {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       padding: 25px 60px;
+      background: rgba(0,0,0,0.25);
+      backdrop-filter: blur(12px);
     }
 
     .brand-logo {
-      height: 60px;
+      height: 65px;
+      filter: drop-shadow(0 0 25px rgba(245,215,110,0.7));
     }
 
     .menu a {
-      color: gold;
-      margin-left: 30px;
+      color: #f5d76e;
+      margin-left: 35px;
       text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 1px;
+      font-weight: bold;
     }
 
     .center {
       text-align: center;
-      padding-top: 100px;
+      padding-top: 90px;
+      animation: fadeIn 1.8s ease;
     }
 
     h1 {
-      font-size: 90px;
-      letter-spacing: 10px;
-      animation: glow 6s infinite alternate;
+      font-size: 95px;
+      letter-spacing: 11px;
+      margin: 0;
       position: relative;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 20px gold; }
-      to { text-shadow: 0 0 60px gold; }
+      display: inline-block;
+      text-shadow: 0 0 35px rgba(245,215,110,0.6);
+      animation: luxuryGlow 8s infinite alternate;
+      overflow: hidden;
     }
 
     h1::after {
       content: "";
       position: absolute;
-      left: -120%;
-      width: 100%;
+      top: 0;
+      left: -130%;
+      width: 90%;
       height: 100%;
-      background: linear-gradient(120deg, transparent, white, transparent);
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.8), transparent);
       animation: shine 40s infinite;
     }
 
-    @keyframes shine {
-      0% { left: -120%; }
-      5% { left: 120%; }
-      100% { left: 120%; }
+    h2 {
+      margin-top: 14px;
+      font-weight: 300;
+      color: #fff1a6;
+      letter-spacing: 2px;
+    }
+
+    .line {
+      width: 240px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, gold, transparent);
+      margin: 28px auto;
+      animation: pulseLine 6s infinite;
+    }
+
+    .subtitle {
+      color: #f1df9a;
+      font-size: 16px;
     }
 
     .membership {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      background: rgba(0,0,0,0.7);
-      border: 1px solid gold;
+      max-width: 720px;
+      margin: 50px auto 0;
+      padding: 22px;
+      background: rgba(0,0,0,0.72);
+      border: 1px solid rgba(245,215,110,0.45);
+      border-radius: 18px;
+      backdrop-filter: blur(16px);
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
     }
 
     input, select, textarea {
       width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      background: black;
-      color: gold;
-      border: 1px solid rgba(255,255,255,0.2);
+      padding: 13px;
+      background: rgba(0,0,0,0.9);
+      color: #f5d76e;
+      border: 1px solid rgba(245,215,110,0.35);
+      border-radius: 8px;
     }
 
     button {
-      width: 100%;
-      margin-top: 15px;
       padding: 14px;
-      background: gold;
+      background: #f5d76e;
       color: black;
-      font-weight: bold;
       border: none;
+      border-radius: 8px;
+      font-weight: bold;
       cursor: pointer;
     }
 
+    button:hover {
+      background: white;
+    }
+
+    .membership-note {
+      text-align: center;
+      color: #e8d88a;
+      font-size: 13px;
+      margin-top: 15px;
+    }
+
     .reserve-section {
-      padding: 60px 20px;
-      background: black;
+      min-height: 100vh;
+      padding: 90px 20px;
+      background:
+        linear-gradient(rgba(0,0,0,0.82), rgba(0,0,0,0.96)),
+        url('escalade-miami.jpg') center/cover no-repeat;
+    }
+
+    .reserve-card {
+      max-width: 980px;
+      margin: auto;
+      background: rgba(0,0,0,0.78);
+      border: 1px solid rgba(245,215,110,0.45);
+      border-radius: 22px;
+      padding: 35px;
+      backdrop-filter: blur(16px);
+    }
+
+    .reserve-card h3 {
+      text-align: center;
+      font-size: 36px;
+      color: #fff1a6;
     }
 
     .form {
-      max-width: 900px;
-      margin: auto;
+      margin-top: 28px;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 15px;
@@ -115,29 +172,57 @@
       grid-column: span 2;
     }
 
+    @keyframes shine {
+      0% { left: -130%; }
+      5% { left: 130%; }
+      100% { left: 130%; }
+    }
+
+    @keyframes luxuryGlow {
+      from { text-shadow: 0 0 20px rgba(245,215,110,0.45); }
+      to { text-shadow: 0 0 55px rgba(245,215,110,0.9); }
+    }
+
+    @keyframes pulseLine {
+      0%,100% { opacity: 0.35; transform: scaleX(0.75); }
+      50% { opacity: 1; transform: scaleX(1.15); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      .menu { display: none; }
+      h1 { font-size: 46px; }
+      .membership, .form { grid-template-columns: 1fr; }
+      .full { grid-column: span 1; }
+    }
+
   </style>
 </head>
 
 <body>
 
-<div class="hero">
+<section class="hero">
 
-  <div class="navbar">
+  <nav class="navbar">
     <img src="logo.png" class="brand-logo">
     <div class="menu">
       <a href="#">Home</a>
       <a href="#reserve">Reserve</a>
     </div>
-  </div>
+  </nav>
 
   <div class="center">
     <h1>BLACK ONE</h1>
-    <h2>Ultra Luxury Mobility</h2>
+    <h2>ULTRA LUXURY MOBILITY</h2>
+    <div class="line"></div>
+    <p class="subtitle">Cadillac Escalade • Miami Bay • Private Executive Chauffeur</p>
   </div>
 
   <div class="membership">
-    <h3>Membership Access</h3>
-
     <select>
       <option>Gold Membership</option>
       <option>Diamond Membership</option>
@@ -146,90 +231,67 @@
     <input type="text" placeholder="Full Name">
     <input type="email" placeholder="Email">
 
-    <button onclick="document.getElementById('reserve').scrollIntoView()">
+    <button class="full" onclick="document.getElementById('reserve').scrollIntoView()">
       Continue to Reserve
     </button>
-
-    <p>
-      Exclusive benefits, priority access and preferred service for members.
-    </p>
   </div>
 
-</div>
-
-<div class="reserve-section" id="reserve">
-
-  <h2 style="text-align:center;">Reservation Request</h2>
-
-  <div class="form">
-
-    <select>
-      <option>Service Type</option>
-      <option>Point to Point</option>
-      <option>Airport Transfer</option>
-      <option>Hourly Service (From 3h / $450)</option>
-      <option>VIP Event</option>
-    </select>
-
-    <select>
-      <option>Vehicle</option>
-      <option>Cadillac Escalade Black</option>
-      <option>Luxury SUV</option>
-      <option>Executive Sedan</option>
-    </select>
-
-    <!-- AQUÍ ESTÁ LO QUE FALTABA -->
-    <input type="text" placeholder="Pickup Location / From">
-    <input type="text" placeholder="Destination / To">
-
-    <input type="date">
-    <input type="time">
-
-    <select>
-      <option>Passengers</option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4+</option>
-    </select>
-
-    <select>
-      <option>Luggage</option>
-      <option>1-2</option>
-      <option>3+</option>
-    </select>
-
-    <select>
-      <option>Airport</option>
-      <option>MIA</option>
-      <option>FLL</option>
-      <option>PBI</option>
-      <option>OPF</option>
-      <option>MCO</option>
-      <option>JFK</option>
-      <option>LGA</option>
-      <option>LAX</option>
-      <option>DFW</option>
-    </select>
-
-    <input type="text" placeholder="Airline / Flight #" class="full">
-    <input type="text" placeholder="Terminal" class="full">
-
-    <select class="full">
-      <option>Add-ons</option>
-      <option>Baby Seat</option>
-      <option>Snacks / Water</option>
-      <option>Extra Stop</option>
-      <option>VIP Setup</option>
-    </select>
-
-    <textarea placeholder="Special request..." class="full" style="height:100px;"></textarea>
-
-    <button class="full">Submit Request</button>
-
+  <div class="membership-note">
+    Exclusive benefits, priority access and preferred luxury service.
   </div>
 
-</div>
+</section>
+
+<section class="reserve-section" id="reserve">
+
+  <div class="reserve-card">
+    <h3>Reservation Request</h3>
+
+    <div class="form">
+
+      <select>
+        <option>Service Type</option>
+        <option>Point to Point</option>
+        <option>Airport Transfer</option>
+        <option>Hourly Service - From 3h / $450</option>
+        <option>VIP Event</option>
+      </select>
+
+      <select>
+        <option>Vehicle</option>
+        <option>Cadillac Escalade Black</option>
+        <option>Luxury SUV</option>
+        <option>Executive Sedan</option>
+      </select>
+
+      <input type="text" placeholder="Pickup Location / From">
+      <input type="text" placeholder="Destination / To">
+
+      <input type="date">
+      <input type="time">
+
+      <select>
+        <option>Passengers</option>
+        <option>1 Passenger</option>
+        <option>2 Passengers</option>
+        <option>3 Passengers</option>
+        <option>4+ Passengers</option>
+      </select>
+
+      <select>
+        <option>Luggage</option>
+        <option>1-2 Bags</option>
+        <option>3+ Bags</option>
+      </select>
+
+      <textarea class="full" placeholder="Special request..." style="height:110px;"></textarea>
+
+      <button class="full">Submit Request</button>
+
+    </div>
+  </div>
+
+</section>
 
 </body>
 </html>
