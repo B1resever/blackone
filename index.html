@@ -5,30 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; scroll-behavior: smooth; }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: black;
       color: #f5d76e;
+      background: black;
     }
 
-    /* HERO */
     .hero {
-      min-height: 100vh;
+      height: 100vh;
       background:
         linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9)),
         url('escalade-miami.jpg') center/cover no-repeat;
     }
 
-    /* NAVBAR */
     .navbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding: 25px 60px;
-      backdrop-filter: blur(10px);
     }
 
     .brand-logo {
@@ -39,84 +35,67 @@
       color: gold;
       margin-left: 30px;
       text-decoration: none;
-      font-size: 13px;
     }
 
-    /* TITLE */
     .center {
       text-align: center;
-      padding-top: 80px;
+      padding-top: 100px;
     }
 
     h1 {
-      font-size: 80px;
-      letter-spacing: 8px;
-      margin: 0;
-      animation: glow 8s infinite alternate;
+      font-size: 90px;
+      letter-spacing: 10px;
+      animation: glow 6s infinite alternate;
+      position: relative;
     }
 
     @keyframes glow {
-      from { text-shadow: 0 0 15px gold; }
-      to { text-shadow: 0 0 40px gold; }
+      from { text-shadow: 0 0 20px gold; }
+      to { text-shadow: 0 0 60px gold; }
     }
 
-    h2 {
-      margin-top: 10px;
-      font-weight: 300;
-    }
-
-    /* MEMBERSHIP */
-    .membership-box {
-      margin: 40px auto;
-      max-width: 700px;
-      padding: 20px;
-      background: rgba(0,0,0,0.75);
-      border: 1px solid gold;
-      border-radius: 12px;
-    }
-
-    input, select, textarea {
+    h1::after {
+      content: "";
+      position: absolute;
+      left: -120%;
       width: 100%;
-      margin-top: 10px;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, white, transparent);
+      animation: shine 40s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -120%; }
+      5% { left: 120%; }
+      100% { left: 120%; }
+    }
+
+    .membership {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid gold;
+    }
+
+    input, select {
+      width: 100%;
       padding: 12px;
+      margin-top: 10px;
       background: black;
       color: gold;
       border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 6px;
     }
 
     button {
+      width: 100%;
       margin-top: 15px;
       padding: 14px;
-      width: 100%;
       background: gold;
-      border: none;
       color: black;
       font-weight: bold;
+      border: none;
       cursor: pointer;
-      border-radius: 6px;
-    }
-
-    button:hover {
-      background: white;
-    }
-
-    /* RESERVE */
-    .reserve-section {
-      padding: 60px 20px;
-      background: black;
-    }
-
-    .form {
-      max-width: 900px;
-      margin: auto;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .full {
-      grid-column: span 2;
     }
 
   </style>
@@ -129,8 +108,8 @@
   <div class="navbar">
     <img src="logo.png" class="brand-logo">
     <div class="menu">
-      <a href="#">Home</a>
-      <a href="#reserve">Reserve</a>
+      <a href="index.html">Home</a>
+      <a href="reserve.html">Reserve</a>
     </div>
   </div>
 
@@ -139,94 +118,20 @@
     <h2>Ultra Luxury Mobility</h2>
   </div>
 
-  <div class="membership-box">
+  <div class="membership">
     <h3>Membership Access</h3>
 
     <select>
-      <option>Gold ($200/month - 20% off)</option>
-      <option>Diamond ($500/month - 35% off)</option>
+      <option>Gold ($200/month - 20%)</option>
+      <option>Diamond ($500/month - 35%)</option>
     </select>
 
     <input type="text" placeholder="Full Name">
     <input type="email" placeholder="Email">
 
-    <button onclick="document.getElementById('reserve').scrollIntoView()">Continue to Reserve</button>
-
-    <p>
-      Non-transferable membership. Rewards apply after completed trips.
-    </p>
-  </div>
-
-</div>
-
-<div class="reserve-section" id="reserve">
-
-  <h2 style="text-align:center;">Reservation Request</h2>
-
-  <div class="form">
-
-    <select>
-      <option>Service Type</option>
-      <option>Point to Point</option>
-      <option>Airport Transfer</option>
-      <option>Hourly (Min 3h / $450)</option>
-      <option>VIP Event</option>
-    </select>
-
-    <select>
-      <option>Vehicle</option>
-      <option>Cadillac Escalade Black</option>
-      <option>Luxury SUV</option>
-      <option>Executive Sedan</option>
-    </select>
-
-    <input type="text" placeholder="Pickup Location">
-    <input type="text" placeholder="Drop-off Location">
-
-    <input type="date">
-    <input type="time">
-
-    <select>
-      <option>Passengers</option>
-      <option>1</option>
-      <option>2</option>
-      <option>3</option>
-      <option>4+</option>
-    </select>
-
-    <select>
-      <option>Luggage</option>
-      <option>1-2</option>
-      <option>3+</option>
-    </select>
-
-    <select>
-      <option>Airport</option>
-      <option>MIA</option>
-      <option>FLL</option>
-      <option>PBI</option>
-      <option>OPF</option>
-      <option>MCO</option>
-      <option>JFK</option>
-      <option>LGA</option>
-      <option>LAX</option>
-      <option>DFW</option>
-    </select>
-
-    <input type="text" placeholder="Airline / Flight #" class="full">
-    <input type="text" placeholder="Terminal" class="full">
-
-    <select class="full">
-      <option>Add-ons</option>
-      <option>Baby Seat</option>
-      <option>Snacks / Water</option>
-      <option>Extra Stop</option>
-      <option>VIP Setup</option>
-    </select>
-
-    <textarea placeholder="Special request..." class="full" style="height:100px;"></textarea>
-
-    <button class="full">Submit Request</button>
+    <button onclick="window.location.href='reserve.html'">
+      Continue to Reserve
+    </button>
 
   </div>
 
