@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -52,7 +52,7 @@
 
     .content {
       text-align: center;
-      padding: 80px 20px 40px;
+      padding: 90px 20px 40px;
       z-index: 2;
       animation: fadeIn 1.6s ease;
     }
@@ -64,7 +64,8 @@
       color: #f5d76e;
       position: relative;
       text-shadow: 0 0 30px rgba(245,215,110,0.55);
-      animation: luxuryGlow 3s infinite alternate;
+      animation: luxuryGlow 8s infinite alternate;
+      overflow: hidden;
     }
 
     h1::after {
@@ -75,7 +76,7 @@
       width: 80%;
       height: 100%;
       background: linear-gradient(120deg, transparent, rgba(255,255,255,0.75), transparent);
-      animation: shine 4s infinite;
+      animation: shine 40s infinite;
     }
 
     h2 {
@@ -96,24 +97,12 @@
       height: 2px;
       background: linear-gradient(90deg, transparent, gold, transparent);
       margin: 28px auto;
-      animation: pulseLine 2s infinite;
+      animation: pulseLine 6s infinite;
     }
 
-    .car-light {
-      position: absolute;
-      bottom: 170px;
-      left: -250px;
-      width: 220px;
-      height: 4px;
-      background: linear-gradient(90deg, transparent, #f5d76e, white, #f5d76e, transparent);
-      filter: blur(2px);
-      animation: carMove 6s infinite;
-      opacity: 0.8;
-    }
-
-    .booking {
+    .membership-box {
       width: 88%;
-      max-width: 1050px;
+      max-width: 760px;
       margin: 0 auto 38px;
       padding: 18px;
       background: rgba(0,0,0,0.68);
@@ -121,14 +110,13 @@
       border-radius: 16px;
       backdrop-filter: blur(14px);
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr 1fr 120px;
+      grid-template-columns: 1fr 1fr 1fr 150px;
       gap: 10px;
       z-index: 3;
       box-shadow: 0 0 40px rgba(0,0,0,0.7);
     }
 
-    .booking input,
-    .booking select {
+    input, select {
       background: rgba(0,0,0,0.85);
       border: 1px solid rgba(245,215,110,0.35);
       color: white;
@@ -137,7 +125,7 @@
       font-size: 13px;
     }
 
-    .booking button {
+    button, .reserve-btn {
       background: #f5d76e;
       border: none;
       color: black;
@@ -145,9 +133,13 @@
       border-radius: 8px;
       cursor: pointer;
       letter-spacing: 1px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .booking button:hover {
+    button:hover, .reserve-btn:hover {
       background: white;
     }
 
@@ -159,27 +151,57 @@
       z-index: 3;
     }
 
+    .reserve-section {
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.96)),
+        url('escalade-miami.jpg') center/cover no-repeat;
+      padding: 100px 20px;
+      text-align: center;
+    }
+
+    .reserve-card {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(0,0,0,0.75);
+      border: 1px solid rgba(245,215,110,0.45);
+      border-radius: 18px;
+      padding: 30px;
+      backdrop-filter: blur(14px);
+    }
+
+    .reserve-card h3 {
+      font-size: 34px;
+      margin-top: 0;
+      color: #fff1a6;
+    }
+
+    .reserve-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 25px;
+    }
+
+    .reserve-form button {
+      grid-column: span 2;
+      padding: 15px;
+    }
+
     @keyframes shine {
       0% { left: -120%; }
-      45% { left: 130%; }
+      5% { left: 130%; }
       100% { left: 130%; }
     }
 
     @keyframes luxuryGlow {
       from { text-shadow: 0 0 18px rgba(245,215,110,0.4); }
-      to { text-shadow: 0 0 45px rgba(245,215,110,0.9); }
+      to { text-shadow: 0 0 42px rgba(245,215,110,0.8); }
     }
 
     @keyframes pulseLine {
       0%,100% { opacity: 0.35; transform: scaleX(0.7); }
       50% { opacity: 1; transform: scaleX(1.1); }
-    }
-
-    @keyframes carMove {
-      0% { left: -250px; opacity: 0; }
-      20% { opacity: 1; }
-      70% { opacity: 1; }
-      100% { left: 110%; opacity: 0; }
     }
 
     @keyframes fadeIn {
@@ -188,34 +210,19 @@
     }
 
     @media (max-width: 900px) {
-      .navbar {
-        padding: 18px 22px;
-      }
+      .navbar { padding: 18px 22px; }
+      .brand-logo { height: 42px; }
+      .menu { display: none; }
+      h1 { font-size: 46px; letter-spacing: 5px; }
+      h2 { font-size: 20px; }
 
-      .brand-logo {
-        height: 42px;
-      }
-
-      .menu {
-        display: none;
-      }
-
-      h1 {
-        font-size: 46px;
-        letter-spacing: 5px;
-      }
-
-      h2 {
-        font-size: 20px;
-      }
-
-      .booking {
+      .membership-box,
+      .reserve-form {
         grid-template-columns: 1fr;
-        width: 92%;
       }
 
-      .booking button {
-        padding: 14px;
+      .reserve-form button {
+        grid-column: span 1;
       }
     }
   </style>
@@ -231,11 +238,9 @@
         <a href="#">Home</a>
         <a href="#">Membership</a>
         <a href="#">Fleet</a>
-        <a href="#">Reserve</a>
+        <a href="#reserve">Reserve</a>
       </div>
     </nav>
-
-    <div class="car-light"></div>
 
     <div class="content">
       <h1>BLACK ONE</h1>
@@ -245,7 +250,7 @@
     </div>
 
     <div>
-      <div class="booking">
+      <div class="membership-box">
         <select>
           <option>Gold Membership</option>
           <option>Diamond Membership</option>
@@ -253,10 +258,8 @@
 
         <input type="text" placeholder="Full Name">
         <input type="email" placeholder="Email">
-        <input type="text" placeholder="From">
-        <input type="text" placeholder="To">
 
-        <button>Reserve</button>
+        <a href="#reserve" class="reserve-btn">Reserve</a>
       </div>
 
       <div class="membership-note">
@@ -264,6 +267,37 @@
       </div>
     </div>
 
+  </section>
+
+  <section class="reserve-section" id="reserve">
+    <div class="reserve-card">
+      <h3>Request a Reservation</h3>
+      <p>Complete your private transportation request. A BLACK ONE representative will confirm availability.</p>
+
+      <div class="reserve-form">
+        <input type="text" placeholder="Pickup Location">
+        <input type="text" placeholder="Destination">
+        <input type="date">
+        <input type="time">
+
+        <select>
+          <option>1 Passenger</option>
+          <option>2 Passengers</option>
+          <option>3 Passengers</option>
+          <option>4 Passengers</option>
+          <option>5+ Passengers</option>
+        </select>
+
+        <select>
+          <option>Cadillac Escalade Black</option>
+          <option>Luxury SUV</option>
+          <option>Executive Sedan</option>
+          <option>Ultra Luxury</option>
+        </select>
+
+        <button>Submit Reservation Request</button>
+      </div>
+    </div>
   </section>
 
 </body>
