@@ -5,28 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; scroll-behavior: smooth; }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: black;
       color: #f5d76e;
+      background: black;
     }
 
     .hero {
       min-height: 100vh;
       background:
-        linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.9)),
+        linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.9)),
         url('escalade-miami.jpg') center/cover no-repeat;
     }
 
     .navbar {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       padding: 25px 60px;
-      backdrop-filter: blur(10px);
     }
 
     .brand-logo {
@@ -37,52 +35,66 @@
       color: gold;
       margin-left: 30px;
       text-decoration: none;
-      font-size: 13px;
     }
 
     .center {
       text-align: center;
-      padding-top: 80px;
+      padding-top: 100px;
     }
 
     h1 {
-      font-size: 80px;
-      letter-spacing: 8px;
-      margin: 0;
+      font-size: 90px;
+      letter-spacing: 10px;
       animation: glow 6s infinite alternate;
+      position: relative;
     }
 
     @keyframes glow {
       from { text-shadow: 0 0 20px gold; }
-      to { text-shadow: 0 0 50px gold; }
+      to { text-shadow: 0 0 60px gold; }
     }
 
-    .membership-box {
+    h1::after {
+      content: "";
+      position: absolute;
+      left: -120%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg, transparent, white, transparent);
+      animation: shine 40s infinite;
+    }
+
+    @keyframes shine {
+      0% { left: -120%; }
+      5% { left: 120%; }
+      100% { left: 120%; }
+    }
+
+    .membership {
+      max-width: 600px;
       margin: 40px auto;
-      max-width: 700px;
       padding: 20px;
       background: rgba(0,0,0,0.7);
       border: 1px solid gold;
-      border-radius: 12px;
     }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
-      margin-top: 10px;
       padding: 12px;
+      margin-top: 10px;
       background: black;
       color: gold;
       border: 1px solid rgba(255,255,255,0.2);
     }
 
     button {
+      width: 100%;
       margin-top: 15px;
       padding: 14px;
-      width: 100%;
       background: gold;
-      border: none;
       color: black;
       font-weight: bold;
+      border: none;
       cursor: pointer;
     }
 
@@ -99,7 +111,9 @@
       gap: 15px;
     }
 
-    .full { grid-column: span 2; }
+    .full {
+      grid-column: span 2;
+    }
 
   </style>
 </head>
@@ -121,21 +135,23 @@
     <h2>Ultra Luxury Mobility</h2>
   </div>
 
-  <div class="membership-box">
+  <div class="membership">
     <h3>Membership Access</h3>
 
     <select>
-      <option>Gold Membership ($200/month - 20% off)</option>
-      <option>Diamond Membership ($500/month - 35% off)</option>
+      <option>Gold Membership</option>
+      <option>Diamond Membership</option>
     </select>
 
     <input type="text" placeholder="Full Name">
     <input type="email" placeholder="Email">
 
-    <button onclick="document.getElementById('reserve').scrollIntoView()">Continue to Reserve</button>
+    <button onclick="document.getElementById('reserve').scrollIntoView()">
+      Continue to Reserve
+    </button>
 
     <p>
-      Non-transferable membership. Rewards apply after completed trips.
+      Exclusive benefits, priority access and preferred service for members.
     </p>
   </div>
 
@@ -151,7 +167,7 @@
       <option>Service Type</option>
       <option>Point to Point</option>
       <option>Airport Transfer</option>
-      <option>Hourly (Min 3h / $450)</option>
+      <option>Hourly Service (From 3h / $450)</option>
       <option>VIP Event</option>
     </select>
 
@@ -162,8 +178,9 @@
       <option>Executive Sedan</option>
     </select>
 
-    <input type="text" placeholder="Pickup Location">
-    <input type="text" placeholder="Drop-off Location">
+    <!-- AQUÍ ESTÁ LO QUE FALTABA -->
+    <input type="text" placeholder="Pickup Location / From">
+    <input type="text" placeholder="Destination / To">
 
     <input type="date">
     <input type="time">
@@ -189,6 +206,10 @@
       <option>PBI</option>
       <option>OPF</option>
       <option>MCO</option>
+      <option>JFK</option>
+      <option>LGA</option>
+      <option>LAX</option>
+      <option>DFW</option>
     </select>
 
     <input type="text" placeholder="Airline / Flight #" class="full">
