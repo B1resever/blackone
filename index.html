@@ -3,39 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BLACK ONE | Luxury Transportation</title>
+  <title>BLACK ONE | Ultra Luxury Transportation</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    :root {
+      --black: #030303;
+      --soft-black: #0a0a0a;
+      --charcoal: #111113;
+      --white: #ffffff;
+      --muted: #b8b8b8;
+      --gold: #caa45d;
+      --gold-soft: #e2c988;
+      --line: rgba(255,255,255,0.12);
+      --glass: rgba(255,255,255,0.055);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
 
     body {
-      font-family: Arial, Helvetica, sans-serif;
-      background: #050505;
-      color: #ffffff;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      background: var(--black);
+      color: var(--white);
       overflow-x: hidden;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    button, input, select, textarea { font-family: inherit; }
+    button { cursor: pointer; }
 
     .page {
       display: none;
       min-height: 100vh;
-      padding-top: 92px;
+      padding-top: 86px;
     }
 
-    .page.active {
-      display: block;
-    }
+    .page.active { display: block; }
 
     header {
       position: fixed;
@@ -43,380 +45,327 @@
       left: 0;
       width: 100%;
       z-index: 1000;
-      background: rgba(0, 0, 0, 0.9);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(12px);
+      background: rgba(3,3,3,0.86);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(18px);
     }
 
     .navbar {
-      width: min(1200px, 92%);
+      width: min(1320px, 92%);
+      height: 86px;
       margin: auto;
-      height: 92px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 30px;
+      gap: 28px;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 14px;
-      cursor: pointer;
+      gap: 16px;
+      border: none;
+      background: transparent;
+      color: var(--white);
     }
 
-    .brand-mark {
-      width: 44px;
-      height: 44px;
-      border: 1px solid rgba(255, 255, 255, 0.65);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      letter-spacing: -2px;
-      background: linear-gradient(145deg, #ffffff, #b9b9b9);
-      color: #000;
-      box-shadow: 0 0 24px rgba(255, 255, 255, 0.18);
-    }
-
-    .brand-text {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: 5px;
-      white-space: nowrap;
+    .brand img {
+      width: 152px;
+      height: auto;
+      display: block;
+      object-fit: contain;
     }
 
     nav {
       display: flex;
       align-items: center;
-      gap: 24px;
-      font-size: 13px;
-      font-weight: 700;
+      gap: 26px;
     }
 
-    nav button {
+    nav button, .lang button {
       background: transparent;
-      color: #fff;
       border: none;
-      cursor: pointer;
+      color: rgba(255,255,255,0.72);
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.2px;
-      opacity: 0.82;
+      letter-spacing: 0.7px;
       transition: 0.25s ease;
     }
 
-    nav button:hover,
-    nav button.active {
-      opacity: 1;
-      color: #d6c49b;
+    nav button:hover, nav button.active, .lang button:hover, .lang button.active {
+      color: var(--gold-soft);
     }
 
-    .language {
+    .lang {
       display: flex;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 800;
-      opacity: 0.88;
+      align-items: center;
+      gap: 10px;
+      padding-left: 14px;
+      border-left: 1px solid var(--line);
     }
 
     .menu-toggle {
       display: none;
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #fff;
-      padding: 10px 12px;
-      border-radius: 12px;
-      cursor: pointer;
+      border: 1px solid var(--line);
+      color: var(--white);
+      padding: 10px 13px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 1px;
     }
 
     .hero {
-      min-height: calc(100vh - 92px);
+      min-height: calc(100vh - 86px);
       position: relative;
       display: flex;
-      align-items: center;
-      overflow: hidden;
+      align-items: flex-end;
       background:
-        linear-gradient(90deg, rgba(0,0,0,0.88), rgba(0,0,0,0.58), rgba(0,0,0,0.25)),
-        url('https://images.unsplash.com/photo-1518684079-3c830dcef090?auto=format&fit=crop&w=1800&q=80') center/cover no-repeat;
+        linear-gradient(90deg, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.42) 48%, rgba(0,0,0,0.22) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.92) 100%),
+        url('./hero-escalade.jpg') center/cover no-repeat;
+      overflow: hidden;
     }
 
-    .hero::after {
+    .hero::before {
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 70% 40%, rgba(214,196,155,0.16), transparent 35%);
+      background: radial-gradient(circle at 70% 35%, rgba(202,164,93,0.14), transparent 34%);
       pointer-events: none;
     }
 
-    .hero-content {
+    .hero-inner {
       position: relative;
       z-index: 2;
-      width: min(1200px, 92%);
+      width: min(1320px, 92%);
       margin: auto;
-      padding: 60px 0;
+      padding: 82px 0 70px;
     }
 
     .hero-logo {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.92);
-      color: #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 900;
-      letter-spacing: -4px;
-      font-size: 40px;
-      margin-bottom: 26px;
-      box-shadow: 0 0 60px rgba(255,255,255,0.22);
+      width: 230px;
+      height: auto;
+      display: block;
+      margin-bottom: 28px;
+      filter: drop-shadow(0 0 34px rgba(202,164,93,0.18));
     }
 
     .eyebrow {
-      color: #d6c49b;
+      color: var(--gold-soft);
+      font-size: 12px;
       letter-spacing: 7px;
-      font-size: 13px;
-      font-weight: 800;
       text-transform: uppercase;
+      font-weight: 700;
       margin-bottom: 18px;
     }
 
     h1 {
-      font-size: clamp(40px, 7vw, 86px);
-      line-height: 0.95;
-      max-width: 850px;
-      letter-spacing: -3px;
-      margin-bottom: 24px;
+      max-width: 780px;
+      font-size: clamp(42px, 6vw, 82px);
+      line-height: 0.96;
+      letter-spacing: -3.2px;
+      font-weight: 700;
+      margin-bottom: 22px;
     }
 
-    .hero p {
-      max-width: 650px;
-      color: #d8d8d8;
-      font-size: 18px;
-      line-height: 1.7;
-      margin-bottom: 34px;
+    .lead {
+      max-width: 620px;
+      color: rgba(255,255,255,0.75);
+      font-size: 17px;
+      line-height: 1.75;
+      margin-bottom: 32px;
     }
 
-    .hero-actions {
+    .actions {
       display: flex;
-      gap: 14px;
       flex-wrap: wrap;
+      gap: 14px;
     }
 
     .btn {
-      border: none;
       border-radius: 999px;
-      padding: 15px 28px;
+      padding: 14px 28px;
+      border: 1px solid transparent;
+      font-size: 12px;
       font-weight: 800;
-      cursor: pointer;
+      letter-spacing: 1.6px;
+      text-transform: uppercase;
       transition: 0.25s ease;
     }
 
-    .btn-primary {
-      background: #ffffff;
-      color: #000000;
-    }
-
-    .btn-primary:hover {
-      background: #d6c49b;
-    }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.08);
-      color: #ffffff;
-      border: 1px solid rgba(255,255,255,0.22);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255,255,255,0.16);
-    }
+    .btn-primary { background: var(--white); color: #000; }
+    .btn-primary:hover { background: var(--gold-soft); }
+    .btn-outline { background: rgba(0,0,0,0.22); color: var(--white); border-color: rgba(255,255,255,0.24); }
+    .btn-outline:hover { border-color: var(--gold-soft); color: var(--gold-soft); }
 
     .section {
-      width: min(1200px, 92%);
+      width: min(1180px, 92%);
       margin: auto;
-      padding: 80px 0;
+      padding: 88px 0;
     }
 
-    .section-title {
-      margin-bottom: 36px;
+    .section-head {
+      margin-bottom: 38px;
     }
 
-    .section-title span {
-      color: #d6c49b;
-      letter-spacing: 5px;
-      font-size: 12px;
-      font-weight: 800;
+    .section-head span {
+      color: var(--gold-soft);
       text-transform: uppercase;
+      letter-spacing: 5px;
+      font-size: 11px;
+      font-weight: 800;
     }
 
-    .section-title h2 {
+    .section-head h2 {
+      max-width: 760px;
       font-size: clamp(34px, 4vw, 56px);
-      margin-top: 12px;
-      letter-spacing: -1.5px;
+      line-height: 1.05;
+      letter-spacing: -1.8px;
+      margin-top: 13px;
+    }
+
+    .section-head p {
+      max-width: 680px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-top: 16px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 22px;
+      gap: 18px;
     }
 
     .card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.035));
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 26px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+      border: 1px solid var(--line);
+      border-radius: 24px;
       padding: 28px;
-      min-height: 230px;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.24);
+      min-height: 210px;
     }
 
-    .card h3 {
-      font-size: 22px;
-      margin-bottom: 12px;
-    }
+    .card h3 { font-size: 21px; margin-bottom: 12px; }
+    .card p, .card li { color: var(--muted); font-size: 15px; line-height: 1.68; }
+    .card ul { padding-left: 18px; margin-top: 12px; }
 
-    .card p,
-    .card li {
-      color: #cfcfcf;
-      line-height: 1.65;
-      font-size: 15px;
-    }
-
-    .card ul {
-      padding-left: 18px;
-      margin-top: 12px;
-    }
-
-    .reservation-wrap {
+    .reservation-layout {
       display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 28px;
+      grid-template-columns: 1fr 0.9fr;
+      gap: 24px;
       align-items: stretch;
     }
 
     .reservation-card {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.055);
+      border: 1px solid var(--line);
       border-radius: 28px;
-      padding: 28px;
+      padding: 26px;
     }
 
     .tabs {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
     }
 
     .tab {
-      border: 1px solid rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.08);
-      color: #fff;
+      background: rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.82);
+      border: 1px solid rgba(255,255,255,0.16);
       border-radius: 999px;
-      padding: 11px 18px;
+      padding: 10px 15px;
+      font-size: 12px;
       font-weight: 800;
-      cursor: pointer;
     }
 
     .tab.active {
-      background: #ffffff;
+      background: var(--white);
       color: #000;
     }
 
     form {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
+      gap: 12px;
     }
 
-    input,
-    select,
-    textarea {
+    input, select, textarea {
       width: 100%;
-      border: 1px solid rgba(255,255,255,0.2);
-      background: rgba(255,255,255,0.1);
-      color: #fff;
-      border-radius: 16px;
-      padding: 15px 16px;
+      background: rgba(255,255,255,0.075);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: var(--white);
+      border-radius: 14px;
+      padding: 14px 15px;
       outline: none;
       font-size: 14px;
     }
 
-    input::placeholder,
-    textarea::placeholder {
-      color: rgba(255,255,255,0.62);
-    }
+    input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.52); }
+    select option { color: #000; }
+    .full, textarea { grid-column: 1 / -1; }
 
-    select option {
-      color: #000;
-    }
-
-    textarea,
-    .full {
-      grid-column: 1 / -1;
-    }
-
-    .car-image {
-      min-height: 420px;
+    .fleet-panel {
+      position: relative;
+      min-height: 470px;
+      border: 1px solid var(--line);
       border-radius: 28px;
       overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.14);
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.12), rgba(0,0,0,0.82)),
-        url('https://images.unsplash.com/photo-1549924231-f129b911e442?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+        linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.82)),
+        url('./hero-escalade.jpg') center/cover no-repeat;
       display: flex;
       align-items: flex-end;
-      padding: 28px;
+      padding: 30px;
     }
 
-    .car-image h3 {
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
+    .fleet-panel h3 { font-size: 30px; margin-bottom: 8px; }
+    .fleet-panel p { color: rgba(255,255,255,0.72); line-height: 1.6; max-width: 430px; }
 
-    .car-image p {
-      color: #d8d8d8;
-      line-height: 1.5;
-    }
-
-    .partners-steps {
+    .partner-flow {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 18px;
+      gap: 16px;
     }
 
     .step {
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.13);
+      background: var(--glass);
+      border: 1px solid var(--line);
       border-radius: 22px;
-      padding: 22px;
+      padding: 24px;
     }
 
     .step strong {
-      color: #d6c49b;
+      color: var(--gold-soft);
+      font-size: 12px;
+      letter-spacing: 2px;
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
 
+    .step p { color: var(--muted); line-height: 1.6; margin-top: 8px; }
+
     footer {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 32px 0;
+      border-top: 1px solid var(--line);
+      padding: 34px 0;
       text-align: center;
-      color: #a8a8a8;
+      color: rgba(255,255,255,0.48);
+      font-size: 13px;
     }
 
     .chat-widget {
       position: fixed;
-      right: 24px;
-      bottom: 24px;
-      width: 300px;
+      right: 22px;
+      bottom: 22px;
+      width: 282px;
       max-width: calc(100vw - 32px);
       z-index: 2000;
-      background: rgba(14,14,16,0.96);
-      border: 1px solid rgba(255,255,255,0.22);
-      border-radius: 22px;
-      box-shadow: 0 25px 90px rgba(0,0,0,0.55);
+      background: rgba(10,10,10,0.96);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 20px;
+      box-shadow: 0 28px 90px rgba(0,0,0,0.58);
       overflow: hidden;
     }
 
@@ -425,174 +374,140 @@
       border-radius: 999px;
     }
 
-    .chat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 13px 15px;
-      background: #ffffff;
+    .chat-open {
+      display: none;
+      background: var(--white);
       color: #000;
+      border: none;
+      padding: 14px 18px;
+      border-radius: 999px;
       font-weight: 900;
-      letter-spacing: 1.5px;
-      font-size: 12px;
+      letter-spacing: 0.8px;
+    }
+
+    .chat-header {
+      background: var(--white);
+      color: #000;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 1.6px;
     }
 
     .chat-close {
-      width: 26px;
-      height: 26px;
+      width: 25px;
+      height: 25px;
       border-radius: 50%;
       border: none;
       background: #000;
       color: #fff;
-      cursor: pointer;
-      font-size: 16px;
-      line-height: 26px;
+      font-size: 17px;
+      line-height: 25px;
     }
 
     .chat-body {
-      padding: 14px;
+      padding: 13px;
       display: grid;
-      gap: 10px;
+      gap: 9px;
     }
 
     .chat-message {
-      background: rgba(255,255,255,0.1);
-      border-radius: 14px;
-      padding: 12px;
-      font-size: 13px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 13px;
+      padding: 11px;
+      color: rgba(255,255,255,0.86);
+      font-size: 12px;
       line-height: 1.45;
-      color: #f0f0f0;
     }
 
     .chat-body input {
       background: #fff;
       color: #000;
       border-radius: 999px;
-      padding: 12px 14px;
+      padding: 11px 13px;
     }
 
     .chat-option {
       background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.18);
       color: #fff;
       border-radius: 999px;
       padding: 10px;
       font-weight: 700;
-      cursor: pointer;
+      font-size: 12px;
     }
 
-    .chat-open {
-      display: none;
-      background: #fff;
-      color: #000;
-      border: none;
-      padding: 14px 18px;
-      border-radius: 999px;
-      font-weight: 900;
-      cursor: pointer;
-    }
+    .chat-option:hover { border-color: var(--gold-soft); color: var(--gold-soft); }
+    .chat-widget.closed .chat-header, .chat-widget.closed .chat-body { display: none; }
+    .chat-widget.closed .chat-open { display: block; }
 
-    .chat-widget.closed .chat-header,
-    .chat-widget.closed .chat-body {
-      display: none;
-    }
-
-    .chat-widget.closed .chat-open {
-      display: block;
-    }
-
-    @media (max-width: 900px) {
-      .navbar {
-        height: 82px;
-      }
-
-      .page {
-        padding-top: 82px;
-      }
-
-      .menu-toggle {
-        display: block;
-      }
-
+    @media (max-width: 980px) {
+      .menu-toggle { display: block; }
+      .brand img { width: 132px; }
       nav {
         position: absolute;
-        top: 82px;
+        top: 86px;
         left: 0;
         width: 100%;
-        background: rgba(0,0,0,0.96);
-        padding: 20px;
+        background: rgba(3,3,3,0.96);
+        border-bottom: 1px solid var(--line);
+        padding: 22px 4%;
         display: none;
         flex-direction: column;
         align-items: flex-start;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
       }
-
-      nav.open {
-        display: flex;
-      }
-
-      .language {
-        display: none;
-      }
-
-      .grid,
-      .reservation-wrap,
-      .partners-steps {
-        grid-template-columns: 1fr;
-      }
-
-      form {
-        grid-template-columns: 1fr;
-      }
-
-      .chat-widget {
-        right: 14px;
-        bottom: 14px;
-        width: 280px;
-      }
-
-      .hero-logo {
-        width: 92px;
-        height: 92px;
-        font-size: 30px;
-      }
+      nav.open { display: flex; }
+      .lang { display: none; }
+      .grid, .reservation-layout, .partner-flow { grid-template-columns: 1fr; }
+      form { grid-template-columns: 1fr; }
+      .hero-logo { width: 178px; }
+      .chat-widget { width: 270px; right: 14px; bottom: 14px; }
     }
   </style>
 </head>
 <body>
   <header>
     <div class="navbar">
-      <div class="brand" onclick="showPage('home')">
-        <div class="brand-mark">BO</div>
-        <div class="brand-text">BLACK ONE</div>
-      </div>
+      <button class="brand" onclick="showPage('home')" aria-label="BLACK ONE Home">
+        <img src="./logo.png.png" alt="BLACK ONE Logo" />
+      </button>
 
-      <button class="menu-toggle" onclick="toggleMenu()">Menu</button>
+      <button class="menu-toggle" onclick="toggleMenu()">MENU</button>
 
       <nav id="mainNav">
-        <button class="nav-btn active" onclick="showPage('home')">Home</button>
-        <button class="nav-btn" onclick="showPage('services')">Services</button>
-        <button class="nav-btn" onclick="showPage('membership')">Membership</button>
-        <button class="nav-btn" onclick="showPage('reservation')">Reservation</button>
-        <button class="nav-btn" onclick="showPage('partners')">Partners</button>
-        <button class="nav-btn" onclick="showPage('contact')">Contact</button>
+        <button class="nav-btn active" data-page="home" onclick="showPage('home')">Home</button>
+        <button class="nav-btn" data-page="services" onclick="showPage('services')">Services</button>
+        <button class="nav-btn" data-page="membership" onclick="showPage('membership')">Membership</button>
+        <button class="nav-btn" data-page="reservation" onclick="showPage('reservation')">Reservation</button>
+        <button class="nav-btn" data-page="partners" onclick="showPage('partners')">Partners</button>
+        <button class="nav-btn" data-page="contact" onclick="showPage('contact')">Contact</button>
       </nav>
 
-      <div class="language">EN&nbsp; ES&nbsp; PT&nbsp; FR</div>
+      <div class="lang" aria-label="Language selector">
+        <button class="lang-btn active" onclick="setLanguage('EN')">EN</button>
+        <button class="lang-btn" onclick="setLanguage('ES')">ES</button>
+        <button class="lang-btn" onclick="setLanguage('PT')">PT</button>
+        <button class="lang-btn" onclick="setLanguage('FR')">FR</button>
+      </div>
     </div>
   </header>
 
   <main>
     <section id="home" class="page active">
       <div class="hero">
-        <div class="hero-content">
-          <div class="hero-logo">BO</div>
-          <div class="eyebrow">Ultra Luxury · Exclusive · One Step Ahead</div>
-          <h1>Executive transportation designed for premium clients.</h1>
-          <p>BLACK ONE provides private chauffeur, airport transfer, hourly service, and premium transportation solutions with a discreet, elegant, and reliable experience.</p>
-          <div class="hero-actions">
-            <button class="btn btn-primary" onclick="showPage('reservation')">Book a Ride</button>
-            <button class="btn btn-secondary" onclick="showPage('services')">View Services</button>
+        <div class="hero-inner">
+          <img class="hero-logo" src="./logo.png.png" alt="BLACK ONE Logo" />
+          <div class="eyebrow" data-i18n="tagline">Ultra Luxury. Exclusive. Always One Step Ahead.</div>
+          <h1 data-i18n="heroTitle">Luxury black car service for clients who expect more.</h1>
+          <p class="lead" data-i18n="heroText">Private chauffeur service, airport transfers, hourly reservations, and executive transportation with a refined, discreet, and premium experience.</p>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="showPage('reservation')" data-i18n="bookBtn">Book a Ride</button>
+            <button class="btn btn-outline" onclick="showPage('services')" data-i18n="servicesBtn">View Services</button>
           </div>
         </div>
       </div>
@@ -600,76 +515,80 @@
 
     <section id="services" class="page">
       <div class="section">
-        <div class="section-title">
-          <span>Services</span>
-          <h2>Transportation solutions for every premium need.</h2>
+        <div class="section-head">
+          <span data-i18n="servicesLabel">Services</span>
+          <h2 data-i18n="servicesTitle">A refined transportation experience, built around precision.</h2>
+          <p data-i18n="servicesText">Simple, elegant, and reliable service for airport travel, executive needs, special occasions, and private transportation.</p>
         </div>
         <div class="grid">
-          <div class="card"><h3>Airport Transfer</h3><p>Private pickup and drop-off service for MIA, FLL, private terminals, hotels, residences, and executive destinations.</p></div>
-          <div class="card"><h3>Hourly Chauffeur</h3><p>Reserve a professional chauffeur by the hour for meetings, events, shopping, dinners, or multi-stop itineraries.</p></div>
-          <div class="card"><h3>One-Way & Roundtrip</h3><p>Point-to-point luxury transportation with the option to schedule a return trip in advance.</p></div>
-          <div class="card"><h3>Corporate Travel</h3><p>Reliable executive transportation for business owners, teams, investors, VIP guests, and corporate accounts.</p></div>
-          <div class="card"><h3>Events & Hospitality</h3><p>Premium transportation coordination for weddings, private events, hotels, restaurants, and luxury venues.</p></div>
-          <div class="card"><h3>Luxury Fleet</h3><p>Professional black car service with luxury sedans, SUVs, and executive vehicles based on availability.</p></div>
+          <div class="card"><h3 data-i18n="airportTitle">Airport Transfer</h3><p data-i18n="airportText">Private transfers to and from MIA, FLL, private terminals, hotels, residences, and executive destinations.</p></div>
+          <div class="card"><h3 data-i18n="hourlyTitle">Hourly Chauffeur</h3><p data-i18n="hourlyText">A professional chauffeur reserved by the hour for meetings, events, dinners, shopping, and multi-stop itineraries.</p></div>
+          <div class="card"><h3 data-i18n="roundTitle">One-Way & Roundtrip</h3><p data-i18n="roundText">Point-to-point luxury service with the option to schedule your return in advance.</p></div>
+          <div class="card"><h3 data-i18n="corpTitle">Corporate Travel</h3><p data-i18n="corpText">Executive transportation for business owners, VIP clients, investors, teams, and corporate guests.</p></div>
+          <div class="card"><h3 data-i18n="eventsTitle">Events</h3><p data-i18n="eventsText">Premium transportation for private events, weddings, hotels, restaurants, luxury venues, and hospitality partners.</p></div>
+          <div class="card"><h3 data-i18n="fleetTitle">Cadillac Escalade Fleet</h3><p data-i18n="fleetText">A luxury SUV experience designed for comfort, presence, privacy, and executive-level transportation.</p></div>
         </div>
       </div>
     </section>
 
     <section id="membership" class="page">
       <div class="section">
-        <div class="section-title">
-          <span>Membership</span>
-          <h2>Priority access for frequent clients.</h2>
+        <div class="section-head">
+          <span data-i18n="membershipLabel">Membership</span>
+          <h2 data-i18n="membershipTitle">Priority service for frequent and premium clients.</h2>
+          <p data-i18n="membershipText">Membership is designed for clients who require faster handling, preferred support, and consistent transportation access.</p>
         </div>
         <div class="grid">
-          <div class="card"><h3>Preferred Client</h3><p>Designed for recurring travelers who need consistent luxury transportation with faster quote handling.</p></div>
-          <div class="card"><h3>Corporate Account</h3><p>For companies that need organized transportation requests, billing coordination, and executive support.</p></div>
-          <div class="card"><h3>VIP Access</h3><p>Priority reservation handling, special requests, preferred vehicle coordination, and personalized service notes.</p></div>
+          <div class="card"><h3 data-i18n="preferredTitle">Preferred Client</h3><p data-i18n="preferredText">For recurring travelers who value reliability, discretion, and a smooth booking process.</p></div>
+          <div class="card"><h3 data-i18n="corporateTitle">Corporate Account</h3><p data-i18n="corporateText">For companies that need organized transportation requests, billing coordination, and executive support.</p></div>
+          <div class="card"><h3 data-i18n="vipTitle">VIP Access</h3><p data-i18n="vipText">Priority reservations, special requests, preferred vehicle coordination, and personalized service notes.</p></div>
         </div>
       </div>
     </section>
 
     <section id="reservation" class="page">
       <div class="section">
-        <div class="section-title">
-          <span>Reservation</span>
-          <h2>Request your private ride.</h2>
+        <div class="section-head">
+          <span data-i18n="reservationLabel">Reservation</span>
+          <h2 data-i18n="reservationTitle">Request your private ride.</h2>
+          <p data-i18n="reservationText">Complete the details below and our team will confirm availability and quote.</p>
         </div>
 
-        <div class="reservation-wrap">
+        <div class="reservation-layout">
           <div class="reservation-card">
             <div class="tabs">
-              <button class="tab active">Airport Transfer</button>
-              <button class="tab">Hourly Chauffeur</button>
-              <button class="tab">One-way</button>
-              <button class="tab">Roundtrip</button>
+              <button class="tab active" data-i18n="tabAirport">Airport Transfer</button>
+              <button class="tab" data-i18n="tabHourly">Hourly Chauffeur</button>
+              <button class="tab" data-i18n="tabOneWay">One-Way</button>
+              <button class="tab" data-i18n="tabRoundtrip">Roundtrip</button>
             </div>
+
             <form>
-              <input type="text" placeholder="From *" required />
-              <input type="text" placeholder="Dropoff *" required />
+              <input type="text" data-placeholder="from" placeholder="From *" required />
+              <input type="text" data-placeholder="dropoff" placeholder="Dropoff *" required />
               <input type="date" required />
               <input type="time" required />
               <select>
-                <option>Luggage</option>
+                <option data-i18n="luggage">Luggage</option>
                 <option>No luggage</option>
                 <option>Carry-on</option>
                 <option>2+ Bags</option>
               </select>
               <select>
-                <option>Vehicle Type</option>
-                <option>Luxury Sedan</option>
+                <option data-i18n="vehicle">Vehicle Type</option>
+                <option>Cadillac Escalade</option>
                 <option>Luxury SUV</option>
-                <option>Executive Van</option>
+                <option>Executive Vehicle</option>
               </select>
-              <textarea rows="4" placeholder="Additional details"></textarea>
-              <button type="submit" class="btn btn-primary full">Get Quote</button>
+              <textarea rows="4" data-placeholder="details" placeholder="Additional details"></textarea>
+              <button type="submit" class="btn btn-primary full" data-i18n="quoteBtn">Get Quote</button>
             </form>
           </div>
 
-          <div class="car-image">
+          <div class="fleet-panel">
             <div>
-              <h3>Luxury Fleet</h3>
-              <p>Images are loaded directly from reliable image URLs. Replace this URL with your real vehicle image when ready.</p>
+              <h3 data-i18n="fleetPanelTitle">Cadillac Escalade Experience</h3>
+              <p data-i18n="fleetPanelText">Elegant presence, premium comfort, and private transportation for business, travel, and luxury lifestyle needs.</p>
             </div>
           </div>
         </div>
@@ -678,29 +597,31 @@
 
     <section id="partners" class="page">
       <div class="section">
-        <div class="section-title">
-          <span>Partners</span>
-          <h2>Partner onboarding for drivers and operators.</h2>
+        <div class="section-head">
+          <span data-i18n="partnersLabel">Partners</span>
+          <h2 data-i18n="partnersTitle">Partner onboarding for premium operators.</h2>
+          <p data-i18n="partnersText">A structured onboarding process for chauffeurs, fleet partners, and transportation associates.</p>
         </div>
-        <div class="partners-steps">
-          <div class="step"><strong>01</strong><h3>Company Info</h3><p>Business profile, W-9, tax receipt, and corporate documents.</p></div>
-          <div class="step"><strong>02</strong><h3>Fleet Info</h3><p>Vehicle details, registration, insurance, stickers, and inspection files.</p></div>
-          <div class="step"><strong>03</strong><h3>Chauffeur Info</h3><p>Driver profile, documents, photo, license, and compliance requirements.</p></div>
-          <div class="step"><strong>04</strong><h3>Approval</h3><p>Training, contract details, bank information, and final summary.</p></div>
+        <div class="partner-flow">
+          <div class="step"><strong>01</strong><h3>Company</h3><p>Business profile, W-9, tax documents, and company records.</p></div>
+          <div class="step"><strong>02</strong><h3>Fleet</h3><p>Vehicle registration, insurance, inspection, and compliance files.</p></div>
+          <div class="step"><strong>03</strong><h3>Chauffeur</h3><p>Driver profile, chauffeur documents, picture, and required credentials.</p></div>
+          <div class="step"><strong>04</strong><h3>Approval</h3><p>Training, contract details, bank information, and final review.</p></div>
         </div>
       </div>
     </section>
 
     <section id="contact" class="page">
       <div class="section">
-        <div class="section-title">
-          <span>Contact</span>
-          <h2>Connect with BLACK ONE.</h2>
+        <div class="section-head">
+          <span data-i18n="contactLabel">Contact</span>
+          <h2 data-i18n="contactTitle">BLACK ONE assistance.</h2>
+          <p data-i18n="contactText">For reservations, membership, corporate transportation, or partner onboarding, contact our team directly.</p>
         </div>
         <div class="grid">
-          <div class="card"><h3>Reservations</h3><p>Use the reservation form to request availability and receive a quote.</p></div>
-          <div class="card"><h3>Corporate Accounts</h3><p>Contact BLACK ONE to discuss recurring transportation service for your company.</p></div>
-          <div class="card"><h3>Partner Drivers</h3><p>Use the Partners section to begin the onboarding process.</p></div>
+          <div class="card"><h3>Reservations</h3><p>Request a quote through the reservation form and our team will confirm availability.</p></div>
+          <div class="card"><h3>Corporate</h3><p>Discuss executive transportation, recurring service, and account support.</p></div>
+          <div class="card"><h3>Partners</h3><p>Start the onboarding process for chauffeur and fleet opportunities.</p></div>
         </div>
       </div>
     </section>
@@ -710,30 +631,82 @@
     <button class="chat-open" onclick="openChat()">Live Assistant</button>
     <div class="chat-header">
       <span>BLACK ONE LIVE ASSISTANT</span>
-      <button class="chat-close" onclick="closeChat()">×</button>
+      <button class="chat-close" onclick="closeChat()" aria-label="Close chat">×</button>
     </div>
     <div class="chat-body">
-      <div class="chat-message">Welcome to BLACK ONE. How can we assist you today?</div>
-      <input type="text" placeholder="Type your message" />
-      <button class="chat-option" onclick="showPage('reservation')">I want to book a ride</button>
-      <button class="chat-option" onclick="showPage('membership')">Membership information</button>
-      <button class="chat-option" onclick="showPage('services')">Airport transfer questions</button>
-      <button class="chat-option" onclick="showPage('partners')">Become a partner driver</button>
+      <div class="chat-message" data-i18n="chatWelcome">Welcome to BLACK ONE. How can we assist you today?</div>
+      <input type="text" data-placeholder="chat" placeholder="Type your message" />
+      <button class="chat-option" onclick="showPage('reservation')" data-i18n="chatBook">I want to book a ride</button>
+      <button class="chat-option" onclick="showPage('membership')" data-i18n="chatMembership">Membership information</button>
+      <button class="chat-option" onclick="showPage('services')" data-i18n="chatAirport">Airport transfer questions</button>
+      <button class="chat-option" onclick="showPage('partners')" data-i18n="chatPartner">Become a partner driver</button>
     </div>
   </div>
 
-  <footer>
-    BLACK ONE © 2026 · Luxury Transportation
-  </footer>
+  <footer>BLACK ONE © 2026 · Ultra Luxury Transportation</footer>
 
   <script>
+    const translations = {
+      EN: {
+        tagline: 'Ultra Luxury. Exclusive. Always One Step Ahead.',
+        heroTitle: 'Luxury black car service for clients who expect more.',
+        heroText: 'Private chauffeur service, airport transfers, hourly reservations, and executive transportation with a refined, discreet, and premium experience.',
+        bookBtn: 'Book a Ride', servicesBtn: 'View Services',
+        servicesLabel: 'Services', servicesTitle: 'A refined transportation experience, built around precision.', servicesText: 'Simple, elegant, and reliable service for airport travel, executive needs, special occasions, and private transportation.',
+        airportTitle: 'Airport Transfer', airportText: 'Private transfers to and from MIA, FLL, private terminals, hotels, residences, and executive destinations.',
+        hourlyTitle: 'Hourly Chauffeur', hourlyText: 'A professional chauffeur reserved by the hour for meetings, events, dinners, shopping, and multi-stop itineraries.',
+        roundTitle: 'One-Way & Roundtrip', roundText: 'Point-to-point luxury service with the option to schedule your return in advance.',
+        corpTitle: 'Corporate Travel', corpText: 'Executive transportation for business owners, VIP clients, investors, teams, and corporate guests.',
+        eventsTitle: 'Events', eventsText: 'Premium transportation for private events, weddings, hotels, restaurants, luxury venues, and hospitality partners.',
+        fleetTitle: 'Cadillac Escalade Fleet', fleetText: 'A luxury SUV experience designed for comfort, presence, privacy, and executive-level transportation.',
+        membershipLabel: 'Membership', membershipTitle: 'Priority service for frequent and premium clients.', membershipText: 'Membership is designed for clients who require faster handling, preferred support, and consistent transportation access.',
+        preferredTitle: 'Preferred Client', preferredText: 'For recurring travelers who value reliability, discretion, and a smooth booking process.', corporateTitle: 'Corporate Account', corporateText: 'For companies that need organized transportation requests, billing coordination, and executive support.', vipTitle: 'VIP Access', vipText: 'Priority reservations, special requests, preferred vehicle coordination, and personalized service notes.',
+        reservationLabel: 'Reservation', reservationTitle: 'Request your private ride.', reservationText: 'Complete the details below and our team will confirm availability and quote.',
+        tabAirport: 'Airport Transfer', tabHourly: 'Hourly Chauffeur', tabOneWay: 'One-Way', tabRoundtrip: 'Roundtrip', luggage: 'Luggage', vehicle: 'Vehicle Type', quoteBtn: 'Get Quote', fleetPanelTitle: 'Cadillac Escalade Experience', fleetPanelText: 'Elegant presence, premium comfort, and private transportation for business, travel, and luxury lifestyle needs.',
+        partnersLabel: 'Partners', partnersTitle: 'Partner onboarding for premium operators.', partnersText: 'A structured onboarding process for chauffeurs, fleet partners, and transportation associates.',
+        contactLabel: 'Contact', contactTitle: 'BLACK ONE assistance.', contactText: 'For reservations, membership, corporate transportation, or partner onboarding, contact our team directly.',
+        chatWelcome: 'Welcome to BLACK ONE. How can we assist you today?', chatBook: 'I want to book a ride', chatMembership: 'Membership information', chatAirport: 'Airport transfer questions', chatPartner: 'Become a partner driver'
+      },
+      ES: {
+        tagline: 'Ultra lujo. Exclusivo. Siempre un paso adelante.',
+        heroTitle: 'Servicio de transporte de lujo para clientes que esperan más.',
+        heroText: 'Servicio privado con chofer, traslados al aeropuerto, reservas por hora y transporte ejecutivo con una experiencia fina, discreta y premium.',
+        bookBtn: 'Reservar', servicesBtn: 'Ver Servicios',
+        servicesLabel: 'Servicios', servicesTitle: 'Una experiencia de transporte refinada, basada en precisión.', servicesText: 'Servicio simple, elegante y confiable para aeropuerto, ejecutivos, eventos y transporte privado.',
+        airportTitle: 'Traslado Aeropuerto', airportText: 'Traslados privados desde y hacia MIA, FLL, terminales privadas, hoteles, residencias y destinos ejecutivos.',
+        hourlyTitle: 'Chofer por Hora', hourlyText: 'Chofer profesional reservado por hora para reuniones, eventos, cenas, compras y rutas con varias paradas.',
+        roundTitle: 'Ida y Vuelta', roundText: 'Servicio de lujo punto a punto con opción de programar el regreso por adelantado.',
+        corpTitle: 'Transporte Corporativo', corpText: 'Transporte ejecutivo para empresarios, clientes VIP, inversionistas, equipos e invitados corporativos.',
+        eventsTitle: 'Eventos', eventsText: 'Transporte premium para eventos privados, bodas, hoteles, restaurantes, venues de lujo y hospitalidad.',
+        fleetTitle: 'Flota Cadillac Escalade', fleetText: 'Una experiencia SUV de lujo diseñada para comodidad, presencia, privacidad y nivel ejecutivo.',
+        membershipLabel: 'Membresía', membershipTitle: 'Servicio prioritario para clientes frecuentes y premium.', membershipText: 'La membresía está diseñada para clientes que requieren atención rápida, soporte preferencial y acceso constante.',
+        preferredTitle: 'Cliente Preferido', preferredText: 'Para viajeros recurrentes que valoran confiabilidad, discreción y reservas simples.', corporateTitle: 'Cuenta Corporativa', corporateText: 'Para empresas que necesitan solicitudes organizadas, coordinación de pagos y soporte ejecutivo.', vipTitle: 'Acceso VIP', vipText: 'Reservas prioritarias, solicitudes especiales, coordinación de vehículo preferido y notas personalizadas.',
+        reservationLabel: 'Reservación', reservationTitle: 'Solicite su viaje privado.', reservationText: 'Complete los detalles y nuestro equipo confirmará disponibilidad y cotización.',
+        tabAirport: 'Aeropuerto', tabHourly: 'Chofer por Hora', tabOneWay: 'Solo Ida', tabRoundtrip: 'Ida y Vuelta', luggage: 'Equipaje', vehicle: 'Tipo de Vehículo', quoteBtn: 'Solicitar Cotización', fleetPanelTitle: 'Experiencia Cadillac Escalade', fleetPanelText: 'Presencia elegante, comodidad premium y transporte privado para negocios, viajes y estilo de vida de lujo.',
+        partnersLabel: 'Socios', partnersTitle: 'Onboarding para operadores premium.', partnersText: 'Proceso organizado para choferes, socios de flota y asociados de transporte.',
+        contactLabel: 'Contacto', contactTitle: 'Asistencia BLACK ONE.', contactText: 'Para reservas, membresía, transporte corporativo o socios, contacte directamente a nuestro equipo.',
+        chatWelcome: 'Bienvenido a BLACK ONE. ¿Cómo podemos asistirle hoy?', chatBook: 'Quiero reservar un viaje', chatMembership: 'Información de membresía', chatAirport: 'Preguntas de aeropuerto', chatPartner: 'Ser socio conductor'
+      },
+      PT: {
+        tagline: 'Ultra luxo. Exclusivo. Sempre um passo à frente.',
+        heroTitle: 'Serviço de carro de luxo para clientes que esperam mais.',
+        heroText: 'Motorista privado, traslados ao aeroporto, reservas por hora e transporte executivo com experiência premium, discreta e refinada.',
+        bookBtn: 'Reservar', servicesBtn: 'Ver Serviços'
+      },
+      FR: {
+        tagline: 'Ultra luxe. Exclusif. Toujours une longueur d’avance.',
+        heroTitle: 'Service de voiture de luxe pour clients exigeants.',
+        heroText: 'Chauffeur privé, transferts aéroport, réservations horaires et transport exécutif avec une expérience raffinée, discrète et premium.',
+        bookBtn: 'Réserver', servicesBtn: 'Voir Services'
+      }
+    };
+
     function showPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
 
-      document.querySelectorAll('.nav-btn').forEach(button => button.classList.remove('active'));
       document.querySelectorAll('.nav-btn').forEach(button => {
-        if (button.textContent.toLowerCase() === pageId) button.classList.add('active');
+        button.classList.toggle('active', button.dataset.page === pageId);
       });
 
       document.getElementById('mainNav').classList.remove('open');
@@ -750,6 +723,31 @@
 
     function openChat() {
       document.getElementById('chatWidget').classList.remove('closed');
+    }
+
+    function setLanguage(lang) {
+      const dictionary = translations[lang] || translations.EN;
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.dataset.i18n;
+        if (dictionary[key]) element.textContent = dictionary[key];
+        else if (translations.EN[key]) element.textContent = translations.EN[key];
+      });
+
+      document.querySelectorAll('.lang-btn').forEach(button => {
+        button.classList.toggle('active', button.textContent === lang);
+      });
+
+      const placeholders = {
+        EN: { from: 'From *', dropoff: 'Dropoff *', details: 'Additional details', chat: 'Type your message' },
+        ES: { from: 'Desde *', dropoff: 'Destino *', details: 'Detalles adicionales', chat: 'Escriba su mensaje' },
+        PT: { from: 'Origem *', dropoff: 'Destino *', details: 'Detalhes adicionais', chat: 'Digite sua mensagem' },
+        FR: { from: 'Départ *', dropoff: 'Destination *', details: 'Détails supplémentaires', chat: 'Écrivez votre message' }
+      };
+
+      document.querySelectorAll('[data-placeholder]').forEach(input => {
+        const key = input.dataset.placeholder;
+        input.placeholder = (placeholders[lang] && placeholders[lang][key]) || placeholders.EN[key];
+      });
     }
 
     document.querySelectorAll('.tab').forEach(tab => {
