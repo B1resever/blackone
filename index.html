@@ -12,13 +12,13 @@
 :root{
   --black:#040404;
   --black2:#0a0a0b;
-  --card:#111113;
   --white:#ffffff;
   --muted:rgba(255,255,255,.76);
   --soft:rgba(255,255,255,.58);
   --line:rgba(255,255,255,.14);
   --gold:#d9b76f;
-  --gold2:#f2d792;
+  --gold2:#f5d991;
+  --goldDark:#8c6d32;
 }
 
 *{margin:0;padding:0;box-sizing:border-box}
@@ -31,28 +31,42 @@ h1,h2,h3,h4,p,span,li,label,button{color:#fff}
 /* HEADER */
 header{
   position:fixed;top:0;left:0;width:100%;z-index:999;
-  background:rgba(0,0,0,.82);backdrop-filter:blur(20px);
+  background:rgba(0,0,0,.84);backdrop-filter:blur(20px);
   border-bottom:1px solid var(--line);
 }
 .navbar{
   width:min(1320px,92%);height:84px;margin:auto;
-  display:flex;align-items:center;justify-content:center;gap:38px;
+  display:flex;align-items:center;justify-content:center;gap:28px;
 }
 .brand-text{
   position:absolute;left:4%;font-size:18px;font-weight:900;letter-spacing:5px;color:#fff;
 }
-nav{display:flex;align-items:center;gap:30px}
+nav{display:flex;align-items:center;gap:24px}
 nav button,.lang button{
   background:none;border:none;color:rgba(255,255,255,.72);
   font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;transition:.25s;
 }
 nav button:hover,nav button.active,.lang button:hover,.lang button.active{color:var(--gold2)}
+.nav-reserve{
+  position:relative!important;
+  color:#000!important;
+  background:linear-gradient(135deg,var(--gold),var(--gold2))!important;
+  border-radius:999px!important;
+  padding:13px 18px!important;
+  box-shadow:0 0 26px rgba(217,183,111,.36);
+  opacity:1!important;
+}
+.nav-reserve:after{
+  content:"";position:absolute;inset:-5px;border-radius:999px;border:1px solid rgba(245,217,145,.38);
+  animation:pulseReserve 2.4s ease-in-out infinite;
+}
+@keyframes pulseReserve{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
 .lang{position:absolute;right:4%;display:flex;gap:10px}.menu{display:none;background:none;border:1px solid var(--line);border-radius:999px;padding:10px 14px;font-size:11px;font-weight:900;letter-spacing:2px;color:#fff}
 
 /* COMMON */
 .page{display:none;min-height:100vh;padding-top:84px}.page.active{display:block}
-.section{width:min(1180px,92%);margin:auto;padding:92px 0}.section-head{margin-bottom:42px}.section-head span{display:inline-block;color:var(--gold2);font-size:11px;font-weight:900;letter-spacing:5px;text-transform:uppercase;margin-bottom:14px}.section-head h2{max-width:850px;font-size:clamp(34px,5vw,58px);line-height:1.04;letter-spacing:-2px}.section-head p{max-width:760px;margin-top:18px;color:var(--muted);line-height:1.8;font-size:16px}.highlight-title{position:relative;padding-bottom:20px}.highlight-title:after{content:"";position:absolute;left:0;bottom:0;width:118px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);box-shadow:0 0 24px rgba(217,183,111,.55)}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:26px;padding:30px;text-align:left;transition:.25s}.card.clickable:hover{transform:translateY(-4px);border-color:rgba(217,183,111,.55);box-shadow:0 18px 60px rgba(0,0,0,.28)}.card h3{font-size:23px;margin-bottom:14px}.card p,.card li{color:var(--muted);line-height:1.75;font-size:15px}.card ul{padding-left:18px;margin-top:12px}.btn{border-radius:999px;padding:15px 30px;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;transition:.25s}.btn-primary{background:var(--gold);color:#000!important;border:none}.btn-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 14px 45px rgba(217,183,111,.28)}.btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.32)}.btn-outline:hover{border-color:var(--gold2);color:var(--gold2)}.panel{margin-top:24px;background:rgba(255,255,255,.045);border:1px solid rgba(217,183,111,.25);border-radius:28px;padding:30px;display:none}.panel.active{display:block}.panel h3{font-size:28px;margin-bottom:12px}.panel p,.panel li{color:var(--muted);line-height:1.8}.panel ul{padding-left:20px;margin-top:12px}.small-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+.section{width:min(1180px,92%);margin:auto;padding:86px 0}.section-head{margin-bottom:34px}.section-head span{display:inline-block;color:var(--gold2);font-size:11px;font-weight:900;letter-spacing:5px;text-transform:uppercase;margin-bottom:14px}.section-head h2{max-width:850px;font-size:clamp(30px,4.2vw,48px);line-height:1.05;letter-spacing:-1.6px}.section-head p{max-width:760px;margin-top:16px;color:var(--muted);line-height:1.75;font-size:16px}.highlight-title{position:relative;padding-bottom:18px}.highlight-title:after{content:"";position:absolute;left:0;bottom:0;width:118px;height:2px;background:linear-gradient(90deg,var(--gold),transparent);box-shadow:0 0 24px rgba(217,183,111,.55)}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:26px;padding:28px;text-align:left;transition:.25s}.card.clickable:hover{transform:translateY(-4px);border-color:rgba(217,183,111,.55);box-shadow:0 18px 60px rgba(0,0,0,.28)}.card h3{font-size:21px;margin-bottom:13px}.card p,.card li{color:var(--muted);line-height:1.72;font-size:14.5px}.card ul{padding-left:18px;margin-top:12px}.btn{border-radius:999px;padding:14px 26px;font-size:11px;font-weight:900;letter-spacing:2px;text-transform:uppercase;transition:.25s}.btn-primary{background:var(--gold);color:#000!important;border:none}.btn-primary:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 14px 45px rgba(217,183,111,.28)}.btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.32)}.btn-outline:hover{border-color:var(--gold2);color:var(--gold2)}.panel{margin-top:22px;background:rgba(255,255,255,.045);border:1px solid rgba(217,183,111,.25);border-radius:28px;padding:28px;display:none}.panel.active{display:block}.panel h3{font-size:26px;margin-bottom:12px}.panel p,.panel li{color:var(--muted);line-height:1.75}.panel ul{padding-left:20px;margin-top:12px}.small-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
 
 /* HERO */
 .hero{
@@ -60,10 +74,11 @@ nav button:hover,nav button.active,.lang button:hover,.lang button.active{color:
   background:linear-gradient(90deg,rgba(0,0,0,.88) 0%,rgba(0,0,0,.48) 42%,rgba(0,0,0,.16) 100%),linear-gradient(180deg,rgba(0,0,0,.02) 0%,rgba(0,0,0,.92) 100%),url('./hero-escalade.jpg');
   background-size:cover;background-position:center 76%;background-repeat:no-repeat;
 }
-.hero-content{width:min(1320px,92%);margin:auto;padding-bottom:90px}.eyebrow{color:var(--gold2);font-size:12px;letter-spacing:7px;text-transform:uppercase;margin-bottom:20px}.hero h1{max-width:780px;font-size:clamp(44px,7vw,88px);line-height:.94;letter-spacing:-4px;margin-bottom:24px}.hero p{max-width:640px;color:rgba(255,255,255,.84);font-size:17px;line-height:1.8;margin-bottom:34px}.actions{display:flex;gap:16px;flex-wrap:wrap}
+.hero-content{width:min(1320px,92%);margin:auto;padding-bottom:86px}.eyebrow{color:var(--gold2);font-size:12px;letter-spacing:7px;text-transform:uppercase;margin-bottom:20px}.hero h1{max-width:780px;font-size:clamp(42px,6.5vw,82px);line-height:.94;letter-spacing:-3.6px;margin-bottom:24px}.hero p{max-width:640px;color:rgba(255,255,255,.84);font-size:17px;line-height:1.8;margin-bottom:34px}.actions{display:flex;gap:16px;flex-wrap:wrap}
 
 /* RESERVATION PRIORITY */
-.reservation-priority{background:radial-gradient(circle at 50% 0%,rgba(217,183,111,.12),transparent 34%),#050505}.reservation-layout{display:grid;grid-template-columns:1.1fr .9fr;gap:24px}.reservation-card{background:linear-gradient(145deg,rgba(255,255,255,.075),rgba(255,255,255,.03));border:1px solid rgba(217,183,111,.32);border-radius:30px;padding:30px;box-shadow:0 0 80px rgba(217,183,111,.08)}.reservation-badge{display:inline-flex;align-items:center;gap:8px;color:#000;background:var(--gold2);border-radius:999px;padding:9px 15px;font-size:11px;font-weight:900;letter-spacing:1px;text-transform:uppercase;margin-bottom:16px}.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}.tab{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:11px 16px;font-size:11px;font-weight:900;letter-spacing:1px}.tab.active{background:#fff;color:#000}.reservation-note{margin-bottom:16px;color:rgba(255,255,255,.84);line-height:1.65;font-size:14px}.dynamic-title{font-size:22px;font-weight:900;margin-bottom:14px;color:#fff}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}input,select,textarea{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:14px;color:#fff;padding:14px 15px;outline:none;font-size:14px}input::placeholder,textarea::placeholder{color:rgba(255,255,255,.66)}select option{color:#000}.full{grid-column:1/-1}.quick-contact{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.quick-contact a,.quick-contact button{text-align:center;text-decoration:none;border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:13px;color:#fff;background:rgba(255,255,255,.055);font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.quick-contact a:hover,.quick-contact button:hover{border-color:var(--gold2);color:var(--gold2)}.media-box{position:relative;min-height:560px;border:1px solid var(--line);border-radius:30px;overflow:hidden;background:#000;display:flex;align-items:flex-end}.media-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.82}.media-box:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.86));z-index:1}.media-fallback{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.86)),url('./hero-escalade.jpg');background-size:cover;background-position:center 76%;z-index:0}.media-content{position:relative;z-index:2;padding:34px}.media-content h3{font-size:32px;margin-bottom:10px}.media-content p{color:var(--muted);line-height:1.7;max-width:420px}.form-result{display:none;margin-top:18px;background:rgba(217,183,111,.09);border:1px solid rgba(217,183,111,.28);border-radius:20px;padding:18px;color:#fff;line-height:1.7}.form-result.active{display:block}
+.reservation-priority{background:radial-gradient(circle at 50% 0%,rgba(217,183,111,.16),transparent 36%),#050505}.reservation-head{display:grid;grid-template-columns:1.1fr .9fr;gap:26px;align-items:end;margin-bottom:34px}.reservation-head h2{font-size:clamp(34px,5vw,60px);line-height:1;letter-spacing:-2px}.reservation-head p{color:rgba(255,255,255,.82);line-height:1.75}.reservation-arrow{display:inline-flex;align-items:center;gap:12px;margin-top:18px;color:var(--gold2);font-size:12px;font-weight:900;letter-spacing:2px;text-transform:uppercase}.reservation-arrow:before{content:"→";font-size:28px;line-height:0;animation:arrowMove 1.4s ease-in-out infinite}@keyframes arrowMove{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+.reservation-layout{display:grid;grid-template-columns:1.12fr .88fr;gap:24px}.reservation-card{background:linear-gradient(145deg,rgba(255,255,255,.085),rgba(255,255,255,.032));border:1px solid rgba(217,183,111,.42);border-radius:30px;padding:30px;box-shadow:0 0 90px rgba(217,183,111,.12)}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px}.tab{background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:15px 12px;font-size:11px;font-weight:900;letter-spacing:1px;line-height:1.25;text-align:center}.tab.active{background:linear-gradient(135deg,#fff,var(--gold2));color:#000;box-shadow:0 0 28px rgba(217,183,111,.24)}.reservation-note{margin-bottom:16px;color:rgba(255,255,255,.84);line-height:1.65;font-size:14px}.dynamic-title{font-size:22px;font-weight:900;margin-bottom:14px;color:#fff}.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}input,select,textarea{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:14px;color:#fff;padding:14px 15px;outline:none;font-size:14px}input:focus,select:focus,textarea:focus{border-color:rgba(245,217,145,.7);box-shadow:0 0 0 3px rgba(217,183,111,.08)}input::placeholder,textarea::placeholder{color:rgba(255,255,255,.66)}select option{color:#000}.full{grid-column:1/-1}.quick-contact{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px}.quick-contact a,.quick-contact button{text-align:center;text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:13px;color:#fff;background:rgba(255,255,255,.055);font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase}.quick-contact a:hover,.quick-contact button:hover{border-color:var(--gold2);color:var(--gold2)}.media-box{position:relative;min-height:560px;border:1px solid var(--line);border-radius:30px;overflow:hidden;background:#000;display:flex;align-items:flex-end}.media-box video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.88}.media-box:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.06),rgba(0,0,0,.86));z-index:1}.media-fallback{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.86)),url('./hero-escalade.jpg');background-size:cover;background-position:center 76%;z-index:0}.media-content{position:relative;z-index:2;padding:34px}.media-content h3{font-size:30px;margin-bottom:10px}.media-content p{color:var(--muted);line-height:1.7;max-width:420px}.form-result{display:none;margin-top:18px;background:rgba(217,183,111,.09);border:1px solid rgba(217,183,111,.28);border-radius:20px;padding:18px;color:#fff;line-height:1.7}.form-result.active{display:block}.field-label{font-size:12px;font-weight:800;color:var(--gold2);letter-spacing:1px;margin:3px 0 -6px 2px;text-transform:uppercase}
 
 /* PARTNERS */
 .partner-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.step{background:rgba(255,255,255,.045);border:1px solid var(--line);border-radius:24px;padding:24px}.step strong{color:var(--gold2);letter-spacing:2px;font-size:12px}.step h3{margin-top:12px}.step p{color:var(--muted);line-height:1.7;margin-top:8px}
@@ -72,7 +87,7 @@ nav button:hover,nav button.active,.lang button:hover,.lang button.active{color:
 .chat{position:fixed;right:20px;bottom:20px;width:304px;background:rgba(8,8,8,.96);border:1px solid rgba(255,255,255,.14);border-radius:22px;overflow:hidden;z-index:9999;box-shadow:0 20px 70px rgba(0,0,0,.55)}.chat.hidden{display:none}.chat-header{background:#fff;color:#000;display:flex;align-items:center;justify-content:space-between;padding:13px 14px;font-size:11px;font-weight:900;letter-spacing:1.5px}.chat-header span{color:#000}.chat-close{width:24px;height:24px;border-radius:50%;border:none;background:#000;color:#fff}.chat-body{padding:13px;display:flex;flex-direction:column;gap:10px}.chat-message{background:rgba(255,255,255,.07);border-radius:14px;padding:12px;line-height:1.55;color:#fff;font-size:13px}.chat input{background:white;color:black;border-radius:999px}.chat-option{background:transparent;border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:999px;padding:11px;transition:.25s}.chat-option:hover{border-color:var(--gold2);color:var(--gold2)}
 footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgba(255,255,255,.55);font-size:13px}
 
-@media(max-width:980px){.brand-text{position:static;font-size:15px}.navbar{justify-content:space-between}.menu{display:block}nav{display:none;position:absolute;top:84px;left:0;width:100%;background:rgba(0,0,0,.96);padding:24px 4%;flex-direction:column;align-items:flex-start}nav.open{display:flex}.lang{display:none}.grid,.reservation-layout,.partner-steps{grid-template-columns:1fr}.form-grid,.quick-contact{grid-template-columns:1fr}.hero{background-position:center 82%}.hero h1{font-size:50px}.chat{width:280px}.media-box{min-height:420px}}
+@media(max-width:980px){.brand-text{position:static;font-size:15px}.navbar{justify-content:space-between}.menu{display:block}nav{display:none;position:absolute;top:84px;left:0;width:100%;background:rgba(0,0,0,.96);padding:24px 4%;flex-direction:column;align-items:flex-start}nav.open{display:flex}.lang{display:none}.grid,.reservation-layout,.partner-steps,.reservation-head{grid-template-columns:1fr}.form-grid,.quick-contact,.tabs{grid-template-columns:1fr}.hero{background-position:center 82%}.hero h1{font-size:48px}.chat{width:280px}.media-box{min-height:420px}.section{padding:72px 0}}
 </style>
 </head>
 <body>
@@ -82,9 +97,9 @@ footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgb
     <button class="menu" onclick="toggleMenu()">MENU</button>
     <nav id="nav">
       <button class="nav-btn active" data-page="home" onclick="showPage('home')">Home</button>
+      <button class="nav-btn nav-reserve" data-page="reservation" onclick="showPage('reservation');setRideType('airport')">Reserve Now</button>
       <button class="nav-btn" data-page="services" onclick="showPage('services')">Services</button>
       <button class="nav-btn" data-page="membership" onclick="showPage('membership')">Membership</button>
-      <button class="nav-btn" data-page="reservation" onclick="showPage('reservation')">Reservation</button>
       <button class="nav-btn" data-page="partners" onclick="showPage('partners')">Partners</button>
       <button class="nav-btn" data-page="contact" onclick="showPage('contact')">Contact</button>
     </nav>
@@ -121,15 +136,15 @@ footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgb
     <div class="grid">
       <button class="card clickable" onclick="servicePanel('airport')">
         <h3 data-i="airport">Airport Transfer</h3>
-        <p data-i="airportShort">Luxury transportation to and from airports, private terminals, hotels, and residences.</p>
+        <p>Private airport service with flight details, luggage notes, terminal coordination, pickup location, and final destination.</p>
       </button>
       <button class="card clickable" onclick="servicePanel('hourly')">
         <h3 data-i="hourly">Hourly Chauffeur</h3>
-        <p data-i="hourlyShort">Professional chauffeur service reserved by the hour for meetings, shopping, dinners, and events.</p>
+        <p>For clients who need the vehicle available by the hour for multiple stops, meetings, dinners, shopping, or events.</p>
       </button>
       <button class="card clickable" onclick="servicePanel('corporate')">
         <h3 data-i="corporate">Corporate Travel</h3>
-        <p data-i="corporateShort">Executive transportation for VIP clients, business owners, corporate teams, and private guests.</p>
+        <p>Executive transportation for companies, hotels, VIP visitors, business owners, and recurring professional travel.</p>
       </button>
     </div>
     <div id="service-detail" class="panel active">
@@ -144,30 +159,33 @@ footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgb
     <div class="section-head highlight-title">
       <span data-i="membership">Membership</span>
       <h2 data-i="membershipTitle">Priority transportation for premium clients.</h2>
-      <p data-i="membershipIntro">Membership is for clients who want priority handling, preferred communication, better coordination, and a more personal BLACK ONE experience.</p>
+      <p data-i="membershipIntro">Membership gives BLACK ONE clients a more coordinated experience before, during, and after every ride.</p>
     </div>
     <div class="grid">
       <button class="card clickable" onclick="membershipPanel('preferred')">
         <h3 data-i="preferred">Preferred Client</h3>
-        <p data-i="preferredShort">Priority reservation support and premium transportation access for frequent personal travel.</p>
+        <p>Ideal for frequent personal travelers who want faster handling, saved preferences, and smoother reservations.</p>
+        <ul><li>Priority quote handling.</li><li>Saved pickup preferences.</li><li>Recurring airport or city routes.</li></ul>
       </button>
       <button class="card clickable" onclick="membershipPanel('corporateAccount')">
         <h3 data-i="corporateAccount">Corporate Account</h3>
-        <p data-i="corporateAccountShort">Transportation coordination for companies, executives, visiting clients, and recurring team needs.</p>
+        <p>For companies that need reliable coordination for executives, clients, guests, meetings, and repeated transportation needs.</p>
+        <ul><li>Executive ride coordination.</li><li>Company contact notes.</li><li>Recurring team support.</li></ul>
       </button>
       <button class="card clickable" onclick="membershipPanel('vip')">
         <h3 data-i="vip">VIP Access</h3>
-        <p data-i="vipShort">Preferred support, special requests, recurring ride notes, and high-touch luxury coordination.</p>
+        <p>For clients who expect a high-touch experience with special requests, personal service notes, and premium coordination.</p>
+        <ul><li>High-priority support.</li><li>Special request handling.</li><li>Preferred luxury vehicle notes.</li></ul>
       </button>
     </div>
     <div id="membership-detail" class="panel active">
       <h3>Why become a member?</h3>
-      <p>BLACK ONE membership creates a smoother experience for clients who book repeatedly. Your preferences, routes, airport needs, vehicle expectations, billing notes, and special instructions can be handled with more precision.</p>
+      <p>BLACK ONE membership is designed for clients who value time, privacy, and consistency. It helps reduce friction in future reservations by keeping your preferences organized and making each request easier to coordinate.</p>
       <ul>
         <li>Priority reservation handling.</li>
         <li>Preferred communication and faster quote coordination.</li>
-        <li>Saved travel preferences and service notes.</li>
-        <li>Better support for executives, families, VIP guests, and companies.</li>
+        <li>Saved travel preferences, service notes, and recurring routes.</li>
+        <li>Better support for executives, families, VIP guests, hotels, and companies.</li>
       </ul>
     </div>
   </div>
@@ -175,14 +193,16 @@ footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgb
 
 <section id="reservation" class="page reservation-priority">
   <div class="section">
-    <div class="section-head highlight-title">
-      <span data-i="reservation">Reservation</span>
-      <h2 data-i="reservationTitle">Start your BLACK ONE reservation.</h2>
-      <p data-i="reservationIntro">This is where every request begins. Choose the service type, complete the correct form, and connect directly by phone, email, or live assistant.</p>
+    <div class="reservation-head highlight-title">
+      <div>
+        <span data-i="reservation">Reservation</span>
+        <h2 data-i="reservationTitle">Book the ride with confidence.</h2>
+        <div class="reservation-arrow">Choose your service below</div>
+      </div>
+      <p data-i="reservationIntro">Every button below opens a specific form. Airport Transfer, Hourly Chauffeur, One-Way, and Roundtrip each collect different details so nothing is missing before BLACK ONE confirms availability and pricing.</p>
     </div>
     <div class="reservation-layout">
       <div class="reservation-card">
-        <div class="reservation-badge">Priority Booking Area</div>
         <div class="tabs">
           <button class="tab active" id="tab-airport" onclick="setRideType('airport', this)" data-i="airport">Airport Transfer</button>
           <button class="tab" id="tab-hourly" onclick="setRideType('hourly', this)" data-i="hourly">Hourly Chauffeur</button>
@@ -205,7 +225,7 @@ footer{border-top:1px solid var(--line);padding:36px;text-align:center;color:rgb
         <video src="./cadillac-miami-bay.mp4" autoplay muted loop playsinline></video>
         <div class="media-content">
           <h3>Cadillac Escalade Experience</h3>
-          <p>Replace the video file with your Cadillac driving footage in Miami. Use the exact name: cadillac-miami-bay.mp4</p>
+          <p>Upload the Cadillac Miami video with this exact filename: cadillac-miami-bay.mp4. It will appear here beside the reservation form.</p>
         </div>
       </div>
     </div>
@@ -274,8 +294,8 @@ const airports=[
   'Key West International Airport (EYW)'
 ];
 const t={
-EN:{tagline:'ULTRA LUXURY · EXCLUSIVE · ALWAYS ONE STEP AHEAD',heroTitle:'Luxury transportation without compromise.',heroText:'Private chauffeur service, airport transfers, hourly reservations, and executive transportation with a refined, discreet, premium experience.',book:'Book a Ride',viewServices:'View Services',services:'Services',servicesTitle:'A refined transportation experience built around precision.',servicesIntro:'Select a service to understand what it includes. Each option connects directly to the correct reservation form.',airport:'Airport Transfer',hourly:'Hourly Chauffeur',corporate:'Corporate Travel',membership:'Membership',membershipTitle:'Priority transportation for premium clients.',membershipIntro:'Membership is for clients who want priority handling, preferred communication, better coordination, and a more personal BLACK ONE experience.',preferred:'Preferred Client',corporateAccount:'Corporate Account',vip:'VIP Access',reservation:'Reservation',reservationTitle:'Start your BLACK ONE reservation.',reservationIntro:'This is where every request begins. Choose the service type, complete the correct form, and connect directly by phone, email, or live assistant.',oneway:'One-Way',roundtrip:'Roundtrip',partners:'Partners',partnersTitle:'Partner onboarding for premium operators.',partnersIntro:'Structured onboarding for chauffeurs, fleet operators, and premium transportation associates.',startOnboarding:'Start Onboarding',contact:'Contact',contactTitle:'BLACK ONE assistance.',contactIntro:'Reservations, corporate transportation, membership, and partner onboarding support.'},
-ES:{tagline:'ULTRA LUJO · EXCLUSIVO · SIEMPRE UN PASO ADELANTE',heroTitle:'Transporte de lujo sin compromisos.',heroText:'Servicio privado con chofer, traslados al aeropuerto, reservas por hora y transporte ejecutivo con una experiencia fina, discreta y premium.',book:'Reservar',viewServices:'Ver Servicios',services:'Servicios',servicesTitle:'Una experiencia de transporte refinada basada en precisión.',servicesIntro:'Seleccione un servicio para entender qué incluye. Cada opción conecta directamente con el formulario correcto de reservación.',airport:'Traslado Aeropuerto',hourly:'Chofer por Hora',corporate:'Transporte Corporativo',membership:'Membresía',membershipTitle:'Transporte prioritario para clientes premium.',membershipIntro:'La membresía es para clientes que desean prioridad, mejor comunicación, coordinación preferencial y una experiencia BLACK ONE más personalizada.',preferred:'Cliente Preferido',corporateAccount:'Cuenta Corporativa',vip:'Acceso VIP',reservation:'Reservación',reservationTitle:'Inicie su reservación BLACK ONE.',reservationIntro:'Aquí nace cada solicitud. Seleccione el tipo de servicio, complete el formulario correcto y conecte directamente por teléfono, email o asistente.',oneway:'Solo Ida',roundtrip:'Ida y Vuelta',partners:'Socios',partnersTitle:'Onboarding para operadores premium.',partnersIntro:'Onboarding estructurado para choferes, operadores de flota y asociados premium.',startOnboarding:'Iniciar Onboarding',contact:'Contacto',contactTitle:'Asistencia BLACK ONE.',contactIntro:'Reservas, transporte corporativo, membresía y soporte para socios.'},
+EN:{tagline:'ULTRA LUXURY · EXCLUSIVE · ALWAYS ONE STEP AHEAD',heroTitle:'Luxury transportation without compromise.',heroText:'Private chauffeur service, airport transfers, hourly reservations, and executive transportation with a refined, discreet, premium experience.',book:'Book a Ride',viewServices:'View Services',services:'Services',servicesTitle:'A refined transportation experience built around precision.',servicesIntro:'Select a service to understand what it includes. Each option connects directly to the correct reservation form.',airport:'Airport Transfer',hourly:'Hourly Chauffeur',corporate:'Corporate Travel',membership:'Membership',membershipTitle:'Priority transportation for premium clients.',membershipIntro:'Membership gives BLACK ONE clients a more coordinated experience before, during, and after every ride.',preferred:'Preferred Client',corporateAccount:'Corporate Account',vip:'VIP Access',reservation:'Reservation',reservationTitle:'Book the ride with confidence.',reservationIntro:'Every button below opens a specific form. Airport Transfer, Hourly Chauffeur, One-Way, and Roundtrip each collect different details so nothing is missing before BLACK ONE confirms availability and pricing.',oneway:'One-Way',roundtrip:'Roundtrip',partners:'Partners',partnersTitle:'Partner onboarding for premium operators.',partnersIntro:'Structured onboarding for chauffeurs, fleet operators, and premium transportation associates.',startOnboarding:'Start Onboarding',contact:'Contact',contactTitle:'BLACK ONE assistance.',contactIntro:'Reservations, corporate transportation, membership, and partner onboarding support.'},
+ES:{tagline:'ULTRA LUJO · EXCLUSIVO · SIEMPRE UN PASO ADELANTE',heroTitle:'Transporte de lujo sin compromisos.',heroText:'Servicio privado con chofer, traslados al aeropuerto, reservas por hora y transporte ejecutivo con una experiencia fina, discreta y premium.',book:'Reservar',viewServices:'Ver Servicios',services:'Servicios',servicesTitle:'Una experiencia de transporte refinada basada en precisión.',servicesIntro:'Seleccione un servicio para entender qué incluye. Cada opción conecta directamente con el formulario correcto de reservación.',airport:'Traslado Aeropuerto',hourly:'Chofer por Hora',corporate:'Transporte Corporativo',membership:'Membresía',membershipTitle:'Transporte prioritario para clientes premium.',membershipIntro:'La membresía le da al cliente BLACK ONE una experiencia más coordinada antes, durante y después de cada viaje.',preferred:'Cliente Preferido',corporateAccount:'Cuenta Corporativa',vip:'Acceso VIP',reservation:'Reservación',reservationTitle:'Reserve con seguridad y precisión.',reservationIntro:'Cada botón abre un formulario específico. Traslado Aeropuerto, Chofer por Hora, Solo Ida e Ida y Vuelta piden detalles diferentes para que nada falte antes de confirmar disponibilidad y precio.',oneway:'Solo Ida',roundtrip:'Ida y Vuelta',partners:'Socios',partnersTitle:'Onboarding para operadores premium.',partnersIntro:'Onboarding estructurado para choferes, operadores de flota y asociados premium.',startOnboarding:'Iniciar Onboarding',contact:'Contacto',contactTitle:'Asistencia BLACK ONE.',contactIntro:'Reservas, transporte corporativo, membresía y soporte para socios.'},
 PT:{tagline:'ULTRA LUXO · EXCLUSIVO · SEMPRE UM PASSO À FRENTE',heroTitle:'Transporte de luxo sem compromisso.',heroText:'Motorista privado, traslados ao aeroporto, reservas por hora e transporte executivo com experiência refinada e premium.',book:'Reservar',viewServices:'Ver Serviços'},
 FR:{tagline:'ULTRA LUXE · EXCLUSIF · TOUJOURS UNE LONGUEUR D’AVANCE',heroTitle:'Transport de luxe sans compromis.',heroText:'Chauffeur privé, transferts aéroport, réservations horaires et transport exécutif avec une expérience raffinée et premium.',book:'Réserver',viewServices:'Voir Services'}
 };
@@ -308,13 +328,13 @@ function servicePanel(type){
 }
 function membershipPanel(type){
   const data={
-    preferred:['Cliente Preferido','Pensado para clientes que viajan con frecuencia y desean evitar repetir instrucciones en cada reserva. BLACK ONE puede mantener preferencias de pickup, rutas comunes, horarios, tipo de vehículo y detalles de servicio.','Solicitar Cliente Preferido'],
-    corporateAccount:['Cuenta Corporativa','Diseñada para compañías, oficinas, hoteles o equipos ejecutivos que requieren transporte organizado para varios usuarios, invitados o eventos. Facilita coordinación, notas de facturación y soporte recurrente.','Solicitar Cuenta Corporativa'],
-    vip:['Acceso VIP','Para clientes de alto valor que requieren atención prioritaria, solicitudes especiales, coordinación más detallada y una experiencia de transporte más personalizada.','Solicitar Acceso VIP']
+    preferred:['Cliente Preferido','Pensado para clientes frecuentes que desean menos fricción al reservar. BLACK ONE puede mantener preferencias de pickup, rutas comunes, horarios, tipo de vehículo, notas de equipaje y detalles especiales para que cada nueva solicitud sea más rápida y precisa.','Solicitar Cliente Preferido'],
+    corporateAccount:['Cuenta Corporativa','Diseñada para compañías, oficinas, hoteles y equipos ejecutivos que necesitan transporte organizado para varios usuarios, invitados, eventos o llegadas frecuentes. Facilita coordinación, contacto principal, notas de facturación y soporte recurrente.','Solicitar Cuenta Corporativa'],
+    vip:['Acceso VIP','Para clientes de alto valor que requieren atención prioritaria, coordinación más detallada, solicitudes especiales, notas personales, manejo discreto y una experiencia de transporte más personalizada.','Solicitar Acceso VIP']
   };
   const p=document.getElementById('membership-detail');
   p.classList.add('active');
-  p.innerHTML=`<h3>${data[type][0]}</h3><p>${data[type][1]}</p><ul><li>Prioridad en la atención de reservas.</li><li>Preferencias de servicio guardadas.</li><li>Mejor coordinación para viajes recurrentes.</li><li>Soporte directo para cambios o solicitudes especiales.</li></ul><form class="form-grid" onsubmit="submitSimple(event,'Solicitud de membresía recibida')"><input class="full" placeholder="Nombre completo *"><input placeholder="Teléfono *"><input placeholder="Email *"><select><option>Frecuencia estimada</option><option>1-3 viajes al mes</option><option>4-8 viajes al mes</option><option>9+ viajes al mes</option></select><textarea class="full" rows="4" placeholder="Preferencias, necesidades o comentarios"></textarea><button class="btn btn-primary full">${data[type][2]}</button></form>`;
+  p.innerHTML=`<h3>${data[type][0]}</h3><p>${data[type][1]}</p><ul><li>Prioridad en atención y seguimiento.</li><li>Preferencias guardadas para futuras reservas.</li><li>Mejor coordinación para cambios, horarios y solicitudes especiales.</li><li>Ideal para viajeros frecuentes, familias, ejecutivos, hoteles y empresas.</li></ul><form class="form-grid" onsubmit="submitSimple(event,'Solicitud de membresía recibida')"><input class="full" placeholder="Nombre completo *"><input placeholder="Teléfono *"><input placeholder="Email *"><select><option>Frecuencia estimada</option><option>1-3 viajes al mes</option><option>4-8 viajes al mes</option><option>9+ viajes al mes</option></select><textarea class="full" rows="4" placeholder="Preferencias, necesidades o comentarios"></textarea><button class="btn btn-primary full">${data[type][2]}</button></form>`;
 }
 function airportOptions(){return '<select class="full"><option value="">Seleccione Aeropuerto</option>'+airports.map(a=>`<option>${a}</option>`).join('')+'</select>'}
 function setRideType(type,btn){
@@ -326,23 +346,23 @@ function setRideType(type,btn){
   let html='';
   if(type==='airport'){
     title.textContent='Formulario de Traslado Aeropuerto';
-    note.textContent='Seleccione el aeropuerto real, dirección del servicio, datos de vuelo, pickup y destino.';
-    html=airportOptions()+'<select><option>Dirección del Servicio</option><option>Pickup en aeropuerto</option><option>Dropoff al aeropuerto</option><option>Ida y vuelta aeropuerto</option></select><input placeholder="Pickup / Hotel / Residencia *"><input placeholder="Destino final *"><input type="date"><input type="time"><input placeholder="Aerolínea"><input placeholder="Número de vuelo"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Notas adicionales del aeropuerto"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Aeropuerto</button>';
+    note.textContent='Para aeropuerto necesitamos saber si es pickup o dropoff, aeropuerto real, vuelo, hora, pasajeros, equipaje y destino exacto.';
+    html=airportOptions()+'<select><option>Dirección del Servicio</option><option>Pickup en aeropuerto</option><option>Dropoff al aeropuerto</option><option>Ida y vuelta aeropuerto</option></select><input placeholder="Pickup / Hotel / Residencia *"><input placeholder="Destino final *"><input type="date"><input type="time"><input placeholder="Aerolínea"><input placeholder="Número de vuelo"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Notas adicionales: terminal, silla de bebé, espera, instrucciones especiales"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Aeropuerto</button>';
   }
   if(type==='hourly'){
     title.textContent='Formulario de Chofer por Hora';
-    note.textContent='Complete ubicación, fecha, hora, cantidad de horas y tipo de servicio.';
-    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input type="date"><input type="time"><select><option>Horas estimadas</option><option>2 horas</option><option>3 horas</option><option>4 horas</option><option>5+ horas</option></select><select><option>Motivo del servicio</option><option>Reuniones</option><option>Cena / Noche</option><option>Compras</option><option>Evento</option><option>Múltiples paradas</option></select><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><textarea class="full" rows="4" placeholder="Itinerario, paradas, espera o instrucciones"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización por Hora</button>';
+    note.textContent='Para servicio por hora necesitamos ubicación inicial, horario, cantidad de horas, motivo del servicio y paradas previstas.';
+    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input type="date"><input type="time"><select><option>Horas estimadas</option><option>2 horas</option><option>3 horas</option><option>4 horas</option><option>5+ horas</option></select><select><option>Motivo del servicio</option><option>Reuniones</option><option>Cena / Noche</option><option>Compras</option><option>Evento</option><option>Múltiples paradas</option></select><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><textarea class="full" rows="4" placeholder="Itinerario, paradas, tiempo de espera, instrucciones o preferencias"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización por Hora</button>';
   }
   if(type==='oneway'){
     title.textContent='Formulario Solo Ida';
-    note.textContent='Complete pickup, destino, fecha, hora, pasajeros y equipaje.';
-    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input class="full" placeholder="Destino *"><input type="date"><input type="time"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Detalles adicionales del viaje"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Solo Ida</button>';
+    note.textContent='Para un viaje solo ida necesitamos pickup, destino, fecha, hora, pasajeros, equipaje y cualquier instrucción especial.';
+    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input class="full" placeholder="Destino *"><input type="date"><input type="time"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Detalles adicionales: entrada, guard gate, instrucciones del edificio, espera"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Solo Ida</button>';
   }
   if(type==='roundtrip'){
     title.textContent='Formulario Ida y Vuelta';
-    note.textContent='Complete los datos de ida y regreso para coordinar el servicio completo.';
-    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input class="full" placeholder="Destino *"><input type="date" title="Fecha de ida"><input type="time" title="Hora de ida"><input type="date" title="Fecha de regreso"><input type="time" title="Hora de regreso"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Detalles de regreso / instrucciones adicionales"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Ida y Vuelta</button>';
+    note.textContent='Para ida y vuelta necesitamos los datos completos de salida y regreso para coordinar el vehículo correctamente.';
+    html='<input class="full" placeholder="Pickup / Ubicación inicial *"><input class="full" placeholder="Destino *"><input type="date" title="Fecha de ida"><input type="time" title="Hora de ida"><input type="date" title="Fecha de regreso"><input type="time" title="Hora de regreso"><select><option>Pasajeros</option><option>1</option><option>2</option><option>3</option><option>4+</option></select><select><option>Equipaje</option><option>Sin equipaje</option><option>Carry-on</option><option>2+ maletas</option></select><textarea class="full" rows="4" placeholder="Detalles de regreso, espera, segunda ubicación o instrucciones adicionales"></textarea><button class="btn btn-primary full" type="submit">Solicitar Cotización Ida y Vuelta</button>';
   }
   form.innerHTML=html;
 }
