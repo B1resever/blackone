@@ -505,10 +505,26 @@
 .topbar {
   height: auto;
   padding: 16px 18px;
-  flex-direction: row;
+  display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 14px;
+}
+
+.brand {
+  font-size: 13px;
+  letter-spacing: 5px;
+}
+
+.nav {
+  margin-left: auto;
+  display: flex;
+  gap: 6px;
+}
+
+.nav a,
+.nav button {
+  min-width: 74px;
+  padding: 0 10px;
+  font-size: 9px;
 }
 .nav {
   width: auto;
