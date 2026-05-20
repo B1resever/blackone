@@ -505,15 +505,17 @@
 .topbar {
   height: auto;
   padding: 16px 18px;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: space-between;
   gap: 14px;
 }
 .nav {
-  width: 100%;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  width: auto;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
 }
       .hero {
         width: min(100% - 28px, 1180px);
