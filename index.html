@@ -512,6 +512,24 @@
         grid-template-columns: 1fr;
       }
 
+  input[type="date"]:before {
+  content: attr(aria-label);
+  color: rgba(255,255,255,.55);
+}
+
+input[type="date"]:valid:before {
+  content: "";
+}
+
+input[type="time"]:before {
+  content: attr(aria-label);
+  color: rgba(255,255,255,.55);
+}
+
+input[type="time"]:valid:before {
+  content: "";
+}    
+      
       .vehicle-card {
         grid-template-columns: 74px 1fr;
       }
@@ -599,8 +617,8 @@
             <input class="full" name="pickup_location" placeholder="Pickup Location *" required>
             <input class="full" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" required>
 
-            <input name="pickup_date" type="date" required>
-            <input name="pickup_time" type="time" required>
+<input name="pickup_date" type="date" required aria-label="Select A Date">
+<input name="pickup_time" type="time" required aria-label="Select A Time">
 
             <button class="btn primary full" type="button" id="continueToVehicle">Continue</button>
           </div>
