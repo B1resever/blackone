@@ -769,8 +769,8 @@ input[type="time"]:valid:before {
         tripTypeField.value = selectedTrip;
 
         if (selectedTrip === "Hourly") {
-  dropoffInput.placeholder = "Main Service Area / Itinerary *";
-} else if (selectedTrip === "Airport") {
+dropoffInput.placeholder = "Drop-off Location *";
+    } else if (selectedTrip === "Airport") {
   dropoffInput.placeholder = "Airport / Flight Destination *";
 } else {
   dropoffInput.placeholder = "Drop-off Location *";
