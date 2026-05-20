@@ -178,26 +178,6 @@
       line-height: 1.7;
       max-width: 520px;
     }
-
-    .trust-line {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 28px;
-    }
-
-    .trust-line span {
-      padding: 10px 13px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.13);
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.82);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-    }
-
     .booking-panel {
       width: 100%;
       max-width: 590px;
@@ -249,11 +229,11 @@
     }
 
     .booking-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
 
     .booking-tabs button {
       border: 1px solid rgba(255,255,255,.16);
@@ -585,12 +565,6 @@
           private events, and VIP arrivals. Request your ride in a few steps.
         </p>
 
-        <div class="trust-line">
-          <span>Airport Transfers</span>
-          <span>Executive SUV</span>
-          <span>Hourly Chauffeur</span>
-          <span>VIP Travel</span>
-        </div>
       </section>
 
       <section id="reserve" class="booking-panel">
@@ -607,14 +581,15 @@
           </div>
         </div>
 
-        <div class="booking-tabs">
-          <button type="button" class="active" data-trip="oneway">One Way</button>
-          <button type="button" data-trip="hourly">Hourly</button>
-        </div>
+<div class="booking-tabs">
+  <button type="button" class="active" data-trip="airport">Airport</button>
+  <button type="button" data-trip="oneway">One-Way</button>
+  <button type="button" data-trip="hourly">Hourly</button>
+</div>
 
         <form id="reservationForm" action="https://formspree.io/f/xjgldvyj" method="POST">
           <input type="hidden" name="form_name" value="BLACK ONE Reservation Request">
-          <input type="hidden" name="trip_type" id="tripTypeField" value="One Way">
+          <input type="hidden" name="trip_type" id="tripTypeField" value="Airport">
           <input type="hidden" name="selected_vehicle" id="selectedVehicleField" value="Cadillac Escalade ESV">
           <input type="hidden" name="pricing_status" value="Pending final confirmation">
 
@@ -716,7 +691,7 @@
   </div>
 
   <script>
-    var selectedTrip = "One Way";
+    var selectedTrip = "Airport";
 
     var step1 = document.getElementById("step1");
     var step2 = document.getElementById("step2");
@@ -764,14 +739,22 @@
 
         button.classList.add("active");
 
-        selectedTrip = button.dataset.trip === "hourly" ? "Hourly" : "One Way";
+        if (button.dataset.trip === "hourly") {
+  selectedTrip = "Hourly";
+} else if (button.dataset.trip === "airport") {
+  selectedTrip = "Airport";
+} else {
+  selectedTrip = "One-Way";
+}
         tripTypeField.value = selectedTrip;
 
         if (selectedTrip === "Hourly") {
-          dropoffInput.placeholder = "Main Service Area / Itinerary *";
-        } else {
-          dropoffInput.placeholder = "Drop-off Location *";
-        }
+  dropoffInput.placeholder = "Main Service Area / Itinerary *";
+} else if (selectedTrip === "Airport") {
+  dropoffInput.placeholder = "Airport / Flight Destination *";
+} else {
+  dropoffInput.placeholder = "Drop-off Location *";
+}
       });
     });
 
