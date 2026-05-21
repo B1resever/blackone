@@ -60,18 +60,16 @@
       flex-direction: column;
     }
 
-    .bg-video,
-.bg-image {
+.hero-bg {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center center;
-  transform: scale(1);
+  background-image: url('blackone-desktop-hero.png');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
   z-index: -4;
 }
-
+    
     .bg-image {
       background:
         linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52), rgba(0,0,0,.84)),
@@ -601,9 +599,7 @@ input[type="time"]:valid:before {
   <div class="page">
     <div class="bg-image"></div>
 
-    <video class="bg-video" autoplay muted loop playsinline>
-  <source src="blackone-hero-4k.mp4" type="video/mp4">
-</video>
+<div class="hero-bg"></div>
 
     <div class="overlay"></div>
 
