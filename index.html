@@ -382,6 +382,115 @@
     }
     .wa-float:hover { background: #16864a; }
 
+    /* ---------- Reservation: stops, conditional fields, map ---------- */
+    .add-stop {
+      border: 1px dashed var(--stone-line); background: var(--off-white); color: var(--navy);
+      border-radius: 12px; min-height: 46px; font-size: 13px; font-weight: 700; letter-spacing: .3px;
+      cursor: pointer; transition: .15s ease;
+    }
+    .add-stop:hover { border-color: var(--celeste); background: var(--celeste-soft); }
+    .stop-row { position: relative; display: flex; align-items: center; gap: 8px; }
+    .stop-row input { flex: 1; }
+    .stop-row .remove-stop {
+      flex: none; width: 46px; min-height: 50px; border-radius: 12px; cursor: pointer;
+      border: 1px solid var(--stone-line); background: #fbfaf7; color: var(--muted); font-size: 18px; line-height: 1;
+    }
+    .stop-row .remove-stop:hover { border-color: var(--celeste); color: var(--navy); }
+
+    .cond-section {
+      display: none; border: 1px solid var(--stone-line); border-radius: 14px;
+      padding: 14px; background: var(--celeste-soft);
+    }
+    .cond-section.show { display: block; }
+    .cond-title { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--navy); margin-bottom: 10px; }
+    .cond-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cond-grid .check {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; min-height: 0;
+      font-size: 13px; font-weight: 600; color: var(--navy);
+    }
+    .cond-grid .check input { width: 18px; height: 18px; min-height: 0; flex: none; }
+
+    .map-wrap { display: grid; gap: 10px; }
+    .b1-map { width: 100%; height: 230px; border-radius: 16px; border: 1px solid var(--stone-line); overflow: hidden; background: #eef1f4; display: none; }
+    .b1-map.show { display: block; }
+    .map-fallback {
+      width: 100%; min-height: 96px; border-radius: 16px; border: 1px dashed var(--stone-line);
+      background: var(--off-white); color: var(--muted); font-size: 13px; line-height: 1.5;
+      display: grid; place-items: center; text-align: center; padding: 18px;
+    }
+    .route-info {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .route-info > div {
+      border: 1px solid var(--stone-line); border-radius: 14px; padding: 12px 14px; background: #fbfaf7;
+      display: grid; gap: 4px;
+    }
+    .route-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+    .route-val { font-size: 18px; font-weight: 700; font-family: "Sora"; color: var(--navy); }
+    .price-note {
+      font-size: 12.5px; color: var(--muted); text-align: center;
+      border: 1px solid var(--stone-line); border-radius: 12px; padding: 10px 12px; background: var(--off-white);
+    }
+    .pac-container { z-index: 100000 !important; border-radius: 12px; margin-top: 4px; box-shadow: var(--shadow); }
+
+    /* ---------- Reservation v2: tabs, chips, fields, summary, vehicles ---------- */
+    .booking-tabs { grid-template-columns: repeat(4, 1fr); }
+    .field.hidden { display: none !important; }
+    .field-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin: 2px 0 -4px; }
+
+    .quick-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .quick-chips .chip-label { width: 100%; font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 2px; }
+    .quick-chips button {
+      width: auto; min-height: 0; border: 1px solid var(--stone-line); background: var(--off-white);
+      color: var(--navy); border-radius: 999px; padding: 7px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: .15s ease;
+    }
+    .quick-chips button:hover { border-color: var(--celeste); background: var(--celeste-soft); }
+
+    /* Trip summary card (steps 2-4) */
+    .trip-summary { display: none; border: 1px solid var(--stone-line); border-radius: 16px; background: var(--off-white); padding: 16px; margin-bottom: 14px; }
+    .trip-summary.show { display: block; }
+    .trip-summary h5 { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--navy); margin-bottom: 12px; }
+    .ts-rows { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+    .ts-row { display: grid; gap: 2px; }
+    .ts-row.full { grid-column: 1 / -1; }
+    .ts-k { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); }
+    .ts-v { font-size: 13.5px; font-weight: 600; color: var(--ink); }
+
+    /* Vehicle grid (step 2) */
+    .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 12px; padding: 2px; }
+    .vcard {
+      border: 1px solid var(--stone-line); border-radius: 16px; background: #fbfaf7; overflow: hidden;
+      cursor: pointer; transition: .18s ease;
+    }
+    .vcard:hover { border-color: var(--celeste); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .vcard.selected { border-color: var(--celeste); background: var(--celeste-soft); box-shadow: 0 0 0 2px rgba(79,143,192,.35); }
+    .vcard .vmedia { height: 150px; background: #eef0f2; overflow: hidden; }
+    .vcard .vmedia.dark { background: #0a0a0a; }
+    .vcard .vmedia img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    .vcard .vbody { padding: 12px 13px 13px; display: flex; flex-direction: column; gap: 7px; }
+    .vcard .vtag { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--celeste); }
+    .vcard h4 { font-size: 14px; line-height: 1.25; }
+    .vcard .vspecs { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+    .vcard .vspecs li { font-size: 10.5px; color: var(--muted); border: 1px solid var(--stone-line); border-radius: 999px; padding: 3px 8px; background: #fff; }
+    .vcard .vavail { display: flex; gap: 6px; }
+    .vcard .vavail span { font-size: 10px; font-weight: 700; letter-spacing: .3px; color: #1f7a4d; display: inline-flex; align-items: center; gap: 4px; }
+    .vcard .vfoot { margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 4px; }
+    .vcard .vprice { font-size: 11px; font-weight: 600; color: var(--navy); }
+    .vcard .vselect { width: auto; min-height: 0; border-radius: 999px; padding: 8px 14px; font-size: 11px; font-weight: 700; letter-spacing: .4px; border: 1px solid var(--navy); background: #fff; color: var(--navy); cursor: pointer; transition: .15s ease; }
+    .vcard.selected .vselect { background: var(--navy); color: #fff; }
+
+    /* Trust bar */
+    .trust-bar {
+      margin-top: 36px; display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;
+      border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 16px; background: rgba(255,255,255,.05);
+    }
+    .trust-bar .tb-item { display: flex; align-items: center; gap: 9px; color: #dbe5ef; font-size: 12.5px; font-weight: 600; }
+    .trust-bar .tb-item .tb-ic { flex: none; width: 30px; height: 30px; border-radius: 9px; background: rgba(255,255,255,.10); color: var(--celeste); display: grid; place-items: center; }
+
+    /* Confirmation summary (step 4) */
+    .confirm-note { font-size: 12.5px; color: var(--muted); line-height: 1.55; border: 1px dashed var(--stone-line); border-radius: 12px; padding: 12px 14px; background: var(--off-white); }
+
     /* ---------- Responsive ---------- */
     @media (max-width: 1024px) {
       .booking-grid { grid-template-columns: 1fr; gap: 36px; }
@@ -396,6 +505,8 @@
       .booking-tabs { grid-template-columns: repeat(2, 1fr); }
       .fleet-grid { grid-template-columns: 1fr; }
       .cta-inner { flex-direction: column; align-items: flex-start; }
+      .trust-bar { grid-template-columns: repeat(3, 1fr); }
+      .vehicle-grid { grid-template-columns: 1fr; max-height: none; }
     }
     @media (max-width: 560px) {
       .wrap { width: calc(100% - 28px); }
@@ -408,6 +519,8 @@
       section.block { padding: 60px 0; }
       .trust-grid, .services-grid, .areas-grid { grid-template-columns: 1fr; }
       .form-grid, .action-row, .support-actions { grid-template-columns: 1fr; }
+      .ts-rows { grid-template-columns: 1fr; }
+      .trust-bar { grid-template-columns: 1fr 1fr; }
       .hero-stats { gap: 22px; }
       .vehicle-card { grid-template-columns: 80px 1fr; }
       .vehicle-card .select-pill { grid-column: 1 / -1; text-align: center; }
@@ -500,15 +613,15 @@
             <span class="step-dot active" id="dot1"></span>
             <span class="step-dot" id="dot2"></span>
             <span class="step-dot" id="dot3"></span>
+            <span class="step-dot" id="dot4"></span>
           </div>
         </div>
 
         <div class="booking-tabs">
-          <button type="button" class="active" data-trip="Point-to-Point">Point-to-Point</button>
-          <button type="button" data-trip="Hourly Service">Hourly Service</button>
-          <button type="button" data-trip="Airport Transfers">Airport Transfers</button>
-          <button type="button" data-trip="Events &amp; Occasions">Events &amp; Occasions</button>
-          <button type="button" data-trip="Luxury Rentals">Luxury Rentals</button>
+          <button type="button" class="active" data-tab="ptp" data-trip="Point to Point">Point to Point</button>
+          <button type="button" data-tab="hourly" data-trip="Hourly">Hourly</button>
+          <button type="button" data-tab="airport" data-trip="Airport Transfer">Airport Transfer</button>
+          <button type="button" data-tab="rental" data-trip="Luxury Rental">Luxury Rental</button>
         </div>
 
         <form id="reservationForm" action="https://formspree.io/f/xjgldvyj" method="POST">
@@ -518,89 +631,281 @@
           <input type="hidden" name="pricing_status" value="Pending final confirmation">
 
           <div class="step-section active form-grid" id="step1">
-            <input class="full" name="pickup_location" placeholder="Pickup Location *" required>
-            <input class="full" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" required>
-            <input name="pickup_date" type="date" required aria-label="Select A Date">
-            <input name="pickup_time" type="time" required aria-label="Select A Time">
-            <button class="btn btn-primary block" type="button" id="continueToVehicle">Continue</button>
+            <input class="field full" data-show="ptp hourly airport rental" name="pickup_location" id="pickupInput" placeholder="Pickup Location * — airport, port, hotel, FBO, address" autocomplete="off" required>
+
+            <!-- Curated quick suggestions -->
+            <div class="field full quick-chips" data-show="ptp hourly airport rental" id="quickChips">
+              <span class="chip-label">Quick picks — fills the active location field</span>
+              <button type="button" data-q="Miami International Airport (MIA), Miami, FL">MIA</button>
+              <button type="button" data-q="Fort Lauderdale-Hollywood International Airport (FLL), Fort Lauderdale, FL">FLL</button>
+              <button type="button" data-q="Palm Beach International Airport (PBI), West Palm Beach, FL">PBI</button>
+              <button type="button" data-q="Miami-Opa Locka Executive Airport (OPF), Opa-locka, FL">OPF</button>
+              <button type="button" data-q="Fort Lauderdale Executive Airport (FXE), Fort Lauderdale, FL">FXE</button>
+              <button type="button" data-q="PortMiami, Miami, FL">PortMiami</button>
+              <button type="button" data-q="Port Everglades, Fort Lauderdale, FL">Port Everglades</button>
+              <button type="button" data-q="Brickell, Miami, FL">Brickell</button>
+              <button type="button" data-q="Miami Beach, FL">Miami Beach</button>
+              <button type="button" data-q="Bal Harbour, FL">Bal Harbour</button>
+              <button type="button" data-q="Aventura, FL">Aventura</button>
+              <button type="button" data-q="Sunny Isles Beach, FL">Sunny Isles</button>
+              <button type="button" data-q="Fontainebleau Miami Beach, 4441 Collins Ave, Miami Beach, FL">Fontainebleau</button>
+            </div>
+
+            <!-- Stops (Point to Point) -->
+            <div class="field full" data-show="ptp" id="stopsContainer"></div>
+            <button class="field full add-stop" data-show="ptp" type="button" id="addStopBtn">+ Add Stop</button>
+
+            <!-- Drop-off (Point to Point, Airport) -->
+            <input class="field full" data-show="ptp airport" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" autocomplete="off">
+
+            <!-- Hours (Hourly) -->
+            <select class="field full" data-show="hourly" name="hours" id="hoursField">
+              <option value="">Number of Hours *</option>
+              <option>2 hours</option><option>3 hours</option><option>4 hours</option>
+              <option>5 hours</option><option>6 hours</option><option>8 hours</option>
+              <option>10 hours</option><option>12 hours</option><option>Full day</option>
+            </select>
+
+            <!-- Date + time -->
+            <input class="field" data-show="ptp hourly airport rental" name="pickup_date" id="dateField" type="date" required aria-label="Select A Date">
+            <input class="field" data-show="ptp hourly airport" name="pickup_time" type="time" required aria-label="Select A Time">
+
+            <!-- Return date (Rental) -->
+            <input class="field" data-show="rental" name="return_date" type="date" aria-label="Return Date">
+
+            <!-- Vehicle preference + chauffeur (Rental) -->
+            <select class="field" data-show="rental" name="vehicle_preference" id="vehiclePrefField">
+              <option value="">Vehicle Preference</option>
+              <option>Cadillac Escalade ESV</option>
+              <option>Rolls-Royce Cullinan</option>
+              <option>Rolls-Royce Ghost</option>
+              <option>Bentley Bentayga</option>
+              <option>Lamborghini Urus</option>
+              <option>Mercedes-Benz G-Class</option>
+              <option>Range Rover Autobiography</option>
+              <option>Mercedes-Maybach GLS 600</option>
+              <option>Mercedes-Maybach S-Class</option>
+              <option>Mercedes-Benz Sprinter Executive</option>
+            </select>
+            <select class="field" data-show="rental" name="chauffeur_needed">
+              <option value="">Chauffeur Needed?</option>
+              <option>Yes — with chauffeur</option>
+              <option>No — self-drive</option>
+            </select>
+
+            <!-- Passengers + luggage -->
+            <select class="field" data-show="ptp hourly airport" name="passengers" id="passengersField">
+              <option value="">Passengers *</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option>
+              <option>5</option><option>6</option><option>7+</option>
+            </select>
+            <select class="field" data-show="ptp hourly airport" name="luggage" id="luggageField">
+              <option value="">Luggage</option>
+              <option>No luggage</option><option>Carry-on</option><option>2+ Bags</option><option>4+ Bags</option>
+            </select>
+
+            <!-- Airport / FBO flight details (Airport tab or auto-detected airport) -->
+            <div class="field full cond-section" id="airportFields">
+              <div class="cond-title">Flight details</div>
+              <div class="cond-grid">
+                <input name="airline" placeholder="Airline (e.g. American)">
+                <input name="flight_number" placeholder="Flight number">
+                <input name="arrival_time" type="time" aria-label="Arrival time">
+                <label class="check"><input type="checkbox" name="meet_and_greet" value="Yes"> Meet &amp; greet (curbside otherwise)</label>
+              </div>
+            </div>
+
+            <!-- Cruise port details (auto-detected) -->
+            <div class="field full cond-section" id="cruiseFields">
+              <div class="cond-title">Cruise port details</div>
+              <div class="cond-grid">
+                <input name="cruise_line" placeholder="Cruise line">
+                <input name="ship_name" placeholder="Ship name">
+                <input class="full" name="terminal" placeholder="Terminal (if known)">
+              </div>
+            </div>
+
+            <!-- Map preview + route (Point to Point, Airport) -->
+            <div class="field full map-wrap" data-show="ptp airport">
+              <div id="b1Map" class="b1-map" aria-label="Route preview map"></div>
+              <div id="mapFallback" class="map-fallback">Map preview available once Google Maps API key is connected.</div>
+              <div id="routeInfo" class="route-info" hidden>
+                <div><span class="route-label">Distance</span><span id="routeMiles" class="route-val">— miles</span></div>
+                <div><span class="route-label">Est. drive time</span><span id="routeTime" class="route-val">— min</span></div>
+              </div>
+            </div>
+
+            <p class="field full price-note" data-show="ptp hourly airport rental">Final price confirmed by B1 Concierge before dispatch.</p>
+
+            <!-- Hidden fields submitted with the reservation -->
+            <input type="hidden" name="stops" id="stopsField">
+            <input type="hidden" name="distance_miles" id="distanceField">
+            <input type="hidden" name="travel_time" id="travelTimeField">
+
+            <button class="btn btn-primary block full" type="button" id="continueToVehicle">Continue to Vehicle</button>
           </div>
 
           <div class="step-section" id="step2">
-            <div class="vehicle-list">
-              <div class="vehicle-card selected" data-vehicle="Cadillac Escalade ESV">
-                <span class="thumb"><img src="images/fleet/Escalade.png" alt="Cadillac Escalade ESV"></span>
-                <div>
+            <div class="trip-summary" data-summary></div>
+
+            <div class="vehicle-grid" id="vehicleGrid">
+              <div class="vcard selected" data-vehicle="Cadillac Escalade ESV">
+                <div class="vmedia dark"><img src="images/fleet/Escalade.png" alt="Cadillac Escalade ESV black SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Flagship Executive SUV</span>
                   <h4>Cadillac Escalade ESV</h4>
-                  <p>Flagship black SUV for executive and airport travel.</p>
+                  <ul class="vspecs"><li>6 seats</li><li>6 bags</li><li>Airport &amp; Executive</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
                 </div>
-                <span class="select-pill">Selected</span>
               </div>
 
-              <div class="vehicle-card" data-vehicle="Luxury SUV / Suburban Class">
-                <span class="thumb"><img src="hero-escalade.jpg" alt="Luxury SUV / Suburban Class"></span>
-                <div>
-                  <h4>Luxury SUV / Suburban Class</h4>
-                  <p>Comparable premium SUV, subject to availability.</p>
+              <div class="vcard" data-vehicle="Rolls-Royce Cullinan">
+                <div class="vmedia"><img src="images/fleet/cullinan.png" alt="Rolls-Royce Cullinan ultra-luxury SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Ultra-Luxury SUV</span>
+                  <h4>Rolls-Royce Cullinan</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>4 bags</li><li>VIP &amp; Occasions</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
                 </div>
-                <span class="select-pill">Select</span>
               </div>
 
-              <div class="vehicle-card" data-vehicle="Exotic / Ultra-Luxury Rental">
-                <span class="thumb"><img src="images/fleet/exotic-luxury.png" alt="Exotic / Ultra-Luxury Rental"></span>
-                <div>
-                  <h4>Exotic / Ultra-Luxury Rental</h4>
-                  <p>Self-drive or chauffeured exotic, by request.</p>
+              <div class="vcard" data-vehicle="Rolls-Royce Ghost">
+                <div class="vmedia"><img src="images/fleet/ghost.png" alt="Rolls-Royce Ghost ultra-luxury sedan"></div>
+                <div class="vbody">
+                  <span class="vtag">Ultra-Luxury Sedan</span>
+                  <h4>Rolls-Royce Ghost</h4>
+                  <ul class="vspecs"><li>3 seats</li><li>3 bags</li><li>Executive &amp; VIP</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
                 </div>
-                <span class="select-pill">Select</span>
               </div>
 
-              <div class="vehicle-card" data-vehicle="Sprinter / Group Option">
-                <span class="thumb"><img src="images/fleet/Sprinter.png" alt="Sprinter / Group Option"></span>
-                <div>
-                  <h4>Sprinter / Group Option</h4>
-                  <p>For groups, events, or larger transportation needs.</p>
+              <div class="vcard" data-vehicle="Bentley Bentayga">
+                <div class="vmedia"><img src="images/fleet/bentayga.png" alt="Bentley Bentayga ultra-luxury SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Ultra-Luxury SUV</span>
+                  <h4>Bentley Bentayga</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>4 bags</li><li>VIP &amp; Leisure</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
                 </div>
-                <span class="select-pill">Select</span>
+              </div>
+
+              <div class="vcard" data-vehicle="Lamborghini Urus">
+                <div class="vmedia"><img src="images/fleet/urus.png" alt="Lamborghini Urus exotic luxury SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Exotic Luxury SUV</span>
+                  <h4>Lamborghini Urus</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>2 bags</li><li>Exotic Experience</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
+              </div>
+
+              <div class="vcard" data-vehicle="Mercedes-Benz G-Class">
+                <div class="vmedia"><img src="images/fleet/gclass.png" alt="Mercedes-Benz G-Class iconic luxury SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Iconic Luxury SUV</span>
+                  <h4>Mercedes-Benz G-Class</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>3 bags</li><li>Statement Arrival</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
+              </div>
+
+              <div class="vcard" data-vehicle="Range Rover Autobiography">
+                <div class="vmedia"><img src="images/fleet/rangerover.png" alt="Range Rover Autobiography executive luxury SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Executive Luxury SUV</span>
+                  <h4>Range Rover Autobiography</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>4 bags</li><li>Executive Comfort</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
+              </div>
+
+              <div class="vcard" data-vehicle="Mercedes-Maybach GLS 600">
+                <div class="vmedia"><img src="images/fleet/maybach-gls.png" alt="Mercedes-Maybach GLS 600 ultra-luxury chauffeur SUV"></div>
+                <div class="vbody">
+                  <span class="vtag">Ultra-Luxury Chauffeur SUV</span>
+                  <h4>Mercedes-Maybach GLS 600</h4>
+                  <ul class="vspecs"><li>4 seats</li><li>4 bags</li><li>Chauffeur VIP</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
+              </div>
+
+              <div class="vcard" data-vehicle="Mercedes-Maybach S-Class">
+                <div class="vmedia"><img src="images/fleet/maybach-s.png" alt="Mercedes-Maybach S-Class executive chauffeur sedan"></div>
+                <div class="vbody">
+                  <span class="vtag">Executive Chauffeur Sedan</span>
+                  <h4>Mercedes-Maybach S-Class</h4>
+                  <ul class="vspecs"><li>3 seats</li><li>3 bags</li><li>Executive Chauffeur</li></ul>
+                  <div class="vavail"><span>Rental</span><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
+              </div>
+
+              <div class="vcard" data-vehicle="Mercedes-Benz Sprinter Executive">
+                <div class="vmedia dark"><img src="images/fleet/Sprinter.png" alt="Mercedes-Benz Sprinter Executive VIP group van"></div>
+                <div class="vbody">
+                  <span class="vtag">VIP Group Transport</span>
+                  <h4>Mercedes-Benz Sprinter Executive</h4>
+                  <ul class="vspecs"><li>14 seats</li><li>12 bags</li><li>Groups &amp; Events</li></ul>
+                  <div class="vavail"><span>Chauffeur</span></div>
+                  <div class="vfoot"><span class="vprice">Quote by B1 Concierge</span><button type="button" class="vselect">Select</button></div>
+                </div>
               </div>
             </div>
 
             <div class="action-row">
               <button class="btn btn-ghost" type="button" id="backToTrip">Back</button>
-              <button class="btn btn-primary" type="button" id="continueToDetails">Continue</button>
+              <button class="btn btn-primary" type="button" id="continueToDetails">Continue to Details</button>
             </div>
           </div>
 
           <div class="step-section form-grid" id="step3">
-            <select class="full" name="payment_method" required>
-              <option value="">Payment Method *</option>
-              <option>Credit / Debit Card</option>
-              <option>Cash Upfront</option>
-              <option>Zelle</option>
-            </select>
-
-            <select name="passengers" required>
-              <option value="">Passengers *</option>
-              <option>1</option>
-              <option>2</option>
-              <option>3</option>
-              <option>4+</option>
-            </select>
-
-            <select name="luggage">
-              <option value="">Luggage</option>
-              <option>No luggage</option>
-              <option>Carry-on</option>
-              <option>2+ Bags</option>
-            </select>
+            <div class="trip-summary full" data-summary></div>
 
             <input class="full" name="full_name" placeholder="First &amp; Last Name *" required>
             <input name="phone_number" placeholder="Phone Number *" required>
             <input type="email" name="email_address" placeholder="Email Address *" required>
 
-            <textarea class="full" name="additional_notes" placeholder="Additional notes"></textarea>
+            <div class="full cond-section show">
+              <div class="cond-title">Additional details</div>
+              <div class="cond-grid">
+                <label class="check"><input type="checkbox" name="child_seats" value="Yes"> Child seat(s) needed</label>
+                <label class="check"><input type="checkbox" name="return_trip" value="Yes"> Add a return trip</label>
+                <label class="check"><input type="checkbox" name="no_flight_details" value="Yes"> I don&apos;t have flight details yet</label>
+              </div>
+            </div>
+
+            <textarea class="full" name="special_requests" placeholder="Special requests (champagne, signage, accessibility, multiple guests…)"></textarea>
+            <textarea class="full" name="notes_for_chauffeur" placeholder="Notes for the chauffeur"></textarea>
 
             <div class="action-row full">
               <button class="btn btn-ghost" type="button" id="backToVehicle">Back</button>
+              <button class="btn btn-primary" type="button" id="continueToPayment">Continue to Payment</button>
+            </div>
+          </div>
+
+          <div class="step-section form-grid" id="step4">
+            <div class="trip-summary full" data-summary></div>
+
+            <select class="full" name="payment_method" required>
+              <option value="">Payment Method *</option>
+              <option>Credit / Debit Card</option>
+              <option>Cash Upfront</option>
+              <option>Zelle</option>
+              <option>Bank / Wire Transfer</option>
+            </select>
+
+            <p class="full confirm-note">This is a reservation <strong>request</strong>. No card is charged now — B1 Concierge confirms availability, vehicle, and the final quote before any payment. You&apos;ll be contacted by phone, email, or WhatsApp shortly after submitting.</p>
+
+            <div class="action-row full">
+              <button class="btn btn-ghost" type="button" id="backToDetails">Back</button>
               <button class="btn btn-primary" type="submit">Request Reservation</button>
             </div>
           </div>
@@ -612,6 +917,17 @@
           <a href="tel:+13058501737">Call Now</a>
           <a class="wa" href="https://wa.me/13058501737" target="_blank" rel="noopener">WhatsApp</a>
         </div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="trust-bar">
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><polyline points="9 12 11 14 15 10"/></svg></span> Licensed Chauffeurs</div>
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5a1.5 1.5 0 00-2.1-2.1L14 9 5.8 7.2 4 9l6 3-3 3H4l-2 2 4 1 1 4 2-2v-3l3-3 3 6z"/></svg></span> Flight Tracking</div>
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span> 24/7 Support</div>
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></span> Private &amp; Discreet</div>
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l-1-6 4 1 3-5 3 5 4-1-1 6"/></svg></span> Luxury Fleet</div>
+        <div class="tb-item"><span class="tb-ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.039z"/></svg></span> WhatsApp Concierge</div>
       </div>
     </div>
   </section>
@@ -866,117 +1182,444 @@
   </script>
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-  <!-- ===== Booking logic (preserved) ===== -->
+  <!-- ===== Booking logic: tabs, 4-step flow, vehicle, summary ===== -->
   <script>
-    var selectedTrip = "Point-to-Point";
+    (function () {
+      var form = document.getElementById("reservationForm");
+      var tripTypeField = document.getElementById("tripTypeField");
+      var selectedVehicleField = document.getElementById("selectedVehicleField");
+      var pickupInput = document.getElementById("pickupInput");
+      var dropoffInput = document.getElementById("dropoffInput");
+      var result = document.getElementById("quoteResult");
 
-    var step1 = document.getElementById("step1");
-    var step2 = document.getElementById("step2");
-    var step3 = document.getElementById("step3");
+      var steps = [null,
+        document.getElementById("step1"),
+        document.getElementById("step2"),
+        document.getElementById("step3"),
+        document.getElementById("step4")];
+      var dots = [null,
+        document.getElementById("dot1"),
+        document.getElementById("dot2"),
+        document.getElementById("dot3"),
+        document.getElementById("dot4")];
 
-    var dot1 = document.getElementById("dot1");
-    var dot2 = document.getElementById("dot2");
-    var dot3 = document.getElementById("dot3");
+      var currentTab = "ptp";
 
-    var tripTypeField = document.getElementById("tripTypeField");
-    var selectedVehicleField = document.getElementById("selectedVehicleField");
-    var dropoffInput = document.getElementById("dropoffInput");
-    var result = document.getElementById("quoteResult");
+      // Which named fields are required per tab (only validated when visible)
+      var requiredByTab = {
+        ptp:    ["pickup_location","dropoff_location","pickup_date","pickup_time","passengers"],
+        hourly: ["pickup_location","hours","pickup_date","pickup_time","passengers"],
+        airport:["pickup_location","dropoff_location","pickup_date","pickup_time","passengers"],
+        rental: ["pickup_location","pickup_date"]
+      };
 
-    function showStep(number) {
-      step1.classList.remove("active");
-      step2.classList.remove("active");
-      step3.classList.remove("active");
+      // ---------- Tabs ----------
+      function applyTab(tab) {
+        currentTab = tab;
+        tripTypeField.value = (document.querySelector('.booking-tabs button[data-tab="' + tab + '"]') || {}).textContent || tab;
 
-      dot1.classList.remove("active");
-      dot2.classList.remove("active");
-      dot3.classList.remove("active");
-
-      if (number === 1) { step1.classList.add("active"); dot1.classList.add("active"); }
-      if (number === 2) { step2.classList.add("active"); dot2.classList.add("active"); }
-      if (number === 3) { step3.classList.add("active"); dot3.classList.add("active"); }
-    }
-
-    document.querySelectorAll("[data-trip]").forEach(function(button) {
-      button.addEventListener("click", function() {
-        document.querySelectorAll("[data-trip]").forEach(function(btn) {
-          btn.classList.remove("active");
+        // Toggle field visibility
+        document.querySelectorAll("#step1 .field[data-show]").forEach(function (el) {
+          var shown = el.getAttribute("data-show").split(" ").indexOf(tab) !== -1;
+          el.classList.toggle("hidden", !shown);
         });
-        button.classList.add("active");
 
-        selectedTrip = button.getAttribute("data-trip");
-        tripTypeField.value = selectedTrip;
+        // Required attributes (clear all step1 fields, then set for visible required)
+        var req = requiredByTab[tab] || [];
+        ["pickup_location","dropoff_location","pickup_date","pickup_time","passengers","hours"].forEach(function (name) {
+          var f = form.querySelector('#step1 [name="' + name + '"]');
+          if (f) f.required = req.indexOf(name) !== -1;
+        });
 
-        if (selectedTrip === "Airport Transfers") {
-          dropoffInput.placeholder = "Airport / FBO / Flight Destination *";
-        } else if (selectedTrip === "Hourly Service") {
-          dropoffInput.placeholder = "Service Area / End Location";
-        } else if (selectedTrip === "Luxury Rentals") {
-          dropoffInput.placeholder = "Delivery Location *";
-        } else if (selectedTrip === "Events & Occasions") {
-          dropoffInput.placeholder = "Venue / Event Location *";
+        // Contextual placeholders
+        if (tab === "airport") {
+          pickupInput.placeholder = "Pickup — Airport / FBO / Address *";
+          dropoffInput.placeholder = "Drop-off — Airport / Hotel / Address *";
+        } else if (tab === "rental") {
+          pickupInput.placeholder = "Delivery Location * — hotel, residence, FBO";
+        } else if (tab === "hourly") {
+          pickupInput.placeholder = "Pickup Location * — start of service";
         } else {
+          pickupInput.placeholder = "Pickup Location * — airport, port, hotel, FBO, address";
           dropoffInput.placeholder = "Drop-off Location *";
         }
-      });
-    });
 
-    document.getElementById("continueToVehicle").addEventListener("click", function() {
-      var requiredFields = step1.querySelectorAll("[required]");
-      var valid = true;
-      requiredFields.forEach(function(field) {
-        if (!field.value.trim()) { valid = false; field.reportValidity(); }
-      });
-      if (valid) { showStep(2); }
-    });
-
-    document.getElementById("backToTrip").addEventListener("click", function() { showStep(1); });
-    document.getElementById("continueToDetails").addEventListener("click", function() { showStep(3); });
-    document.getElementById("backToVehicle").addEventListener("click", function() { showStep(2); });
-
-    document.querySelectorAll(".vehicle-card").forEach(function(card) {
-      card.addEventListener("click", function() {
-        document.querySelectorAll(".vehicle-card").forEach(function(item) {
-          item.classList.remove("selected");
-          item.querySelector(".select-pill").textContent = "Select";
-        });
-        card.classList.add("selected");
-        card.querySelector(".select-pill").textContent = "Selected";
-        selectedVehicleField.value = card.dataset.vehicle;
-      });
-    });
-
-    document.getElementById("reservationForm").addEventListener("submit", async function(event) {
-      event.preventDefault();
-
-      result.classList.add("active");
-      result.textContent = "Sending request...";
-
-      var form = event.target;
-      var formData = new FormData(form);
-      var data = {};
-      formData.forEach(function(value, key) { data[key] = value; });
-      data.submitted_from = window.location.href;
-
-      try {
-        var response = await fetch("https://formspree.io/f/xjgldvyj", {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify(data)
-        });
-
-        if (response.ok) {
-          result.textContent = "Request received. B1 / BLACK ONE will contact you shortly to confirm availability and final pricing.";
-          form.reset();
-          selectedVehicleField.value = "Cadillac Escalade ESV";
-          showStep(1);
-        } else {
-          result.textContent = "The request could not be sent. Please call or WhatsApp B1 directly.";
-        }
-      } catch (error) {
-        result.textContent = "Connection error. Please call or WhatsApp B1 directly.";
+        // Let the maps module react (airport flight fields, map relevance)
+        document.dispatchEvent(new CustomEvent("b1:tabchange", { detail: { tab: tab } }));
       }
-    });
+
+      document.querySelectorAll(".booking-tabs button[data-tab]").forEach(function (button) {
+        button.addEventListener("click", function () {
+          document.querySelectorAll(".booking-tabs button").forEach(function (b) { b.classList.remove("active"); });
+          button.classList.add("active");
+          applyTab(button.getAttribute("data-tab"));
+        });
+      });
+
+      // ---------- Steps ----------
+      function showStep(n) {
+        for (var i = 1; i <= 4; i++) {
+          steps[i].classList.toggle("active", i === n);
+          dots[i].classList.toggle("active", i <= n);
+        }
+        if (n >= 2) buildSummary();
+        var panel = document.querySelector(".booking-panel");
+        if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
+      function validateVisible(stepEl) {
+        var ok = true;
+        stepEl.querySelectorAll("[required]").forEach(function (field) {
+          if (field.closest(".hidden")) return;
+          if (!String(field.value).trim()) { ok = false; field.reportValidity(); }
+        });
+        return ok;
+      }
+
+      document.getElementById("continueToVehicle").addEventListener("click", function () {
+        if (validateVisible(steps[1])) showStep(2);
+      });
+      document.getElementById("backToTrip").addEventListener("click", function () { showStep(1); });
+      document.getElementById("continueToDetails").addEventListener("click", function () { showStep(3); });
+      document.getElementById("backToVehicle").addEventListener("click", function () { showStep(2); });
+      document.getElementById("continueToPayment").addEventListener("click", function () {
+        if (validateVisible(steps[3])) showStep(4);
+      });
+      document.getElementById("backToDetails").addEventListener("click", function () { showStep(3); });
+
+      // ---------- Vehicle selection ----------
+      document.querySelectorAll("#vehicleGrid .vcard").forEach(function (card) {
+        function pick() {
+          document.querySelectorAll("#vehicleGrid .vcard").forEach(function (c) {
+            c.classList.remove("selected");
+            var b = c.querySelector(".vselect"); if (b) b.textContent = "Select";
+          });
+          card.classList.add("selected");
+          var btn = card.querySelector(".vselect"); if (btn) btn.textContent = "Selected";
+          selectedVehicleField.value = card.dataset.vehicle;
+        }
+        card.addEventListener("click", pick);
+      });
+
+      // ---------- Trip summary ----------
+      function val(name) {
+        var f = form.querySelector('[name="' + name + '"]');
+        return f && String(f.value).trim() ? String(f.value).trim() : "—";
+      }
+      function buildSummary() {
+        var distance = document.getElementById("distanceField").value;
+        var travel = document.getElementById("travelTimeField").value;
+        var stopsVal = document.getElementById("stopsField").value;
+
+        var rows = [];
+        rows.push(["Service", tripTypeField.value]);
+        rows.push(["Pickup", val("pickup_location")]);
+        if (currentTab === "ptp" || currentTab === "airport") rows.push(["Drop-off", val("dropoff_location")]);
+        if (stopsVal) rows.push(["Stops", stopsVal]);
+        if (currentTab === "hourly") rows.push(["Duration", val("hours")]);
+        rows.push(["Date", val("pickup_date")]);
+        if (currentTab !== "rental") rows.push(["Time", val("pickup_time")]);
+        if (currentTab === "rental") rows.push(["Return", val("return_date")]);
+        if (currentTab !== "rental") rows.push(["Passengers", val("passengers")]);
+        if (currentTab !== "rental") rows.push(["Luggage", val("luggage")]);
+        if (distance) rows.push(["Distance", distance + " mi"]);
+        if (travel) rows.push(["Est. time", travel]);
+        rows.push(["Vehicle", selectedVehicleField.value]);
+
+        var html = '<h5>Trip details</h5><div class="ts-rows">';
+        rows.forEach(function (r) {
+          var full = (r[0] === "Pickup" || r[0] === "Drop-off" || r[0] === "Stops" || r[0] === "Vehicle") ? " full" : "";
+          html += '<div class="ts-row' + full + '"><span class="ts-k">' + r[0] + '</span><span class="ts-v">' + escapeHtml(r[1]) + '</span></div>';
+        });
+        html += '</div>';
+
+        document.querySelectorAll("[data-summary]").forEach(function (el) {
+          el.innerHTML = html;
+          el.classList.add("show");
+        });
+      }
+      function escapeHtml(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+        });
+      }
+
+      // ---------- Submit ----------
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+        result.classList.add("active");
+        result.textContent = "Sending request...";
+
+        var data = {};
+        new FormData(form).forEach(function (value, key) { data[key] = value; });
+        data.submitted_from = window.location.href;
+
+        try {
+          var response = await fetch("https://formspree.io/f/xjgldvyj", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            body: JSON.stringify(data)
+          });
+          if (response.ok) {
+            result.textContent = "Request received. B1 / BLACK ONE will contact you shortly to confirm availability, vehicle, and final pricing.";
+            form.reset();
+            selectedVehicleField.value = "Cadillac Escalade ESV";
+            document.querySelectorAll("#vehicleGrid .vcard").forEach(function (c, i) {
+              c.classList.toggle("selected", i === 0);
+              var b = c.querySelector(".vselect"); if (b) b.textContent = i === 0 ? "Selected" : "Select";
+            });
+            document.querySelectorAll("[data-summary]").forEach(function (el) { el.classList.remove("show"); });
+            showStep(1);
+          } else {
+            result.textContent = "The request could not be sent. Please call or WhatsApp B1 directly.";
+          }
+        } catch (error) {
+          result.textContent = "Connection error. Please call or WhatsApp B1 directly.";
+        }
+      });
+
+      // Initialize default tab
+      applyTab("ptp");
+    })();
+  </script>
+
+  <!-- ===== Reservation: Google Maps (autocomplete, route, distance) ===== -->
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      var pickupInput   = document.getElementById("pickupInput");
+      var dropoffInput  = document.getElementById("dropoffInput");
+      var stopsContainer= document.getElementById("stopsContainer");
+      var addStopBtn    = document.getElementById("addStopBtn");
+      var mapEl         = document.getElementById("b1Map");
+      var mapFallback   = document.getElementById("mapFallback");
+      var routeInfo     = document.getElementById("routeInfo");
+      var routeMiles    = document.getElementById("routeMiles");
+      var routeTime     = document.getElementById("routeTime");
+      var airportFields = document.getElementById("airportFields");
+      var cruiseFields  = document.getElementById("cruiseFields");
+      var stopsField    = document.getElementById("stopsField");
+      var distanceField = document.getElementById("distanceField");
+      var travelField   = document.getElementById("travelTimeField");
+
+      // South Florida bias (Miami–Palm Beach corridor)
+      var SOFLO = { sw: { lat: 25.40, lng: -80.55 }, ne: { lat: 26.85, lng: -80.00 } };
+
+      var map, directionsService, directionsRenderer, autocompletePlaces = {};
+      var pickupPlace = null, dropoffPlace = null;
+      var stops = []; // { id, input, place }
+      var stopSeq = 0;
+
+      // ----- Add Stop (works even without Maps; autocomplete attaches if available) -----
+      addStopBtn.addEventListener("click", function () {
+        if (stops.length >= 3) return;
+        var id = ++stopSeq;
+        var row = document.createElement("div");
+        row.className = "stop-row";
+        var input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Add stop (address, hotel, venue…)";
+        input.autocomplete = "off";
+        input.setAttribute("data-stop-id", id);
+        var remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "remove-stop";
+        remove.setAttribute("aria-label", "Remove stop");
+        remove.textContent = "\u00d7";
+        remove.addEventListener("click", function () {
+          stops = stops.filter(function (s) { return s.id !== id; });
+          row.remove();
+          syncStopsField();
+          recalcRoute();
+        });
+        row.appendChild(input);
+        row.appendChild(remove);
+        stopsContainer.appendChild(row);
+
+        var entry = { id: id, input: input, place: null };
+        stops.push(entry);
+
+        if (window.google && google.maps && google.maps.places) {
+          attachAutocomplete(input, function (place) {
+            entry.place = place;
+            syncStopsField();
+            recalcRoute();
+          });
+        }
+        input.addEventListener("input", syncStopsField);
+        input.addEventListener("focus", function () { activeField = input; });
+        if (stops.length >= 3) addStopBtn.style.display = "none";
+      });
+
+      function syncStopsField() {
+        stopsField.value = stops.map(function (s) { return s.input.value.trim(); })
+                                .filter(Boolean).join(" | ");
+      }
+
+      // ----- Active field tracking + quick-pick chips -----
+      var activeField = pickupInput;
+      pickupInput.addEventListener("focus", function () { activeField = pickupInput; });
+      dropoffInput.addEventListener("focus", function () { activeField = dropoffInput; });
+
+      document.querySelectorAll("#quickChips button[data-q]").forEach(function (chip) {
+        chip.addEventListener("click", function () {
+          var target = (activeField && !activeField.closest(".hidden")) ? activeField : pickupInput;
+          target.value = chip.getAttribute("data-q");
+          if (target === pickupInput) detectPickupType(target.value);
+          if (window.google && google.maps) geocodeField(target);
+          target.focus();
+        });
+      });
+
+      // ----- React to tab changes from the booking controller -----
+      var tabIsAirport = false;
+      document.addEventListener("b1:tabchange", function (e) {
+        var tab = e.detail && e.detail.tab;
+        tabIsAirport = tab === "airport";
+        // On the Airport tab the flight-detail fields are always relevant
+        if (tabIsAirport) airportFields.classList.add("show");
+        else detectPickupType(pickupInput.value);
+      });
+
+      // ----- Maps loader -----
+      function showFallback() {
+        if (mapFallback) mapFallback.style.display = "grid";
+        if (mapEl) mapEl.classList.remove("show");
+      }
+
+      var key = window.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+      if (!key) {
+        showFallback();
+      } else {
+        window.initB1Maps = initB1Maps;
+        var s = document.createElement("script");
+        s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(key) +
+                "&libraries=places&callback=initB1Maps&loading=async";
+        s.async = true;
+        s.onerror = showFallback;
+        document.head.appendChild(s);
+      }
+
+      function initB1Maps() {
+        if (!window.google || !google.maps) { showFallback(); return; }
+        mapFallback.style.display = "none";
+        mapEl.classList.add("show");
+
+        map = new google.maps.Map(mapEl, {
+          center: { lat: 25.93, lng: -80.20 },
+          zoom: 9,
+          disableDefaultUI: true,
+          zoomControl: true,
+          gestureHandling: "cooperative",
+        });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+          map: map,
+          suppressMarkers: false,
+          polylineOptions: { strokeColor: "#0a1c30", strokeWeight: 5, strokeOpacity: 0.9 },
+        });
+
+        attachAutocomplete(pickupInput, function (place) {
+          pickupPlace = place;
+          detectPickupType(pickupInput.value, place && place.types);
+          recalcRoute();
+        });
+        attachAutocomplete(dropoffInput, function (place) {
+          dropoffPlace = place;
+          recalcRoute();
+        });
+        // attach to any stops already added before Maps finished loading
+        stops.forEach(function (entry) {
+          attachAutocomplete(entry.input, function (place) {
+            entry.place = place; syncStopsField(); recalcRoute();
+          });
+        });
+      }
+
+      function attachAutocomplete(input, onPlace) {
+        var bounds = new google.maps.LatLngBounds(SOFLO.sw, SOFLO.ne);
+        var ac = new google.maps.places.Autocomplete(input, {
+          bounds: bounds,
+          componentRestrictions: { country: "us" },
+          fields: ["place_id", "name", "formatted_address", "geometry", "types"],
+        });
+        ac.addListener("place_changed", function () {
+          var place = ac.getPlace();
+          if (place && place.formatted_address && place.name &&
+              place.formatted_address.indexOf(place.name) === -1) {
+            input.value = place.name + ", " + place.formatted_address;
+          }
+          onPlace(place);
+        });
+        autocompletePlaces[input.id || ("stop-" + (++stopSeq))] = ac;
+      }
+
+      // ----- Airport / cruise port detection (text-based, works without Maps) -----
+      function detectPickupType(text, types) {
+        var hay = String(text || "").toLowerCase();
+        var isAirport = (types && types.indexOf("airport") !== -1) ||
+                        /\bairport\b|\bfbo\b|executive airport|air base|seaplane|\b(mia|fll|pbi|opf|fxe|tmb)\b/.test(hay);
+        var isCruise  = /port\s*miami|portmiami|port everglades|cruise|cruise port|cruise terminal|port of/.test(hay);
+
+        // Airport tab forces the flight fields on regardless of detection
+        airportFields.classList.toggle("show", isAirport || tabIsAirport);
+        cruiseFields.classList.toggle("show", isCruise && !isAirport);
+      }
+
+      // ----- Geocode a chip-filled field so the route can still be drawn -----
+      function geocodeField(input) {
+        if (!window.google || !google.maps) return;
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode({ address: input.value }, function (res, status) {
+          if (status !== "OK" || !res.length) return;
+          var place = { geometry: { location: res[0].geometry.location }, types: res[0].types,
+                        formatted_address: res[0].formatted_address };
+          if (input === pickupInput) pickupPlace = place;
+          else if (input === dropoffInput) dropoffPlace = place;
+          else {
+            var entry = stops.filter(function (s) { return s.input === input; })[0];
+            if (entry) entry.place = place;
+          }
+          recalcRoute();
+        });
+      }
+
+      // ----- Route + distance/time -----
+      function recalcRoute() {
+        if (!directionsService || !pickupPlace || !dropoffPlace) return;
+        if (!pickupPlace.geometry || !dropoffPlace.geometry) return;
+
+        var waypoints = stops
+          .filter(function (s) { return s.place && s.place.geometry; })
+          .map(function (s) { return { location: s.place.geometry.location, stopover: true }; });
+
+        directionsService.route({
+          origin: pickupPlace.geometry.location,
+          destination: dropoffPlace.geometry.location,
+          waypoints: waypoints,
+          optimizeWaypoints: false,
+          travelMode: google.maps.TravelMode.DRIVING,
+        }, function (res, status) {
+          if (status !== "OK" || !res.routes.length) return;
+          directionsRenderer.setDirections(res);
+
+          var meters = 0, seconds = 0;
+          res.routes[0].legs.forEach(function (leg) {
+            meters += leg.distance.value;
+            seconds += leg.duration.value;
+          });
+          var miles = meters / 1609.344;
+          var minutes = Math.round(seconds / 60);
+
+          routeMiles.textContent = miles.toFixed(1) + " miles";
+          routeTime.textContent = minutes + " min";
+          routeInfo.hidden = false;
+
+          distanceField.value = miles.toFixed(1);
+          travelField.value = minutes + " min";
+        });
+      }
+    })();
   </script>
 </body>
 </html>
