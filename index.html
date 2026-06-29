@@ -3,638 +3,499 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BLACK ONE | Executive Transportation</title>
+  <title>B1 / BLACK ONE | Ultra-Luxury Rentals &amp; Private Chauffeur Transportation</title>
+  <meta name="description" content="B1 / BLACK ONE connects elite clients, companies, hotels, aviation, events, and private travelers with ultra-luxury vehicle rentals and white-glove private chauffeur transportation across South Florida." />
+  <meta name="theme-color" content="#0f2742" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #050505;
-      --panel: rgba(12, 12, 12, 0.82);
-      --panel-strong: rgba(18, 18, 18, 0.94);
-      --line: rgba(255, 255, 255, 0.16);
-      --text: #ffffff;
-      --muted: rgba(255, 255, 255, 0.68);
-      --soft: rgba(255, 255, 255, 0.08);
-      --white: #ffffff;
-      --black: #000000;
+      --navy: #0f2742;
+      --navy-deep: #0a1c30;
+      --celeste: #4f8fc0;
+      --celeste-soft: #e7f0f8;
+      --stone: #6f7682;
+      --stone-line: #e4ddd2;
+      --off-white: #f7f4ee;
+      --paper: #ffffff;
+      --ink: #16202c;
+      --muted: #5b6573;
+      --orange: #c1703c;
+      --orange-soft: #f3e3d6;
+      --radius: 18px;
+      --shadow: 0 24px 70px rgba(15, 39, 66, 0.14);
+      --shadow-sm: 0 10px 30px rgba(15, 39, 66, 0.10);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     html {
       scroll-behavior: smooth;
+      background: var(--off-white);
     }
 
     body {
       font-family: "Inter", Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      background: var(--off-white);
+      color: var(--ink);
       min-height: 100vh;
       overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    button,
-    input,
-    select,
-    textarea {
-      font-family: inherit;
-    }
+    h1, h2, h3, h4, .brand-word { font-family: "Sora", "Inter", sans-serif; }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
+    button, input, select, textarea { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
 
-    .page {
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-.hero-bg {
-  position: fixed;
-  inset: 0;
-  background-image: url('blackone-desktop-hero.png');
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  z-index: -4;
-}
-    
-    .bg-image {
-      background:
-        linear-gradient(90deg, rgba(0,0,0,.86), rgba(0,0,0,.52), rgba(0,0,0,.84)),
-        url("hero-escalade.jpg") center/cover no-repeat;
-      z-index: -5;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(circle at 20% 35%, rgba(255,255,255,.08), transparent 28%),
-        linear-gradient(90deg, rgba(0,0,0,.88), rgba(0,0,0,.50), rgba(0,0,0,.78));
-      z-index: -3;
-    }
-
-.topbar {
-  width: 100%;
-  height: 64px;
-  padding: 0 42px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid rgba(255,255,255,.10);
-  background: rgba(0,0,0,.44);
-  backdrop-filter: blur(18px);
-  position: relative;
-  z-index: 20;
-}
-
-    .brand {
-      font-size: 17px;
-      font-weight: 900;
-      letter-spacing: 9px;
-      white-space: nowrap;
-    }
-
-.nav {
-  position: absolute;
-  right: 42px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  width: auto;
-}
-
-.nav a,
-.nav button {
-  min-width: 86px;
-  padding: 0 14px;
-  font-size: 10px;
-}
-    
-.nav a,
-.nav button {
-  height: 34px;
-  min-width: 86px;
-  padding: 0 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.06);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  cursor: pointer;
-}
-
-    .nav .primary {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .hero {
-      flex: 1;
-      width: min(1180px, calc(100% - 48px));
-      margin: 0 auto;
-      padding: 72px 0 52px;
-      display: grid;
-      grid-template-columns: .95fr 1.05fr;
-      align-items: center;
-      gap: 46px;
-    }
-
-    .hero-copy {
-      max-width: 560px;
-    }
+    .wrap { width: min(1200px, calc(100% - 40px)); margin: 0 auto; }
 
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 9px 13px;
-      border: 1px solid rgba(255,255,255,.18);
-      border-radius: 999px;
-      background: rgba(255,255,255,.06);
-      color: rgba(255,255,255,.86);
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 2.2px;
-      text-transform: uppercase;
-      margin-bottom: 24px;
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(255,255,255,.10);
+      color: #eaf2fa; font-size: 11px; font-weight: 700;
+      letter-spacing: 2px; text-transform: uppercase;
     }
+    .eyebrow.dark {
+      border-color: var(--stone-line);
+      background: var(--paper);
+      color: var(--celeste);
+    }
+    .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); }
 
-    h1 {
-      font-size: clamp(46px, 6vw, 82px);
-      line-height: .92;
-      letter-spacing: -0.075em;
-      margin-bottom: 24px;
+    /* ---------- Header ---------- */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(247, 244, 238, 0.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--stone-line);
     }
+    .topbar-inner {
+      height: 70px; display: flex; align-items: center; gap: 20px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: var(--navy); color: #fff;
+      display: grid; place-items: center;
+      font-family: "Sora", sans-serif; font-weight: 800; font-size: 17px;
+      letter-spacing: -0.5px; box-shadow: var(--shadow-sm);
+    }
+    .brand-word { font-weight: 800; font-size: 16px; letter-spacing: 4px; color: var(--ink); }
+    .brand-sub { display: block; font-family: "Inter"; font-size: 9px; font-weight: 600; letter-spacing: 2.5px; color: var(--stone); text-transform: uppercase; }
 
-    .hero-copy p {
-      color: rgba(255,255,255,.78);
-      font-size: 17px;
-      line-height: 1.7;
-      max-width: 520px;
+    .main-nav { margin-left: auto; display: flex; align-items: center; gap: 26px; }
+    .main-nav a.link {
+      font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .3px;
     }
-    .booking-panel {
-      width: 100%;
-      max-width: 590px;
-      justify-self: end;
-      background: linear-gradient(180deg, rgba(18,18,18,.94), rgba(8,8,8,.90));
-      border: 1px solid rgba(255,255,255,.16);
-      border-radius: 30px;
-      padding: 28px;
-      box-shadow: 0 35px 110px rgba(0,0,0,.68);
-      backdrop-filter: blur(22px);
-    }
+    .main-nav a.link:hover { color: var(--navy); }
 
-    .booking-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    .booking-head h2 {
-      font-size: 25px;
-      letter-spacing: -0.04em;
-      line-height: 1.05;
-    }
-
-    .booking-head p {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.55;
-      margin-top: 8px;
-    }
-
-    .steps {
-      display: flex;
-      gap: 7px;
-      margin-top: 4px;
-    }
-
-    .step-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: rgba(255,255,255,.25);
-    }
-
-    .step-dot.active {
-      background: #fff;
-    }
-
-    .booking-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 18px;
-}
-
-    .booking-tabs button {
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.07);
-      color: #fff;
-      border-radius: 16px;
-      height: 48px;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .booking-tabs button.active {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .form-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .full {
-      grid-column: 1 / -1;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.09);
-      color: #fff;
-      border-radius: 15px;
-      min-height: 52px;
-      padding: 0 15px;
-      font-size: 14px;
-      outline: none;
-    }
-
-    textarea {
-      min-height: 94px;
-      padding: 14px 15px;
-      resize: vertical;
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: rgba(255,255,255,.58);
-    }
-
-    select option {
-      color: #000;
-    }
-
-    .step-section {
-      display: none;
-      animation: reveal .28s ease both;
-    }
-
-    .step-section.active {
-      display: grid;
-    }
-
-    @keyframes reveal {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .vehicle-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .vehicle-card {
-      display: grid;
-      grid-template-columns: 86px 1fr auto;
-      align-items: center;
-      gap: 14px;
-      padding: 11px;
-      border: 1px solid rgba(255,255,255,.13);
-      border-radius: 18px;
-      background: rgba(255,255,255,.06);
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    .vehicle-card:hover,
-    .vehicle-card.selected {
-      border-color: rgba(255,255,255,.58);
-      background: rgba(255,255,255,.12);
-    }
-
-    .vehicle-card img {
-      width: 86px;
-      height: 56px;
-      object-fit: contain;
-      filter: drop-shadow(0 15px 24px rgba(0,0,0,.55));
-    }
-
-    .vehicle-card h3 {
-      font-size: 15px;
-      margin-bottom: 4px;
-    }
-
-    .vehicle-card p {
-      font-size: 12px;
-      color: rgba(255,255,255,.62);
-      line-height: 1.45;
-    }
-
-    .select-pill {
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      padding: 8px 11px;
-      font-size: 10px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,.8);
-    }
-
-    .vehicle-card.selected .select-pill {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .action-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
 
     .btn {
-      min-height: 52px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.07);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1.8px;
-      text-transform: uppercase;
-      cursor: pointer;
-    }
-
-    .btn.primary {
-      background: #fff;
-      color: #000;
-      border-color: #fff;
-    }
-
-    .btn.full {
-      width: 100%;
-      margin-top: 12px;
-    }
-
-    .support-actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .support-actions a {
-      height: 48px;
-      border-radius: 999px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      font-size: 11px;
-      font-weight: 900;
-      letter-spacing: 1.7px;
-      text-transform: uppercase;
-    }
-
-    .result {
-      margin-top: 14px;
-      padding: 15px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.13);
-      background: rgba(255,255,255,.07);
-      color: rgba(255,255,255,.78);
-      font-size: 13px;
-      line-height: 1.55;
-      display: none;
-    }
-
-    .result.active {
-      display: block;
-    }
-
-    .micro-footer {
-      width: min(1180px, calc(100% - 48px));
-      margin: 0 auto;
-      padding: 0 0 26px;
-      color: rgba(255,255,255,.54);
-      font-size: 12px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .micro-footer span {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      height: 46px; padding: 0 22px; border-radius: 999px;
+      font-size: 13px; font-weight: 700; letter-spacing: .4px;
+      border: 1px solid transparent; cursor: pointer; transition: .18s ease;
       white-space: nowrap;
     }
+    .btn-primary { background: var(--navy); color: #fff; border-color: var(--navy); }
+    .btn-primary:hover { background: var(--navy-deep); }
+    .btn-ghost { background: transparent; color: var(--navy); border-color: rgba(15,39,66,.28); }
+    .btn-ghost:hover { background: rgba(15,39,66,.06); }
+    .btn-light { background: #fff; color: var(--navy); border-color: #fff; }
+    .btn-light:hover { background: #eef2f6; }
+    .btn-outline-light { background: rgba(255,255,255,.08); color: #fff; border-color: rgba(255,255,255,.45); }
+    .btn-outline-light:hover { background: rgba(255,255,255,.18); }
+    .btn-wa { background: #1f9d55; color: #fff; border-color: #1f9d55; }
+    .btn-wa:hover { background: #18854699; background: #16864a; }
 
-    @media (max-width: 980px) {
-      .topbar {
-        padding: 0 22px;
-      }
+    /* ---------- Google Translate ---------- */
+    .translate-wrap {
+      display: inline-flex; align-items: center; gap: 8px;
+      height: 46px; padding: 0 12px 0 14px;
+      border: 1px solid var(--stone-line); border-radius: 999px;
+      background: var(--paper); box-shadow: var(--shadow-sm);
+    }
+    .translate-wrap .globe { color: var(--celeste); display: grid; place-items: center; }
+    #google_translate_element { display: inline-flex; align-items: center; }
+    /* Tame Google's default styling for an elegant compact look */
+    .goog-te-gadget { font-size: 0 !important; color: transparent !important; font-family: "Inter", sans-serif !important; }
+    .goog-te-gadget .goog-te-combo {
+      margin: 0 !important;
+      font-size: 13px !important; font-weight: 600 !important;
+      color: var(--ink) !important;
+      background: transparent !important;
+      border: none !important;
+      outline: none !important;
+      padding: 4px 4px !important;
+      max-width: 140px;
+      cursor: pointer;
+    }
+    .goog-te-gadget-icon { display: none !important; }
+    .goog-te-gadget span { display: none !important; }
+    /* Hide the top banner frame that Google injects */
+    .goog-te-banner-frame.skiptranslate, .goog-te-banner-frame { display: none !important; }
+    .skiptranslate iframe { display: none !important; }
+    body { top: 0 !important; }
+    #goog-gt-tt, .goog-tooltip, .goog-tooltip:hover { display: none !important; }
+    .goog-text-highlight { background: none !important; box-shadow: none !important; }
 
-      .brand {
-        font-size: 14px;
-        letter-spacing: 6px;
-      }
+    /* ---------- Hero ---------- */
+    .hero {
+      position: relative;
+      min-height: 88vh;
+      display: flex; align-items: center;
+      color: #fff;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: url('images/hero/b1-daytime-luxury.png') center/cover no-repeat;
+      transform: scale(1.03);
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(95deg, rgba(10,28,48,.92) 0%, rgba(10,28,48,.66) 38%, rgba(10,28,48,.18) 70%, rgba(10,28,48,.05) 100%),
+        linear-gradient(0deg, rgba(10,28,48,.55), rgba(10,28,48,0) 40%);
+    }
+    .hero-inner { position: relative; z-index: 2; padding: 90px 0; }
+    .hero-copy { max-width: 660px; }
+    .hero h1 {
+      font-size: clamp(38px, 5.4vw, 66px);
+      line-height: 1.04; letter-spacing: -0.02em;
+      margin: 22px 0 20px; text-wrap: balance;
+    }
+    .hero p.lead {
+      font-size: clamp(15px, 1.6vw, 18px); color: #dfe8f1;
+      max-width: 580px; line-height: 1.65;
+    }
+    .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .hero-stats {
+      display: flex; flex-wrap: wrap; gap: 32px; margin-top: 44px;
+      padding-top: 28px; border-top: 1px solid rgba(255,255,255,.18);
+    }
+    .hero-stats .stat strong { display: block; font-family: "Sora"; font-size: 24px; font-weight: 700; }
+    .hero-stats .stat span { font-size: 12px; color: #c4d2e0; letter-spacing: 1px; text-transform: uppercase; }
 
-      .nav a:not(.primary) {
-        display: none;
-      }
+    /* ---------- Section primitives ---------- */
+    section.block { padding: 86px 0; }
+    .section-head { max-width: 720px; margin-bottom: 44px; }
+    .section-head.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .section-head h2 {
+      font-size: clamp(28px, 3.6vw, 42px); line-height: 1.1;
+      letter-spacing: -0.02em; margin: 16px 0 14px; color: var(--ink);
+      text-wrap: balance;
+    }
+    .section-head p { color: var(--muted); font-size: 16px; }
 
-      .hero {
-        grid-template-columns: 1fr;
-        padding: 42px 0 30px;
-      }
-
-      .booking-panel {
-        justify-self: start;
-        max-width: 100%;
-      }
-
-      .hero-copy {
-        max-width: 100%;
-      }
-
-      .micro-footer {
-        flex-direction: column;
-      }
+    /* ---------- Booking ---------- */
+    .booking-section { background: var(--navy); color: #fff; position: relative; }
+    .booking-grid {
+      display: grid; grid-template-columns: 1fr 1.05fr; gap: 50px; align-items: start;
+    }
+    .booking-intro h2 { color: #fff; }
+    .booking-intro p { color: #cdd9e6; }
+    .intro-list { margin-top: 26px; display: grid; gap: 14px; }
+    .intro-list li {
+      list-style: none; display: flex; gap: 12px; align-items: flex-start;
+      color: #dbe5ef; font-size: 14.5px;
+    }
+    .intro-list .ic {
+      flex: none; width: 26px; height: 26px; border-radius: 8px;
+      background: rgba(255,255,255,.10); display: grid; place-items: center; color: var(--celeste);
     }
 
-    @media (max-width: 640px) {
-.topbar {
-  height: auto;
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
-}
+    .booking-panel {
+      background: var(--paper); color: var(--ink);
+      border-radius: 24px; padding: 26px; box-shadow: var(--shadow);
+    }
+    .booking-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+    .booking-head h3 { font-size: 21px; letter-spacing: -0.01em; }
+    .booking-head p { color: var(--muted); font-size: 13px; margin-top: 6px; }
+    .steps { display: flex; gap: 6px; margin-top: 6px; }
+    .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--stone-line); }
+    .step-dot.active { background: var(--navy); }
 
-.brand {
-  font-size: 13px;
-  letter-spacing: 5px;
-}
+    .booking-tabs {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px;
+    }
+    .booking-tabs button {
+      border: 1px solid var(--stone-line); background: var(--off-white); color: var(--ink);
+      border-radius: 12px; min-height: 44px; padding: 0 8px;
+      font-size: 11px; font-weight: 700; letter-spacing: .3px; cursor: pointer; transition: .15s ease;
+    }
+    .booking-tabs button:hover { border-color: var(--celeste); }
+    .booking-tabs button.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 
-.nav {
-  margin-left: auto;
-  display: flex;
-  gap: 6px;
-}
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .full { grid-column: 1 / -1; }
 
-.nav a,
-.nav button {
-  min-width: 74px;
-  padding: 0 10px;
-  font-size: 9px;
-}
-.nav {
-  width: auto;
-  justify-content: flex-end;
-  flex-wrap: nowrap;
-  gap: 8px;
-  overflow-x: auto;
-}
-      .hero {
-        width: min(100% - 28px, 1180px);
-      }
+    input, select, textarea {
+      width: 100%; border: 1px solid var(--stone-line); background: #fbfaf7; color: var(--ink);
+      border-radius: 12px; min-height: 50px; padding: 0 14px; font-size: 14px; outline: none; transition: .15s ease;
+    }
+    input:focus, select:focus, textarea:focus { border-color: var(--celeste); background: #fff; box-shadow: 0 0 0 3px rgba(79,143,192,.14); }
+    textarea { min-height: 92px; padding: 13px 14px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #98a0ab; }
+    select { color: var(--ink); }
 
-      .booking-panel {
-        padding: 18px;
-        border-radius: 24px;
-      }
+    .step-section { display: none; animation: reveal .26s ease both; }
+    .step-section.active { display: grid; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
 
-      .form-grid,
-      .action-row,
-      .support-actions {
-        grid-template-columns: 1fr;
-      }
+    .vehicle-list { display: grid; gap: 10px; }
+    .vehicle-card {
+      display: grid; grid-template-columns: 92px 1fr auto; align-items: center; gap: 14px;
+      padding: 10px; border: 1px solid var(--stone-line); border-radius: 16px; background: #fbfaf7;
+      cursor: pointer; transition: .18s ease;
+    }
+    .vehicle-card:hover, .vehicle-card.selected { border-color: var(--celeste); background: var(--celeste-soft); }
+    .vehicle-card .thumb {
+      width: 92px; height: 60px; border-radius: 10px; background: var(--navy-deep);
+      display: grid; place-items: center; overflow: hidden;
+    }
+    .vehicle-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .vehicle-card h4 { font-size: 14.5px; margin-bottom: 3px; }
+    .vehicle-card p { font-size: 12px; color: var(--muted); line-height: 1.4; }
+    .select-pill {
+      border-radius: 999px; border: 1px solid var(--stone-line); padding: 7px 11px;
+      font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--muted);
+    }
+    .vehicle-card.selected .select-pill { background: var(--navy); color: #fff; border-color: var(--navy); }
 
-  input[type="date"]:before {
-  content: attr(aria-label);
-  color: rgba(255,255,255,.55);
-}
+    .action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+    .btn.block { width: 100%; min-height: 50px; }
+    .btn.mt { margin-top: 12px; }
 
-input[type="date"]:valid:before {
-  content: "";
-}
+    .support-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .support-actions a {
+      height: 46px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px;
+      border: 1px solid var(--stone-line); background: var(--off-white); color: var(--ink);
+      font-size: 12px; font-weight: 700; letter-spacing: .4px;
+    }
+    .support-actions a.wa { background: #1f9d55; color: #fff; border-color: #1f9d55; }
 
-input[type="time"]:before {
-  content: attr(aria-label);
-  color: rgba(255,255,255,.55);
-}
+    .result {
+      margin-top: 14px; padding: 14px; border-radius: 14px;
+      border: 1px solid var(--stone-line); background: var(--celeste-soft);
+      color: var(--navy); font-size: 13px; line-height: 1.55; display: none;
+    }
+    .result.active { display: block; }
 
-input[type="time"]:valid:before {
-  content: "";
-}    
-      
-      .vehicle-card {
-        grid-template-columns: 74px 1fr;
-      }
+    /* ---------- Trust ---------- */
+    .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .trust-card {
+      background: var(--paper); border: 1px solid var(--stone-line); border-radius: var(--radius);
+      padding: 24px; box-shadow: var(--shadow-sm);
+    }
+    .trust-card .ic {
+      width: 44px; height: 44px; border-radius: 12px; background: var(--celeste-soft);
+      color: var(--celeste); display: grid; place-items: center; margin-bottom: 16px;
+    }
+    .trust-card h4 { font-size: 17px; margin-bottom: 6px; }
+    .trust-card p { font-size: 14px; color: var(--muted); }
 
-      .vehicle-card img {
-        width: 74px;
-      }
+    /* ---------- Services ---------- */
+    .services-section { background: var(--paper); }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .service-card {
+      border: 1px solid var(--stone-line); border-radius: var(--radius); padding: 26px;
+      background: var(--off-white); transition: .18s ease;
+    }
+    .service-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); border-color: var(--celeste); }
+    .service-card .ic {
+      width: 48px; height: 48px; border-radius: 14px; background: var(--navy); color: #fff;
+      display: grid; place-items: center; margin-bottom: 18px;
+    }
+    .service-card h3 { font-size: 18px; margin-bottom: 8px; }
+    .service-card p { font-size: 14px; color: var(--muted); }
 
-      .select-pill {
-        grid-column: 1 / -1;
-        text-align: center;
-      }
+    /* ---------- Fleet ---------- */
+    .fleet-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .fleet-card {
+      border: 1px solid var(--stone-line); border-radius: 22px; overflow: hidden; background: var(--paper);
+      box-shadow: var(--shadow-sm); transition: .2s ease;
+    }
+    .fleet-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .fleet-media { aspect-ratio: 16 / 9; background: var(--navy-deep); display: grid; place-items: center; }
+    .fleet-media img { width: 100%; height: 100%; object-fit: cover; }
+    .fleet-body { padding: 22px 24px 24px; }
+    .fleet-body .tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--celeste); }
+    .fleet-body h3 { font-size: 21px; margin: 8px 0 8px; }
+    .fleet-body p { font-size: 14px; color: var(--muted); }
+    .fleet-feats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .fleet-feats span {
+      font-size: 12px; font-weight: 600; color: var(--navy);
+      background: var(--celeste-soft); padding: 6px 12px; border-radius: 999px;
+    }
 
-      h1 {
-        font-size: 44px;
-      }
+    /* ---------- Service areas ---------- */
+    .areas-section { background: var(--paper); }
+    .areas-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .area-card { position: relative; border-radius: 18px; overflow: hidden; aspect-ratio: 3 / 4; box-shadow: var(--shadow-sm); }
+    .area-card img { width: 100%; height: 100%; object-fit: cover; transition: .4s ease; }
+    .area-card:hover img { transform: scale(1.06); }
+    .area-card .label {
+      position: absolute; inset: auto 0 0 0; padding: 16px;
+      background: linear-gradient(0deg, rgba(10,28,48,.85), rgba(10,28,48,0));
+      color: #fff; font-family: "Sora"; font-weight: 700; font-size: 16px; letter-spacing: .3px;
+    }
 
-.hero-copy p {
-  font-size: 15px;
-}
+    /* ---------- CTA band ---------- */
+    .cta-band { background: var(--navy); color: #fff; }
+    .cta-inner { display: flex; align-items: center; justify-content: space-between; gap: 30px; flex-wrap: wrap; padding: 56px 0; }
+    .cta-inner h2 { font-size: clamp(26px, 3.4vw, 38px); letter-spacing: -0.02em; max-width: 640px; text-wrap: balance; }
+    .cta-inner p { color: #cdd9e6; margin-top: 10px; max-width: 560px; }
+    .cta-actions { display: flex; gap: 12px; flex-wrap: wrap; }
 
-.hero-copy {
-  display: none;
-}
+    /* ---------- Footer ---------- */
+    .footer { background: var(--navy-deep); color: #c7d3e0; padding: 64px 0 30px; }
+    .footer-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 36px; }
+    .footer .brand-word { color: #fff; }
+    .footer .brand-sub { color: #8fa3b8; }
+    .footer .f-tagline { margin-top: 18px; font-size: 14px; color: #aebccd; max-width: 320px; }
+    .footer h5 { color: #fff; font-family: "Sora"; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+    .footer ul { list-style: none; display: grid; gap: 11px; }
+    .footer ul a, .footer ul li { font-size: 14px; color: #aebccd; }
+    .footer ul a:hover { color: #fff; }
+    .footer .contact-item { display: flex; gap: 10px; align-items: center; }
+    .footer-bottom {
+      margin-top: 48px; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.10);
+      display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+      font-size: 12.5px; color: #8fa3b8;
+    }
+    .footer-bottom .legal { display: flex; gap: 18px; flex-wrap: wrap; }
 
-</style>
+    /* ---------- WhatsApp float ---------- */
+    .wa-float {
+      position: fixed; right: 18px; bottom: 18px; z-index: 60;
+      width: 56px; height: 56px; border-radius: 50%; background: #1f9d55; color: #fff;
+      display: grid; place-items: center; box-shadow: 0 12px 30px rgba(31,157,85,.4);
+    }
+    .wa-float:hover { background: #16864a; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 1024px) {
+      .booking-grid { grid-template-columns: 1fr; gap: 36px; }
+      .trust-grid, .services-grid { grid-template-columns: repeat(2, 1fr); }
+      .areas-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 860px) {
+      .main-nav a.link { display: none; }
+      .header-actions .btn-ghost { display: none; }
+      .hero { min-height: 0; }
+      .hero-inner { padding: 64px 0 56px; }
+      .booking-tabs { grid-template-columns: repeat(2, 1fr); }
+      .fleet-grid { grid-template-columns: 1fr; }
+      .cta-inner { flex-direction: column; align-items: flex-start; }
+    }
+    @media (max-width: 560px) {
+      .wrap { width: calc(100% - 28px); }
+      .topbar-inner { height: 62px; gap: 10px; }
+      .brand-word { font-size: 14px; letter-spacing: 3px; }
+      .brand-sub { font-size: 8px; }
+      .translate-wrap { height: 42px; padding: 0 8px 0 10px; }
+      .goog-te-gadget .goog-te-combo { max-width: 92px; font-size: 12px !important; }
+      .header-actions .btn { height: 42px; padding: 0 16px; font-size: 12px; }
+      section.block { padding: 60px 0; }
+      .trust-grid, .services-grid, .areas-grid { grid-template-columns: 1fr; }
+      .form-grid, .action-row, .support-actions { grid-template-columns: 1fr; }
+      .hero-stats { gap: 22px; }
+      .vehicle-card { grid-template-columns: 80px 1fr; }
+      .vehicle-card .select-pill { grid-column: 1 / -1; text-align: center; }
+      input[type="date"]:before { content: attr(aria-label); color: #98a0ab; }
+      input[type="date"]:valid:before { content: ""; }
+      input[type="time"]:before { content: attr(aria-label); color: #98a0ab; }
+      input[type="time"]:valid:before { content: ""; }
+    }
+  </style>
 </head>
 
 <body>
-  <div class="page">
-    <div class="bg-image"></div>
+  <!-- ===== Header ===== -->
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#home">
+        <span class="brand-mark">B1</span>
+        <span>
+          <span class="brand-word">BLACK ONE</span>
+          <span class="brand-sub notranslate">Ultra-Luxury Transportation</span>
+        </span>
+      </a>
 
-<div class="hero-bg"></div>
+      <nav class="main-nav">
+        <a class="link" href="#services">Services</a>
+        <a class="link" href="#fleet">Fleet</a>
+        <a class="link" href="#areas">Service Areas</a>
+        <a class="link" href="#reserve">Reserve</a>
 
-    <div class="overlay"></div>
+        <div class="header-actions">
+          <div class="translate-wrap" title="Translate this site">
+            <span class="globe" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 2.5 15.3 0 18M12 3c-2.5 2.7-2.5 15.3 0 18"/></svg>
+            </span>
+            <div id="google_translate_element"></div>
+          </div>
+          <a class="btn btn-primary" href="#reserve">Reserve Now</a>
+        </div>
+      </nav>
+    </div>
+  </header>
 
-    <header class="topbar">
-      <a class="brand" href="#home">BLACK ONE</a>
+  <!-- ===== Hero ===== -->
+  <main id="home" class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="wrap hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="dot"></span> Private &middot; Aviation &middot; South Florida</span>
+        <h1>Ultra-Luxury Rentals &amp; Private Chauffeur Transportation</h1>
+        <p class="lead">Connecting elite clients, companies, hotels, aviation, events, and private travelers with exceptional vehicles and white-glove transportation across South Florida.</p>
+        <div class="hero-cta">
+          <a class="btn btn-light" href="#reserve">Reserve Now</a>
+          <a class="btn btn-outline-light" href="#fleet">Explore Fleet</a>
+          <a class="btn btn-wa" href="https://wa.me/13058501737" target="_blank" rel="noopener">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.039z"/></svg>
+            WhatsApp Concierge
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><strong>24/7</strong><span>Concierge</span></div>
+          <div class="stat"><strong>White-Glove</strong><span>Service</span></div>
+          <div class="stat"><strong>South FL</strong><span>Coverage</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
 
-      <nav class="nav">
-  <a href="#home">Home</a>
-  <a href="#reserve">Reserve</a>
-  <a href="#faq">FAQ</a>
-</nav>
-    </header>
+  <!-- ===== Booking ===== -->
+  <section id="reserve" class="block booking-section">
+    <div class="wrap booking-grid">
+      <div class="booking-intro">
+        <span class="eyebrow"><span class="dot"></span> Reservations</span>
+        <h2 class="section-head" style="margin-bottom:14px;">Reserve elite transportation in minutes</h2>
+        <p>Tell us your trip details and our concierge team will confirm availability, vehicle, and final pricing. Every reservation is handled with discretion and precision.</p>
+        <ul class="intro-list">
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Point-to-point, hourly, airport, events &amp; luxury rentals</li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Professional chauffeurs and a meticulously maintained fleet</li>
+          <li><span class="ic"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span> Privacy guaranteed for executives, VIPs &amp; private travelers</li>
+        </ul>
+      </div>
 
-    <main id="home" class="hero">
-<section class="hero-copy" style="display:none;">
-  <div class="eyebrow">Private · Executive · Miami</div>
-
-  <h1>Luxury black car service, simplified.</h1>
-
-  <p>
-    Premium SUV transportation...
-  </p>
-</section>
-
-      <section id="reserve" class="booking-panel">
+      <div class="booking-panel">
         <div class="booking-head">
           <div>
-            <h2>Reserve your ride</h2>
-            <p>Enter your trip details. BLACK ONE will confirm availability and final pricing.</p>
+            <h3>Reserve your experience</h3>
+            <p>Enter your trip details. B1 will confirm availability and final pricing.</p>
           </div>
-
           <div class="steps">
             <span class="step-dot active" id="dot1"></span>
             <span class="step-dot" id="dot2"></span>
@@ -642,52 +503,61 @@ input[type="time"]:valid:before {
           </div>
         </div>
 
-<div class="booking-tabs">
-  <button type="button" class="active" data-trip="airport">Airport</button>
-  <button type="button" data-trip="oneway">One-Way</button>
-  <button type="button" data-trip="hourly">Hourly</button>
-</div>
+        <div class="booking-tabs">
+          <button type="button" class="active" data-trip="Point-to-Point">Point-to-Point</button>
+          <button type="button" data-trip="Hourly Service">Hourly Service</button>
+          <button type="button" data-trip="Airport Transfers">Airport Transfers</button>
+          <button type="button" data-trip="Events &amp; Occasions">Events &amp; Occasions</button>
+          <button type="button" data-trip="Luxury Rentals">Luxury Rentals</button>
+        </div>
 
         <form id="reservationForm" action="https://formspree.io/f/xjgldvyj" method="POST">
-          <input type="hidden" name="form_name" value="BLACK ONE Reservation Request">
-          <input type="hidden" name="trip_type" id="tripTypeField" value="Airport">
+          <input type="hidden" name="form_name" value="B1 / BLACK ONE Reservation Request">
+          <input type="hidden" name="trip_type" id="tripTypeField" value="Point-to-Point">
           <input type="hidden" name="selected_vehicle" id="selectedVehicleField" value="Cadillac Escalade ESV">
           <input type="hidden" name="pricing_status" value="Pending final confirmation">
 
           <div class="step-section active form-grid" id="step1">
             <input class="full" name="pickup_location" placeholder="Pickup Location *" required>
             <input class="full" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" required>
-
-<input name="pickup_date" type="date" required aria-label="Select A Date">
-<input name="pickup_time" type="time" required aria-label="Select A Time">
-
-            <button class="btn primary full" type="button" id="continueToVehicle">Continue</button>
+            <input name="pickup_date" type="date" required aria-label="Select A Date">
+            <input name="pickup_time" type="time" required aria-label="Select A Time">
+            <button class="btn btn-primary block" type="button" id="continueToVehicle">Continue</button>
           </div>
 
           <div class="step-section" id="step2">
             <div class="vehicle-list">
               <div class="vehicle-card selected" data-vehicle="Cadillac Escalade ESV">
-                <img src="images/fleet/Escalade.png" alt="Cadillac Escalade ESV">
+                <span class="thumb"><img src="images/fleet/Escalade.png" alt="Cadillac Escalade ESV"></span>
                 <div>
-                  <h3>Cadillac Escalade ESV</h3>
-                  <p>Premium black SUV for executive and airport travel.</p>
+                  <h4>Cadillac Escalade ESV</h4>
+                  <p>Flagship black SUV for executive and airport travel.</p>
                 </div>
                 <span class="select-pill">Selected</span>
               </div>
 
-              <div class="vehicle-card" data-vehicle="Luxury SUV / Escalade Class">
-                <img src="images/fleet/hero-escalade.png" alt="Luxury SUV">
+              <div class="vehicle-card" data-vehicle="Luxury SUV / Suburban Class">
+                <span class="thumb"><img src="hero-escalade.jpg" alt="Luxury SUV / Suburban Class"></span>
                 <div>
-                  <h3>Luxury SUV / Escalade Class</h3>
+                  <h4>Luxury SUV / Suburban Class</h4>
                   <p>Comparable premium SUV, subject to availability.</p>
                 </div>
                 <span class="select-pill">Select</span>
               </div>
 
-              <div class="vehicle-card" data-vehicle="Sprinter / Group Vehicle">
-                <img src="images/fleet/Sprinter.png" alt="Sprinter Group Vehicle">
+              <div class="vehicle-card" data-vehicle="Exotic / Ultra-Luxury Rental">
+                <span class="thumb"><img src="images/fleet/exotic-luxury.png" alt="Exotic / Ultra-Luxury Rental"></span>
                 <div>
-                  <h3>Sprinter / Group Vehicle</h3>
+                  <h4>Exotic / Ultra-Luxury Rental</h4>
+                  <p>Self-drive or chauffeured exotic, by request.</p>
+                </div>
+                <span class="select-pill">Select</span>
+              </div>
+
+              <div class="vehicle-card" data-vehicle="Sprinter / Group Option">
+                <span class="thumb"><img src="images/fleet/Sprinter.png" alt="Sprinter / Group Option"></span>
+                <div>
+                  <h4>Sprinter / Group Option</h4>
                   <p>For groups, events, or larger transportation needs.</p>
                 </div>
                 <span class="select-pill">Select</span>
@@ -695,8 +565,8 @@ input[type="time"]:valid:before {
             </div>
 
             <div class="action-row">
-              <button class="btn" type="button" id="backToTrip">Back</button>
-              <button class="btn primary" type="button" id="continueToDetails">Continue</button>
+              <button class="btn btn-ghost" type="button" id="backToTrip">Back</button>
+              <button class="btn btn-primary" type="button" id="continueToDetails">Continue</button>
             </div>
           </div>
 
@@ -723,15 +593,15 @@ input[type="time"]:valid:before {
               <option>2+ Bags</option>
             </select>
 
-            <input class="full" name="full_name" placeholder="First & Last Name *" required>
+            <input class="full" name="full_name" placeholder="First &amp; Last Name *" required>
             <input name="phone_number" placeholder="Phone Number *" required>
             <input type="email" name="email_address" placeholder="Email Address *" required>
 
             <textarea class="full" name="additional_notes" placeholder="Additional notes"></textarea>
 
             <div class="action-row full">
-              <button class="btn" type="button" id="backToVehicle">Back</button>
-              <button class="btn primary" type="submit">Request Reservation</button>
+              <button class="btn btn-ghost" type="button" id="backToVehicle">Back</button>
+              <button class="btn btn-primary" type="submit">Request Reservation</button>
             </div>
           </div>
         </form>
@@ -740,19 +610,265 @@ input[type="time"]:valid:before {
 
         <div class="support-actions">
           <a href="tel:+13058501737">Call Now</a>
-          <a href="https://wa.me/13058501737" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="wa" href="https://wa.me/13058501737" target="_blank" rel="noopener">WhatsApp</a>
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
+  </section>
 
-    <footer class="micro-footer">
-      <span>BLACK ONE © 2026 · Executive Transportation</span>
-      <span>Miami · Airport · Executive · VIP</span>
-    </footer>
-  </div>
+  <!-- ===== Trust ===== -->
+  <section class="block">
+    <div class="wrap">
+      <div class="section-head center">
+        <span class="eyebrow dark"><span class="dot"></span> Why B1</span>
+        <h2>A standard of service reserved for the few</h2>
+        <p>Every detail is engineered around discretion, reliability, and an effortless experience.</p>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>
+          <h4>24/7 Concierge</h4>
+          <p>A dedicated team available around the clock for every request and change of plan.</p>
+        </div>
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+          <h4>Professional Chauffeurs</h4>
+          <p>Vetted, discreet, and impeccably presented professionals who know South Florida.</p>
+        </div>
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l-1-6 4 1 3-5 3 5 4-1-1 6"/></svg></span>
+          <h4>Luxury Fleet</h4>
+          <p>A meticulously maintained selection of flagship SUVs, exotics, and group vehicles.</p>
+        </div>
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="9 12 11 14 15 10"/></svg></span>
+          <h4>On-Time, Every Time</h4>
+          <p>Flight-tracked arrivals and precise scheduling so you are never left waiting.</p>
+        </div>
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/></svg></span>
+          <h4>Privacy Guaranteed</h4>
+          <p>Confidential travel for executives, VIPs, and private clients, always protected.</p>
+        </div>
+        <div class="trust-card">
+          <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 18.3 7.2 16.7l.9-5.4L4.2 7.7l5.4-.8z"/></svg></span>
+          <h4>White-Glove Service</h4>
+          <p>Anticipatory, detail-obsessed care from first contact to final destination.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- ===== Services ===== -->
+  <section id="services" class="block services-section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow dark"><span class="dot"></span> Services</span>
+        <h2>Ultra-luxury mobility for every occasion</h2>
+        <p>From private aviation transfers to multi-day luxury rentals, B1 connects you to the right experience.</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5a1.5 1.5 0 00-2.1-2.1L14 9 5.8 7.2 4 9l6 3-3 3H4l-2 2 4 1 1 4 2-2v-3l3-3 3 6z"/></svg></span>
+          <h3>Airport &amp; FBO Transfers</h3>
+          <p>Seamless arrivals and departures at commercial terminals and private aviation FBOs.</p>
+        </div>
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l-1-6 4 1 3-5 3 5 4-1-1 6"/><circle cx="8" cy="19" r="1.6"/><circle cx="16" cy="19" r="1.6"/></svg></span>
+          <h3>Ultra-Luxury Rentals</h3>
+          <p>Flagship SUVs and exotics available chauffeured or self-drive, by the day or longer.</p>
+        </div>
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 016-6h4a6 6 0 016 6v1"/></svg></span>
+          <h3>Private Chauffeur Service</h3>
+          <p>A dedicated professional chauffeur for door-to-door comfort and total discretion.</p>
+        </div>
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg></span>
+          <h3>Hourly Private Service</h3>
+          <p>Keep your vehicle and chauffeur on call for meetings, shopping, or a full day out.</p>
+        </div>
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></span>
+          <h3>Corporate &amp; VIP Transportation</h3>
+          <p>Reliable executive travel and account programs for companies, hotels, and partners.</p>
+        </div>
+        <div class="service-card">
+          <span class="ic"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 18.3 7.2 16.7l.9-5.4L4.2 7.7l5.4-.8z"/></svg></span>
+          <h3>Special Events &amp; Private Occasions</h3>
+          <p>Weddings, galas, and milestone moments delivered with flawless arrival.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Fleet ===== -->
+  <section id="fleet" class="block">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow dark"><span class="dot"></span> The Fleet</span>
+        <h2>Exceptional vehicles, impeccably maintained</h2>
+        <p>Select the experience that fits your journey. Availability confirmed at reservation.</p>
+      </div>
+      <div class="fleet-grid">
+        <article class="fleet-card">
+          <div class="fleet-media"><img src="images/fleet/Escalade.png" alt="Cadillac Escalade ESV luxury black SUV"></div>
+          <div class="fleet-body">
+            <span class="tag">Flagship SUV</span>
+            <h3>Cadillac Escalade ESV</h3>
+            <p>The signature B1 experience for executives, airport transfers, and VIP travel.</p>
+            <div class="fleet-feats"><span>Up to 6 guests</span><span>Premium leather</span><span>Privacy glass</span></div>
+          </div>
+        </article>
+        <article class="fleet-card">
+          <div class="fleet-media"><img src="hero-escalade.jpg" alt="Luxury SUV / Suburban class vehicle"></div>
+          <div class="fleet-body">
+            <span class="tag">Premium SUV</span>
+            <h3>Luxury SUV / Suburban Class</h3>
+            <p>A spacious, refined alternative for comfort-first transfers and daily service.</p>
+            <div class="fleet-feats"><span>Up to 6 guests</span><span>Generous luggage</span><span>Quiet cabin</span></div>
+          </div>
+        </article>
+        <article class="fleet-card">
+          <div class="fleet-media"><img src="images/fleet/exotic-luxury.png" alt="Exotic ultra-luxury rental vehicle"></div>
+          <div class="fleet-body">
+            <span class="tag">Exotic Rental</span>
+            <h3>Exotic / Ultra-Luxury Rental</h3>
+            <p>Make an entrance. Chauffeured or self-drive exotics available by request.</p>
+            <div class="fleet-feats"><span>By request</span><span>Self-drive option</span><span>Statement arrival</span></div>
+          </div>
+        </article>
+        <article class="fleet-card">
+          <div class="fleet-media"><img src="images/fleet/Sprinter.png" alt="Mercedes Sprinter group transportation van"></div>
+          <div class="fleet-body">
+            <span class="tag">Group &amp; Events</span>
+            <h3>Sprinter / Group Option</h3>
+            <p>Travel together in comfort for groups, corporate teams, and private events.</p>
+            <div class="fleet-feats"><span>Group seating</span><span>Event ready</span><span>Ample space</span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Service Areas ===== -->
+  <section id="areas" class="block areas-section">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow dark"><span class="dot"></span> Coverage</span>
+        <h2>Serving South Florida&rsquo;s most exclusive destinations</h2>
+        <p>From Miami to Palm Beach, B1 delivers a consistent, elevated standard of service.</p>
+      </div>
+      <div class="areas-grid">
+        <div class="area-card"><img src="area-miami.jpg" alt="Miami skyline"><span class="label">Miami</span></div>
+        <div class="area-card"><img src="area-brickell.jpg" alt="Brickell financial district"><span class="label">Brickell</span></div>
+        <div class="area-card"><img src="area-fort-lauderdale.jpeg" alt="Fort Lauderdale waterfront"><span class="label">Fort Lauderdale</span></div>
+        <div class="area-card"><img src="area-palm-beach.jpg" alt="Palm Beach"><span class="label">Palm Beach</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA band ===== -->
+  <section class="cta-band">
+    <div class="wrap cta-inner">
+      <div>
+        <h2>Ready to experience transportation, elevated?</h2>
+        <p>Reserve online or speak directly with the B1 concierge. We will handle every detail.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-light" href="#reserve">Reserve Now</a>
+        <a class="btn btn-wa" href="https://wa.me/13058501737" target="_blank" rel="noopener">WhatsApp Concierge</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <a class="brand" href="#home">
+            <span class="brand-mark">B1</span>
+            <span>
+              <span class="brand-word">BLACK ONE</span>
+              <span class="brand-sub notranslate">Ultra-Luxury Transportation</span>
+            </span>
+          </a>
+          <p class="f-tagline">Ultra-Luxury Rentals &amp; Private Chauffeur Transportation. Serving South Florida with white-glove care.</p>
+        </div>
+
+        <div>
+          <h5>Company</h5>
+          <ul>
+            <li><a href="#services">Services</a></li>
+            <li><a href="#fleet">Fleet</a></li>
+            <li><a href="#areas">Service Areas</a></li>
+            <li><a href="#reserve">Reserve</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h5>Contact</h5>
+          <ul>
+            <li class="contact-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 01-2.2 2 19.8 19.8 0 01-8.6-3.1 19.5 19.5 0 01-6-6A19.8 19.8 0 012 4.2 2 2 0 014 2h3a2 2 0 012 1.7c.1 1 .4 1.9.7 2.8a2 2 0 01-.5 2.1L8 9.8a16 16 0 006 6l1.2-1.2a2 2 0 012.1-.5c.9.3 1.8.6 2.8.7a2 2 0 011.7 2z"/></svg>
+              <a href="tel:+13058501737">305-850-1737</a>
+            </li>
+            <li class="contact-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              <a href="mailto:info@b1reserve.com">info@b1reserve.com</a>
+            </li>
+            <li class="contact-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24z"/></svg>
+              <a href="https://wa.me/13058501737" target="_blank" rel="noopener">WhatsApp</a>
+            </li>
+            <li class="contact-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+              <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h5>Legal</h5>
+          <ul>
+            <li><a href="#">Terms &amp; Conditions</a></li>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Cancellation Policy</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 B1 / BLACK ONE &middot; South Florida. All rights reserved.</span>
+        <span class="legal">
+          <a href="#">Terms &amp; Conditions</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Cancellation Policy</a>
+        </span>
+      </div>
+    </div>
+  </footer>
+
+  <a class="wa-float" href="https://wa.me/13058501737" target="_blank" rel="noopener" aria-label="Chat with B1 on WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.039zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.5-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+  </a>
+
+  <!-- ===== Google Translate ===== -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+        autoDisplay: false
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <!-- ===== Booking logic (preserved) ===== -->
   <script>
-    var selectedTrip = "Airport";
+    var selectedTrip = "Point-to-Point";
 
     var step1 = document.getElementById("step1");
     var step2 = document.getElementById("step2");
@@ -776,20 +892,9 @@ input[type="time"]:valid:before {
       dot2.classList.remove("active");
       dot3.classList.remove("active");
 
-      if (number === 1) {
-        step1.classList.add("active");
-        dot1.classList.add("active");
-      }
-
-      if (number === 2) {
-        step2.classList.add("active");
-        dot2.classList.add("active");
-      }
-
-      if (number === 3) {
-        step3.classList.add("active");
-        dot3.classList.add("active");
-      }
+      if (number === 1) { step1.classList.add("active"); dot1.classList.add("active"); }
+      if (number === 2) { step2.classList.add("active"); dot2.classList.add("active"); }
+      if (number === 3) { step3.classList.add("active"); dot3.classList.add("active"); }
     }
 
     document.querySelectorAll("[data-trip]").forEach(function(button) {
@@ -797,55 +902,37 @@ input[type="time"]:valid:before {
         document.querySelectorAll("[data-trip]").forEach(function(btn) {
           btn.classList.remove("active");
         });
-
         button.classList.add("active");
 
-        if (button.dataset.trip === "hourly") {
-  selectedTrip = "Hourly";
-} else if (button.dataset.trip === "airport") {
-  selectedTrip = "Airport";
-} else {
-  selectedTrip = "One-Way";
-}
+        selectedTrip = button.getAttribute("data-trip");
         tripTypeField.value = selectedTrip;
 
-        if (selectedTrip === "Hourly") {
-dropoffInput.placeholder = "Drop-off Location *";
-    } else if (selectedTrip === "Airport") {
-  dropoffInput.placeholder = "Airport / Flight Destination *";
-} else {
-  dropoffInput.placeholder = "Drop-off Location *";
-}
+        if (selectedTrip === "Airport Transfers") {
+          dropoffInput.placeholder = "Airport / FBO / Flight Destination *";
+        } else if (selectedTrip === "Hourly Service") {
+          dropoffInput.placeholder = "Service Area / End Location";
+        } else if (selectedTrip === "Luxury Rentals") {
+          dropoffInput.placeholder = "Delivery Location *";
+        } else if (selectedTrip === "Events & Occasions") {
+          dropoffInput.placeholder = "Venue / Event Location *";
+        } else {
+          dropoffInput.placeholder = "Drop-off Location *";
+        }
       });
     });
 
     document.getElementById("continueToVehicle").addEventListener("click", function() {
       var requiredFields = step1.querySelectorAll("[required]");
       var valid = true;
-
       requiredFields.forEach(function(field) {
-        if (!field.value.trim()) {
-          valid = false;
-          field.reportValidity();
-        }
+        if (!field.value.trim()) { valid = false; field.reportValidity(); }
       });
-
-      if (valid) {
-        showStep(2);
-      }
+      if (valid) { showStep(2); }
     });
 
-    document.getElementById("backToTrip").addEventListener("click", function() {
-      showStep(1);
-    });
-
-    document.getElementById("continueToDetails").addEventListener("click", function() {
-      showStep(3);
-    });
-
-    document.getElementById("backToVehicle").addEventListener("click", function() {
-      showStep(2);
-    });
+    document.getElementById("backToTrip").addEventListener("click", function() { showStep(1); });
+    document.getElementById("continueToDetails").addEventListener("click", function() { showStep(3); });
+    document.getElementById("backToVehicle").addEventListener("click", function() { showStep(2); });
 
     document.querySelectorAll(".vehicle-card").forEach(function(card) {
       card.addEventListener("click", function() {
@@ -853,7 +940,6 @@ dropoffInput.placeholder = "Drop-off Location *";
           item.classList.remove("selected");
           item.querySelector(".select-pill").textContent = "Select";
         });
-
         card.classList.add("selected");
         card.querySelector(".select-pill").textContent = "Selected";
         selectedVehicleField.value = card.dataset.vehicle;
@@ -869,33 +955,26 @@ dropoffInput.placeholder = "Drop-off Location *";
       var form = event.target;
       var formData = new FormData(form);
       var data = {};
-
-      formData.forEach(function(value, key) {
-        data[key] = value;
-      });
-
+      formData.forEach(function(value, key) { data[key] = value; });
       data.submitted_from = window.location.href;
 
       try {
         var response = await fetch("https://formspree.io/f/xjgldvyj", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify(data)
         });
 
         if (response.ok) {
-          result.textContent = "Request received. BLACK ONE will contact you shortly to confirm availability and final pricing.";
+          result.textContent = "Request received. B1 / BLACK ONE will contact you shortly to confirm availability and final pricing.";
           form.reset();
           selectedVehicleField.value = "Cadillac Escalade ESV";
           showStep(1);
         } else {
-          result.textContent = "The request could not be sent. Please call or WhatsApp BLACK ONE directly.";
+          result.textContent = "The request could not be sent. Please call or WhatsApp B1 directly.";
         }
       } catch (error) {
-        result.textContent = "Connection error. Please call or WhatsApp BLACK ONE directly.";
+        result.textContent = "Connection error. Please call or WhatsApp B1 directly.";
       }
     });
   </script>
