@@ -90,11 +90,68 @@
     .brand-word { font-weight: 800; font-size: 16px; letter-spacing: 4px; color: var(--ink); }
     .brand-sub { display: block; font-family: "Inter"; font-size: 9px; font-weight: 600; letter-spacing: 2.5px; color: var(--stone); text-transform: uppercase; }
 
-    .main-nav { margin-left: auto; display: flex; align-items: center; gap: 26px; }
+    .main-nav { margin-left: auto; display: flex; align-items: center; gap: 26px; position: relative; }
     .main-nav a.link {
       font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .3px;
     }
     .main-nav a.link:hover { color: var(--navy); }
+
+    /* ---------- Services mega menu ---------- */
+    .nav-item { position: static; display: inline-flex; }
+    .nav-trigger {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none; cursor: pointer; padding: 0;
+      font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .3px;
+    }
+    .nav-trigger:hover, .nav-item.open .nav-trigger { color: var(--navy); }
+    .nav-trigger .chev { transition: transform .2s ease; }
+    .nav-item.open .nav-trigger .chev { transform: rotate(180deg); }
+
+    .mega {
+      position: absolute; top: calc(100% + 16px); right: 0; left: auto;
+      width: 880px; max-width: 92vw;
+      background: var(--paper); border: 1px solid var(--stone-line);
+      border-radius: 20px; box-shadow: var(--shadow); padding: 22px;
+      opacity: 0; visibility: hidden; transform: translateY(8px);
+      transition: opacity .18s ease, transform .18s ease, visibility .18s;
+      z-index: 60;
+    }
+    .nav-item.open .mega { opacity: 1; visibility: visible; transform: translateY(0); }
+    .mega-grid { display: grid; grid-template-columns: 1.65fr 1fr; gap: 20px; }
+    .mega-services { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 18px; align-content: start; }
+    .mega-col h5, .mega-side-block h5 {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+      color: var(--celeste); margin: 0 0 8px 10px;
+    }
+    .mega-col + .mega-col { border-left: 1px solid var(--stone-line); padding-left: 18px; }
+    .mega-link {
+      display: flex; align-items: center; gap: 11px;
+      padding: 8px 10px; border-radius: 12px;
+      font-size: 13px; font-weight: 600; color: var(--ink);
+      transition: background .15s ease, color .15s ease;
+    }
+    .mega-link:hover { background: var(--celeste-soft); color: var(--navy); }
+    .mega-link .mi {
+      flex: none; width: 34px; height: 34px; border-radius: 10px;
+      background: var(--off-white); color: var(--celeste);
+      display: grid; place-items: center; border: 1px solid var(--stone-line);
+    }
+    .mega-link:hover .mi { background: #fff; color: var(--navy); }
+
+    .mega-side { background: var(--navy); color: #fff; border-radius: 16px; padding: 18px; display: grid; gap: 18px; align-content: start; }
+    .mega-side h5 { color: var(--celeste); }
+    .mega-cities { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 14px; }
+    .mega-cities a { font-size: 12.5px; font-weight: 500; color: #d7e2ee; display: inline-flex; align-items: center; gap: 7px; padding: 3px 0; }
+    .mega-cities a:hover { color: #fff; }
+    .mega-cities a .mp { color: var(--celeste); display: grid; place-items: center; flex: none; }
+    .mega-cities a.view-all { color: var(--celeste); font-weight: 700; }
+    .mega-airports { display: flex; flex-wrap: wrap; gap: 7px; }
+    .mega-airports a { font-size: 11px; font-weight: 700; letter-spacing: .5px; color: #eaf2fa; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.06); border-radius: 999px; padding: 6px 11px; }
+    .mega-airports a:hover { background: rgba(255,255,255,.16); }
+    .mega-airports a.view-all { color: var(--navy); background: #fff; border-color: #fff; }
+    .mega-foot { grid-column: 1 / -1; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--stone-line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .mega-foot span { font-size: 12px; color: var(--muted); }
+    .mega-foot span strong { color: var(--navy); letter-spacing: 1px; }
 
     .header-actions { display: flex; align-items: center; gap: 12px; }
 
@@ -500,6 +557,15 @@
     @media (max-width: 860px) {
       .main-nav a.link { display: none; }
       .header-actions .btn-ghost { display: none; }
+      .nav-item { position: static; }
+      .mega {
+        position: fixed; top: 70px; left: 12px; right: 12px; width: auto; max-width: none;
+        max-height: calc(100vh - 86px); overflow-y: auto; padding: 16px;
+      }
+      .mega-grid { grid-template-columns: 1fr; gap: 14px; }
+      .mega-services { grid-template-columns: 1fr; gap: 2px; }
+      .mega-col + .mega-col { border-left: none; padding-left: 0; padding-top: 12px; margin-top: 6px; border-top: 1px solid var(--stone-line); }
+      .mega-cities { grid-template-columns: 1fr 1fr; }
       .hero { min-height: 0; }
       .hero-inner { padding: 64px 0 56px; }
       .booking-tabs { grid-template-columns: repeat(2, 1fr); }
@@ -511,6 +577,7 @@
     @media (max-width: 560px) {
       .wrap { width: calc(100% - 28px); }
       .topbar-inner { height: 62px; gap: 10px; }
+      .mega { top: 62px; }
       .brand-word { font-size: 14px; letter-spacing: 3px; }
       .brand-sub { font-size: 8px; }
       .translate-wrap { height: 42px; padding: 0 8px 0 10px; }
@@ -533,6 +600,24 @@
 </head>
 
 <body>
+  <!-- ===== Icon sprite (Services mega menu) ===== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <g id="ic-plane"><path d="M17.8 19.2 16 11l3.5-3.5a1.5 1.5 0 0 0-2.1-2.1L14 9 5.8 7.2 4 9l6 3-3 3H4l-2 2 4 1 1 4 2-2v-3z"/></g>
+      <g id="ic-car"><path d="M3 13l2-5.2A2 2 0 0 1 6.9 6.5h10.2A2 2 0 0 1 19 7.8L21 13v5a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1H6v1a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><circle cx="7" cy="14" r="1"/><circle cx="17" cy="14" r="1"/></g>
+      <g id="ic-route"><circle cx="6" cy="6" r="2"/><circle cx="18" cy="18" r="2"/><path d="M8 6h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7"/></g>
+      <g id="ic-clock"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></g>
+      <g id="ic-map"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></g>
+      <g id="ic-star"><polygon points="12 3 14.4 8.9 21 9.4 16 13.5 17.5 20 12 16.4 6.5 20 8 13.5 3 9.4 9.6 8.9"/></g>
+      <g id="ic-building"><rect x="5" y="3" width="14" height="18" rx="1.5"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M9 15h2M13 15h2"/></g>
+      <g id="ic-link"><path d="M9.5 12a3 3 0 0 1 3-3H14a3 3 0 0 1 0 6h-1M14.5 12a3 3 0 0 1-3 3H10a3 3 0 0 1 0-6h1"/></g>
+      <g id="ic-users"><path d="M16 19v-1a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v1"/><circle cx="9.5" cy="8" r="3"/><path d="M17 8.2a3 3 0 0 1 0 5.6M21 19v-1a4 4 0 0 0-3-3.8"/></g>
+      <g id="ic-briefcase"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></g>
+      <g id="ic-badge"><circle cx="12" cy="9" r="4"/><path d="M9 12.5 8 21l4-2 4 2-1-8.5"/></g>
+      <g id="ic-pin"><path d="M12 21s-6-5.7-6-10a6 6 0 0 1 12 0c0 4.3-6 10-6 10z"/><circle cx="12" cy="11" r="2"/></g>
+    </defs>
+  </svg>
+
   <!-- ===== Header ===== -->
   <header class="topbar">
     <div class="wrap topbar-inner">
@@ -545,7 +630,77 @@
       </a>
 
       <nav class="main-nav">
-        <a class="link" href="#services">Services</a>
+        <div class="nav-item" id="servicesNav">
+          <button type="button" class="nav-trigger" aria-haspopup="true" aria-expanded="false" aria-controls="servicesMega">
+            Services
+            <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="mega" id="servicesMega" role="menu" aria-label="Services">
+            <div class="mega-grid">
+              <div class="mega-services">
+                <div class="mega-col">
+                  <h5>Consumer Services</h5>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-plane"/></svg></span> Airport Transfer</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-car"/></svg></span> Airport Car Service</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-route"/></svg></span> City to City</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-badge"/></svg></span> Chauffeur Services</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-clock"/></svg></span> Hourly Hire</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-map"/></svg></span> City Tours</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-star"/></svg></span> Special Events</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-route"/></svg></span> Point to Point Car Service</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-car"/></svg></span> Luxury SUV Service</a>
+                </div>
+                <div class="mega-col">
+                  <h5>Business Services</h5>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-plane"/></svg></span> Corporate Airport Transfer</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-building"/></svg></span> Corporate Event Transportation</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-link"/></svg></span> Strategic Partnership Program</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-users"/></svg></span> Client &amp; Partner Travel</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-briefcase"/></svg></span> Meetings &amp; Offsite Events</a>
+                  <a class="mega-link" href="#reserve" role="menuitem"><span class="mi"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-badge"/></svg></span> Chauffeur Partner</a>
+                </div>
+              </div>
+
+              <div class="mega-side">
+                <div class="mega-side-block">
+                  <h5>Top Cities</h5>
+                  <div class="mega-cities">
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Miami</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Fort Lauderdale</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Orlando</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Palm Beach</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Tampa</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> New York</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Boston</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Dallas</a>
+                    <a href="#areas"><span class="mp"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><use href="#ic-pin"/></svg></span> Washington DC</a>
+                    <a class="view-all" href="#areas">View All &rarr;</a>
+                  </div>
+                </div>
+                <div class="mega-side-block">
+                  <h5>Airports</h5>
+                  <div class="mega-airports">
+                    <a href="#reserve">MIA</a>
+                    <a href="#reserve">FLL</a>
+                    <a href="#reserve">PBI</a>
+                    <a href="#reserve">OPF</a>
+                    <a href="#reserve">FXE</a>
+                    <a href="#reserve">TPA</a>
+                    <a href="#reserve">MCO</a>
+                    <a href="#reserve">JFK</a>
+                    <a href="#reserve">LGA</a>
+                    <a class="view-all" href="#reserve">View All</a>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mega-foot">
+                <span>Concierge transportation by <strong>B1 / BLACK ONE</strong></span>
+                <a class="btn btn-primary" href="#reserve" style="height:40px;padding:0 18px;">Reserve Now</a>
+              </div>
+            </div>
+          </div>
+        </div>
         <a class="link" href="#fleet">Fleet</a>
         <a class="link" href="#areas">Service Areas</a>
         <a class="link" href="#reserve">Reserve</a>
@@ -569,21 +724,11 @@
     <div class="hero-overlay"></div>
     <div class="wrap hero-inner">
       <div class="hero-copy">
-        <span class="eyebrow"><span class="dot"></span> Private &middot; Aviation &middot; South Florida</span>
         <h1>Ultra-Luxury Rentals &amp; Private Chauffeur Transportation</h1>
-        <p class="lead">Connecting elite clients, companies, hotels, aviation, events, and private travelers with exceptional vehicles and white-glove transportation across South Florida.</p>
+        <p class="lead">Exceptional vehicles and white-glove private transportation across South Florida.</p>
         <div class="hero-cta">
           <a class="btn btn-light" href="#reserve">Reserve Now</a>
           <a class="btn btn-outline-light" href="#fleet">Explore Fleet</a>
-          <a class="btn btn-wa" href="https://wa.me/13058501737" target="_blank" rel="noopener">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.515 5.26l-.999 3.648 3.973-1.039z"/></svg>
-            WhatsApp Concierge
-          </a>
-        </div>
-        <div class="hero-stats">
-          <div class="stat"><strong>24/7</strong><span>Concierge</span></div>
-          <div class="stat"><strong>White-Glove</strong><span>Service</span></div>
-          <div class="stat"><strong>South FL</strong><span>Coverage</span></div>
         </div>
       </div>
     </div>
@@ -1619,6 +1764,37 @@
           travelField.value = minutes + " min";
         });
       }
+    })();
+  </script>
+
+  <!-- ===== Services mega menu (hover desktop, accordion mobile, outside-click close) ===== -->
+  <script>
+    (function () {
+      var item = document.getElementById("servicesNav");
+      if (!item) return;
+      var trigger = item.querySelector(".nav-trigger");
+      var isDesktop = function () { return window.matchMedia("(min-width: 861px)").matches; };
+
+      function open() { item.classList.add("open"); trigger.setAttribute("aria-expanded", "true"); }
+      function close() { item.classList.remove("open"); trigger.setAttribute("aria-expanded", "false"); }
+
+      trigger.addEventListener("click", function (e) {
+        e.preventDefault();
+        item.classList.contains("open") ? close() : open();
+      });
+
+      // Desktop: open on hover, close when the mouse leaves
+      item.addEventListener("mouseenter", function () { if (isDesktop()) open(); });
+      item.addEventListener("mouseleave", function () { if (isDesktop()) close(); });
+
+      // Close when clicking outside, or pressing Escape
+      document.addEventListener("click", function (e) { if (!item.contains(e.target)) close(); });
+      document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
+
+      // Close after selecting an item
+      item.querySelectorAll(".mega a").forEach(function (link) {
+        link.addEventListener("click", function () { close(); });
+      });
     })();
   </script>
 </body>
