@@ -382,6 +382,57 @@
     }
     .wa-float:hover { background: #16864a; }
 
+    /* ---------- Reservation: stops, conditional fields, map ---------- */
+    .add-stop {
+      border: 1px dashed var(--stone-line); background: var(--off-white); color: var(--navy);
+      border-radius: 12px; min-height: 46px; font-size: 13px; font-weight: 700; letter-spacing: .3px;
+      cursor: pointer; transition: .15s ease;
+    }
+    .add-stop:hover { border-color: var(--celeste); background: var(--celeste-soft); }
+    .stop-row { position: relative; display: flex; align-items: center; gap: 8px; }
+    .stop-row input { flex: 1; }
+    .stop-row .remove-stop {
+      flex: none; width: 46px; min-height: 50px; border-radius: 12px; cursor: pointer;
+      border: 1px solid var(--stone-line); background: #fbfaf7; color: var(--muted); font-size: 18px; line-height: 1;
+    }
+    .stop-row .remove-stop:hover { border-color: var(--celeste); color: var(--navy); }
+
+    .cond-section {
+      display: none; border: 1px solid var(--stone-line); border-radius: 14px;
+      padding: 14px; background: var(--celeste-soft);
+    }
+    .cond-section.show { display: block; }
+    .cond-title { font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; color: var(--navy); margin-bottom: 10px; }
+    .cond-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .cond-grid .check {
+      grid-column: 1 / -1; display: flex; align-items: center; gap: 9px; min-height: 0;
+      font-size: 13px; font-weight: 600; color: var(--navy);
+    }
+    .cond-grid .check input { width: 18px; height: 18px; min-height: 0; flex: none; }
+
+    .map-wrap { display: grid; gap: 10px; }
+    .b1-map { width: 100%; height: 230px; border-radius: 16px; border: 1px solid var(--stone-line); overflow: hidden; background: #eef1f4; display: none; }
+    .b1-map.show { display: block; }
+    .map-fallback {
+      width: 100%; min-height: 96px; border-radius: 16px; border: 1px dashed var(--stone-line);
+      background: var(--off-white); color: var(--muted); font-size: 13px; line-height: 1.5;
+      display: grid; place-items: center; text-align: center; padding: 18px;
+    }
+    .route-info {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .route-info > div {
+      border: 1px solid var(--stone-line); border-radius: 14px; padding: 12px 14px; background: #fbfaf7;
+      display: grid; gap: 4px;
+    }
+    .route-label { font-size: 10.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+    .route-val { font-size: 18px; font-weight: 700; font-family: "Sora"; color: var(--navy); }
+    .price-note {
+      font-size: 12.5px; color: var(--muted); text-align: center;
+      border: 1px solid var(--stone-line); border-radius: 12px; padding: 10px 12px; background: var(--off-white);
+    }
+    .pac-container { z-index: 100000 !important; border-radius: 12px; margin-top: 4px; box-shadow: var(--shadow); }
+
     /* ---------- Responsive ---------- */
     @media (max-width: 1024px) {
       .booking-grid { grid-template-columns: 1fr; gap: 36px; }
@@ -518,10 +569,53 @@
           <input type="hidden" name="pricing_status" value="Pending final confirmation">
 
           <div class="step-section active form-grid" id="step1">
-            <input class="full" name="pickup_location" placeholder="Pickup Location *" required>
-            <input class="full" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" required>
+            <input class="full" name="pickup_location" id="pickupInput" placeholder="Pickup Location * — airport, port, hotel, FBO, address" autocomplete="off" required>
+
+            <div class="full" id="stopsContainer"></div>
+            <button class="full add-stop" type="button" id="addStopBtn">+ Add Stop</button>
+
+            <input class="full" name="dropoff_location" id="dropoffInput" placeholder="Drop-off Location *" autocomplete="off" required>
+
             <input name="pickup_date" type="date" required aria-label="Select A Date">
             <input name="pickup_time" type="time" required aria-label="Select A Time">
+
+            <!-- Airport details (shown when pickup is an airport / FBO) -->
+            <div class="full cond-section" id="airportFields">
+              <div class="cond-title">Airport / FBO details</div>
+              <div class="cond-grid">
+                <input name="airline" placeholder="Airline">
+                <input name="flight_number" placeholder="Flight number">
+                <input name="arrival_time" type="time" aria-label="Arrival time">
+                <label class="check"><input type="checkbox" name="meet_and_greet" value="Yes"> Meet &amp; greet requested</label>
+              </div>
+            </div>
+
+            <!-- Cruise port details (shown when pickup is a cruise port) -->
+            <div class="full cond-section" id="cruiseFields">
+              <div class="cond-title">Cruise port details</div>
+              <div class="cond-grid">
+                <input name="cruise_line" placeholder="Cruise line">
+                <input name="ship_name" placeholder="Ship name">
+                <input class="full" name="terminal" placeholder="Terminal (if known)">
+              </div>
+            </div>
+
+            <!-- Map preview + route -->
+            <div class="full map-wrap">
+              <div id="b1Map" class="b1-map" aria-label="Route preview map"></div>
+              <div id="mapFallback" class="map-fallback">Map preview available once Google Maps API key is connected.</div>
+              <div id="routeInfo" class="route-info" hidden>
+                <div><span class="route-label">Distance</span><span id="routeMiles" class="route-val">— miles</span></div>
+                <div><span class="route-label">Est. travel time</span><span id="routeTime" class="route-val">— min</span></div>
+              </div>
+              <p class="price-note">Final price confirmed by B1 concierge before dispatch.</p>
+            </div>
+
+            <!-- Hidden fields submitted with the reservation -->
+            <input type="hidden" name="stops" id="stopsField">
+            <input type="hidden" name="distance_miles" id="distanceField">
+            <input type="hidden" name="travel_time" id="travelTimeField">
+
             <button class="btn btn-primary block" type="button" id="continueToVehicle">Continue</button>
           </div>
 
@@ -977,6 +1071,204 @@
         result.textContent = "Connection error. Please call or WhatsApp B1 directly.";
       }
     });
+  </script>
+
+  <!-- ===== Reservation: Google Maps (autocomplete, route, distance) ===== -->
+  <script src="config.js"></script>
+  <script>
+    (function () {
+      var pickupInput   = document.getElementById("pickupInput");
+      var dropoffInput  = document.getElementById("dropoffInput");
+      var stopsContainer= document.getElementById("stopsContainer");
+      var addStopBtn    = document.getElementById("addStopBtn");
+      var mapEl         = document.getElementById("b1Map");
+      var mapFallback   = document.getElementById("mapFallback");
+      var routeInfo     = document.getElementById("routeInfo");
+      var routeMiles    = document.getElementById("routeMiles");
+      var routeTime     = document.getElementById("routeTime");
+      var airportFields = document.getElementById("airportFields");
+      var cruiseFields  = document.getElementById("cruiseFields");
+      var stopsField    = document.getElementById("stopsField");
+      var distanceField = document.getElementById("distanceField");
+      var travelField   = document.getElementById("travelTimeField");
+
+      // South Florida bias (Miami–Palm Beach corridor)
+      var SOFLO = { sw: { lat: 25.40, lng: -80.55 }, ne: { lat: 26.85, lng: -80.00 } };
+
+      var map, directionsService, directionsRenderer, autocompletePlaces = {};
+      var pickupPlace = null, dropoffPlace = null;
+      var stops = []; // { id, input, place }
+      var stopSeq = 0;
+
+      // ----- Add Stop (works even without Maps; autocomplete attaches if available) -----
+      addStopBtn.addEventListener("click", function () {
+        if (stops.length >= 3) return;
+        var id = ++stopSeq;
+        var row = document.createElement("div");
+        row.className = "stop-row";
+        var input = document.createElement("input");
+        input.type = "text";
+        input.placeholder = "Add stop (address, hotel, venue…)";
+        input.autocomplete = "off";
+        input.setAttribute("data-stop-id", id);
+        var remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "remove-stop";
+        remove.setAttribute("aria-label", "Remove stop");
+        remove.textContent = "\u00d7";
+        remove.addEventListener("click", function () {
+          stops = stops.filter(function (s) { return s.id !== id; });
+          row.remove();
+          syncStopsField();
+          recalcRoute();
+        });
+        row.appendChild(input);
+        row.appendChild(remove);
+        stopsContainer.appendChild(row);
+
+        var entry = { id: id, input: input, place: null };
+        stops.push(entry);
+
+        if (window.google && google.maps && google.maps.places) {
+          attachAutocomplete(input, function (place) {
+            entry.place = place;
+            syncStopsField();
+            recalcRoute();
+          });
+        }
+        input.addEventListener("input", syncStopsField);
+        if (stops.length >= 3) addStopBtn.style.display = "none";
+      });
+
+      function syncStopsField() {
+        stopsField.value = stops.map(function (s) { return s.input.value.trim(); })
+                                .filter(Boolean).join(" | ");
+      }
+
+      // ----- Maps loader -----
+      function showFallback() {
+        if (mapFallback) mapFallback.style.display = "grid";
+        if (mapEl) mapEl.classList.remove("show");
+      }
+
+      var key = window.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
+      if (!key) {
+        showFallback();
+      } else {
+        window.initB1Maps = initB1Maps;
+        var s = document.createElement("script");
+        s.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(key) +
+                "&libraries=places&callback=initB1Maps&loading=async";
+        s.async = true;
+        s.onerror = showFallback;
+        document.head.appendChild(s);
+      }
+
+      function initB1Maps() {
+        if (!window.google || !google.maps) { showFallback(); return; }
+        mapFallback.style.display = "none";
+        mapEl.classList.add("show");
+
+        map = new google.maps.Map(mapEl, {
+          center: { lat: 25.93, lng: -80.20 },
+          zoom: 9,
+          disableDefaultUI: true,
+          zoomControl: true,
+          gestureHandling: "cooperative",
+        });
+        directionsService = new google.maps.DirectionsService();
+        directionsRenderer = new google.maps.DirectionsRenderer({
+          map: map,
+          suppressMarkers: false,
+          polylineOptions: { strokeColor: "#0a1c30", strokeWeight: 5, strokeOpacity: 0.9 },
+        });
+
+        attachAutocomplete(pickupInput, function (place) {
+          pickupPlace = place;
+          handlePickupType(place);
+          recalcRoute();
+        });
+        attachAutocomplete(dropoffInput, function (place) {
+          dropoffPlace = place;
+          recalcRoute();
+        });
+        // attach to any stops already added before Maps finished loading
+        stops.forEach(function (entry) {
+          attachAutocomplete(entry.input, function (place) {
+            entry.place = place; syncStopsField(); recalcRoute();
+          });
+        });
+      }
+
+      function attachAutocomplete(input, onPlace) {
+        var bounds = new google.maps.LatLngBounds(SOFLO.sw, SOFLO.ne);
+        var ac = new google.maps.places.Autocomplete(input, {
+          bounds: bounds,
+          componentRestrictions: { country: "us" },
+          fields: ["place_id", "name", "formatted_address", "geometry", "types"],
+        });
+        ac.addListener("place_changed", function () {
+          var place = ac.getPlace();
+          if (place && place.formatted_address && place.name &&
+              place.formatted_address.indexOf(place.name) === -1) {
+            input.value = place.name + ", " + place.formatted_address;
+          }
+          onPlace(place);
+        });
+        autocompletePlaces[input.id || ("stop-" + (++stopSeq))] = ac;
+      }
+
+      // ----- Airport / cruise port detection -----
+      function handlePickupType(place) {
+        var types = (place && place.types) || [];
+        var name = ((place && place.name) || "").toLowerCase();
+        var addr = ((place && place.formatted_address) || "").toLowerCase();
+        var hay = name + " " + addr;
+
+        var isAirport = types.indexOf("airport") !== -1 ||
+                        /\bairport\b|\bfbo\b|executive airport|air base|seaplane/.test(hay);
+        var isCruise  = /port\s*miami|portmiami|port everglades|cruise|cruise port|cruise terminal|port of/.test(hay);
+
+        airportFields.classList.toggle("show", isAirport);
+        cruiseFields.classList.toggle("show", isCruise && !isAirport);
+      }
+
+      // ----- Route + distance/time -----
+      function recalcRoute() {
+        if (!directionsService || !pickupPlace || !dropoffPlace) return;
+        if (!pickupPlace.geometry || !dropoffPlace.geometry) return;
+
+        var waypoints = stops
+          .filter(function (s) { return s.place && s.place.geometry; })
+          .map(function (s) { return { location: s.place.geometry.location, stopover: true }; });
+
+        directionsService.route({
+          origin: pickupPlace.geometry.location,
+          destination: dropoffPlace.geometry.location,
+          waypoints: waypoints,
+          optimizeWaypoints: false,
+          travelMode: google.maps.TravelMode.DRIVING,
+        }, function (res, status) {
+          if (status !== "OK" || !res.routes.length) return;
+          directionsRenderer.setDirections(res);
+
+          var meters = 0, seconds = 0;
+          res.routes[0].legs.forEach(function (leg) {
+            meters += leg.distance.value;
+            seconds += leg.duration.value;
+          });
+          var miles = meters / 1609.344;
+          var minutes = Math.round(seconds / 60);
+
+          routeMiles.textContent = miles.toFixed(1) + " miles";
+          routeTime.textContent = minutes + " min";
+          routeInfo.hidden = false;
+
+          distanceField.value = miles.toFixed(1);
+          travelField.value = minutes + " min";
+        });
+      }
+    })();
   </script>
 </body>
 </html>
