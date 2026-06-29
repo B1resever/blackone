@@ -458,17 +458,17 @@
     .ts-v { font-size: 13.5px; font-weight: 600; color: var(--ink); }
 
     /* Vehicle grid (step 2) */
-    .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-height: 560px; overflow-y: auto; padding: 2px; }
+    .vehicle-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: start; gap: 12px; padding: 2px; }
     .vcard {
       border: 1px solid var(--stone-line); border-radius: 16px; background: #fbfaf7; overflow: hidden;
-      cursor: pointer; transition: .18s ease; display: flex; flex-direction: column;
+      cursor: pointer; transition: .18s ease;
     }
     .vcard:hover { border-color: var(--celeste); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
     .vcard.selected { border-color: var(--celeste); background: var(--celeste-soft); box-shadow: 0 0 0 2px rgba(79,143,192,.35); }
-    .vcard .vmedia { height: 165px; background: #eef0f2; display: grid; place-items: center; overflow: hidden; }
+    .vcard .vmedia { height: 150px; background: #eef0f2; overflow: hidden; }
     .vcard .vmedia.dark { background: #0a0a0a; }
-    .vcard .vmedia img { width: 100%; height: 100%; object-fit: contain; object-position: center; }
-    .vcard .vbody { padding: 12px 13px 13px; display: flex; flex-direction: column; gap: 7px; flex: 1; }
+    .vcard .vmedia img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    .vcard .vbody { padding: 12px 13px 13px; display: flex; flex-direction: column; gap: 7px; }
     .vcard .vtag { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--celeste); }
     .vcard h4 { font-size: 14px; line-height: 1.25; }
     .vcard .vspecs { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
