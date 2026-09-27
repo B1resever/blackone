@@ -2,6 +2,16 @@ import { getDbPool } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
+type DriverApplicationRow = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  vehicle_make: string;
+  vehicle_model: string;
+  status: string;
+  submitted_at: string;
+};
+
 type QueueRow = {
   public_code: string;
   ride_type: string;
@@ -25,7 +35,7 @@ function shortPlace(value: string) {
 async function getOperationsData() {
   const pool = getDbPool();
 
-  const [open, today, drivers, pending, queue] = await Promise.all([
+  const [open, today, drivers, pending, queue, driverApplications] = await Promise.all([
     pool.query(
       `select count(*)::int as count
        from reservations
@@ -68,7 +78,14 @@ async function getOperationsData() {
        where r.trip_status not in ('completed','cancelled')
        order by r.pickup_at asc
        limit 20`
-    )
+    ),
+    pool.query<DriverApplicationRow>(
+      `select id, first_name, last_name, vehicle_make, vehicle_model, status, submitted_at
+       from driver_applications
+       where status in ('pending','needs_update')
+       order by submitted_at asc
+       limit 20`
+    ).catch(() => ({ rows: [] as DriverApplicationRow[] }))
   ]);
 
   return {
@@ -78,7 +95,8 @@ async function getOperationsData() {
       ["Drivers online", String(drivers.rows[0]?.count ?? 0)],
       ["Pending assignments", String(pending.rows[0]?.count ?? 0)]
     ],
-    queue: queue.rows
+    queue: queue.rows,
+    driverApplications: driverApplications.rows
   };
 }
 
@@ -135,6 +153,19 @@ export default async function AdminPage() {
           <p>{connectionError}</p>
         </section>
       )}
+
+      <section className="panel">
+        <h2>Provider applications</h2>
+        {!connectionError && data?.driverApplications.length === 0 && (
+          <div className="queue"><span>No pending provider applications.</span><b>Ready</b></div>
+        )}
+        {data?.driverApplications.map((driver) => (
+          <div className="queue" key={driver.id}>
+            <span>{driver.first_name} {driver.last_name} · {driver.vehicle_make} {driver.vehicle_model}</span>
+            <b>{titleCase(driver.status)}</b>
+          </div>
+        ))}
+      </section>
 
       <section className="panel">
         <h2>Dispatch queue</h2>
