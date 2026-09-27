@@ -117,7 +117,8 @@ export default function BookingClient() {
           <button type="button" className="payButton" onClick={checkout} disabled={loading || !canCheckout}>Continue to secure payment</button>
         </div>
       )}
-      {quote && !canCheckout && <p className="formStatus">Add date, time and a valid email to continue to secure payment.</p>}\n      {status && <p className="formStatus">{status}</p>}
+      {quote && !canCheckout && <p className="formStatus">Add date, time and a valid email to continue to secure payment.</p>}
+      {status && <p className="formStatus">{status}</p>}
       <small>Pricing is calculated server-side. Final operational rules can still adjust vehicle class, waiting time, events and special requests.</small>
     </form>
   );
