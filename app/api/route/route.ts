@@ -6,6 +6,19 @@ const schema = z.object({
   destination: z.string().min(3).max(300)
 });
 
+const AIRPORT_ALIASES: Record<string, string> = {
+  MIA: "Miami International Airport, 2100 NW 42nd Ave, Miami, FL 33142",
+  FLL: "Fort Lauderdale-Hollywood International Airport, 100 Terminal Dr, Fort Lauderdale, FL 33315",
+  PBI: "Palm Beach International Airport, 1000 James L Turnage Blvd, West Palm Beach, FL 33415",
+  OPF: "Miami-Opa Locka Executive Airport, 14201 NW 42nd Ave, Opa-locka, FL 33054",
+  FXE: "Fort Lauderdale Executive Airport, 6000 NW 21st Terrace, Fort Lauderdale, FL 33309"
+};
+
+function normalizeLocation(value: string) {
+  const trimmed = value.trim();
+  return AIRPORT_ALIASES[trimmed.toUpperCase()] ?? trimmed;
+}
+
 function moneyToNumber(value: { units?: string; nanos?: number } | undefined) {
   if (!value) return 0;
   return Number(value.units ?? "0") + Number(value.nanos ?? 0) / 1_000_000_000;
@@ -26,8 +39,8 @@ export async function POST(request: Request) {
       "X-Goog-FieldMask": "routes.distanceMeters,routes.duration,routes.travelAdvisory.tollInfo.estimatedPrice"
     },
     body: JSON.stringify({
-      origin: { address: parsed.data.origin },
-      destination: { address: parsed.data.destination },
+      origin: { address: normalizeLocation(parsed.data.origin) },
+      destination: { address: normalizeLocation(parsed.data.destination) },
       travelMode: "DRIVE",
       routingPreference: "TRAFFIC_AWARE",
       extraComputations: ["TOLLS"],
@@ -43,7 +56,13 @@ export async function POST(request: Request) {
 
   const data = await response.json();
   const selected = data.routes?.[0];
-  if (!selected) return NextResponse.json({ error: "No driving route found" }, { status: 404 });
+  if (!selected) {
+    return NextResponse.json({
+      error: "No driving route found",
+      origin: normalizeLocation(parsed.data.origin),
+      destination: normalizeLocation(parsed.data.destination)
+    }, { status: 404 });
+  }
 
   const seconds = Number(String(selected.duration ?? "0s").replace("s", ""));
   const tolls = Array.isArray(selected.travelAdvisory?.tollInfo?.estimatedPrice)
