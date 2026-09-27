@@ -4,7 +4,7 @@ import { getDbPool } from "@/lib/db";
 export const runtime = "nodejs";
 
 const MAX_FILE_BYTES = 5 * 1024 * 1024;
-const allowedTypes = new Set(["image/jpeg","image/png","image/webp","application/pdf"]);
+const allowedTypes = new Set(["image/jpeg","image/png","image/webp","image/heic","image/heif","application/pdf"]);
 
 function textValue(form: FormData, key: string) {
   const value = form.get(key);
@@ -35,6 +35,10 @@ async function ensureSchema() {
       last_name text not null,
       phone text not null,
       email text not null,
+      address text not null,
+      city text not null,
+      state text not null,
+      zip text not null,
       license_number text not null,
       license_state text not null,
       license_expires date not null,
@@ -42,9 +46,14 @@ async function ensureSchema() {
       vehicle_model text not null,
       vehicle_year integer not null,
       vehicle_color text not null,
+      vehicle_vin text not null,
       vehicle_plate text not null,
+      vehicle_type text not null,
       vehicle_capacity integer not null,
+      registration_state text not null,
       registration_expires date not null,
+      insurance_company text not null,
+      insurance_policy text not null,
       insurance_expires date not null,
       status text not null default 'pending' check (status in ('pending','approved','rejected','needs_update')),
       submitted_at timestamptz not null default now(),
@@ -55,7 +64,7 @@ async function ensureSchema() {
     create table if not exists driver_application_documents (
       id uuid primary key default gen_random_uuid(),
       application_id uuid not null references driver_applications(id) on delete cascade,
-      document_type text not null check (document_type in ('provider_photo','vehicle_registration','insurance')),
+      document_type text not null check (document_type in ('provider_photo','license_front','license_back','vehicle_registration','insurance')),
       file_name text not null,
       content_type text not null,
       file_size integer not null,
@@ -64,6 +73,18 @@ async function ensureSchema() {
       unique(application_id, document_type)
     )
   `);
+  const alters = [
+    "alter table driver_applications add column if not exists address text",
+    "alter table driver_applications add column if not exists city text",
+    "alter table driver_applications add column if not exists state text",
+    "alter table driver_applications add column if not exists zip text",
+    "alter table driver_applications add column if not exists vehicle_vin text",
+    "alter table driver_applications add column if not exists vehicle_type text",
+    "alter table driver_applications add column if not exists registration_state text",
+    "alter table driver_applications add column if not exists insurance_company text",
+    "alter table driver_applications add column if not exists insurance_policy text"
+  ];
+  for (const sql of alters) await pool.query(sql);
   await pool.query("create index if not exists driver_applications_status_idx on driver_applications(status, submitted_at desc)");
 }
 
@@ -74,6 +95,10 @@ export async function POST(request: NextRequest) {
     const lastName = required(form,"lastName");
     const phone = required(form,"phone");
     const email = required(form,"email").toLowerCase();
+    const address = required(form,"address");
+    const city = required(form,"city");
+    const state = required(form,"state");
+    const zip = required(form,"zip");
     const licenseNumber = required(form,"licenseNumber");
     const licenseState = required(form,"licenseState");
     const licenseExpires = required(form,"licenseExpires");
@@ -81,17 +106,25 @@ export async function POST(request: NextRequest) {
     const model = required(form,"model");
     const year = Number(required(form,"year"));
     const color = required(form,"color");
+    const vin = required(form,"vin");
     const plate = required(form,"plate");
+    const vehicleType = required(form,"vehicleType");
     const capacity = Number(required(form,"capacity"));
+    const registrationState = required(form,"registrationState");
     const registrationExpires = required(form,"registrationExpires");
+    const insuranceCompany = required(form,"insuranceCompany");
+    const insurancePolicy = required(form,"insurancePolicy");
     const insuranceExpires = required(form,"insuranceExpires");
 
     if (!email.includes("@")) throw new Error("Enter a valid email");
     if (!Number.isInteger(year) || year < 2000 || year > 2030) throw new Error("Invalid vehicle year");
     if (!Number.isInteger(capacity) || capacity < 1 || capacity > 20) throw new Error("Invalid capacity");
+    if (vin.length < 11 || vin.length > 17) throw new Error("Invalid VIN");
 
-    const [photo,registration,insurance] = await Promise.all([
+    const [photo,licenseFront,licenseBack,registration,insurance] = await Promise.all([
       fileValue(form,"providerPhoto"),
+      fileValue(form,"licenseFront"),
+      fileValue(form,"licenseBack"),
       fileValue(form,"registrationFile"),
       fileValue(form,"insuranceFile")
     ]);
@@ -110,17 +143,19 @@ export async function POST(request: NextRequest) {
 
       const application = await client.query(
         `insert into driver_applications
-          (first_name,last_name,phone,email,license_number,license_state,license_expires,
-           vehicle_make,vehicle_model,vehicle_year,vehicle_color,vehicle_plate,vehicle_capacity,
-           registration_expires,insurance_expires)
-         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+          (first_name,last_name,phone,email,address,city,state,zip,license_number,license_state,license_expires,
+           vehicle_make,vehicle_model,vehicle_year,vehicle_color,vehicle_vin,vehicle_plate,vehicle_type,vehicle_capacity,
+           registration_state,registration_expires,insurance_company,insurance_policy,insurance_expires)
+         values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)
          returning id`,
-        [firstName,lastName,phone,email,licenseNumber,licenseState,licenseExpires,make,model,year,color,plate,capacity,registrationExpires,insuranceExpires]
+        [firstName,lastName,phone,email,address,city,state,zip,licenseNumber,licenseState,licenseExpires,make,model,year,color,vin,plate,vehicleType,capacity,registrationState,registrationExpires,insuranceCompany,insurancePolicy,insuranceExpires]
       );
       const id = application.rows[0].id;
 
       for (const [type,file] of [
         ["provider_photo",photo],
+        ["license_front",licenseFront],
+        ["license_back",licenseBack],
         ["vehicle_registration",registration],
         ["insurance",insurance]
       ] as const) {
