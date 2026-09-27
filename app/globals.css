@@ -15,3 +15,10 @@
 .successCard small{word-break:break-all;color:var(--muted)}
 .successCheck{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:#e8f5ed;color:#177245;font-size:28px;font-weight:800}
 .successCard .primary{justify-self:start}
+
+.placeField{position:relative}
+.placeSuggestions{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:0 16px 34px rgba(8,21,34,.16)}
+.placeSuggestions button{width:100%;min-height:58px!important;border-radius:0!important;background:#fff!important;color:var(--ink)!important;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 14px!important;border-bottom:1px solid #eee8df!important;text-align:left;font-weight:700!important}
+.placeSuggestions button:last-child{border-bottom:0!important}
+.placeSuggestions button small{font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap}
+.placeLoading{padding:12px 14px;font-size:12px;color:var(--muted)}
