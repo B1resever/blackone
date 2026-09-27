@@ -106,15 +106,15 @@ export default async function AdminPage() {
   return (
     <main className="portalPage adminBg">
       <header className="portalHeader">
-        <a href="/">← B1 Reserve</a>
-        <span>ONE OPERATIONS · PREVIEW</span>
+        <a href="/">← B1</a>
+        <span>B1 CONTROL CENTER · PREVIEW</span>
       </header>
 
       <section className="portalHero">
         <div>
           <div className="eyebrow dark">B1 COMMAND CENTER</div>
-          <h1>Reservations, dispatch and margins.</h1>
-          <p>Live operating dashboard for B1 staff.</p>
+          <h1>Live reservations, dispatch and closeout.</h1>
+          <p>Central operating view for B1 reservations, provider assignments and trip status.</p>
         </div>
         <a className="primary" href="/#book">New reservation</a>
       </section>
@@ -124,7 +124,7 @@ export default async function AdminPage() {
           <article className="metric" key={label}>
             <small>{label}</small>
             <strong>{value}</strong>
-            <span>{connectionError ? "Connection unavailable" : "Live from ONE database"}</span>
+            <span>{connectionError ? "Connection unavailable" : "Live from B1 database"}</span>
           </article>
         ))}
       </section>
