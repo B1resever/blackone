@@ -54,7 +54,7 @@ create table if not exists reservations (
   currency text not null default 'USD',
   payment_status text not null default 'unpaid' check (payment_status in ('unpaid','pending','paid','refunded','failed')),
   trip_status text not null default 'requested' check (trip_status in ('requested','quoted','confirmed','assigned','driver_en_route','arrived','passenger_onboard','completed','cancelled')),
-  stripe_checkout_session_id text,
+  stripe_checkout_session_id text unique,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
