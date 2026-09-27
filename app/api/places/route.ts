@@ -6,26 +6,32 @@ const schema = z.object({
 });
 
 const B1_KEY_LOCATIONS = [
-  "Miami International Airport",
-  "Fort Lauderdale-Hollywood International Airport",
-  "Palm Beach International Airport",
-  "Miami-Opa Locka Executive Airport",
-  "Fort Lauderdale Executive Airport",
-  "PortMiami",
-  "Port Everglades",
-  "Miami Beach Marina",
-  "Bayside Marketplace",
-  "Brickell",
-  "Miami Beach",
-  "Bal Harbour",
-  "Aventura",
-  "Sunny Isles Beach",
-  "Kaseya Center",
-  "Hard Rock Stadium",
-  "Miami Beach Convention Center",
-  "Broward County Convention Center",
-  "Seminole Hard Rock Hotel & Casino Hollywood",
-  "Fontainebleau Miami Beach"
+  { name: "Miami International Airport", aliases: ["mia", "miami airport"] },
+  { name: "Fort Lauderdale-Hollywood International Airport", aliases: ["fll", "fort lauderdale airport"] },
+  { name: "Palm Beach International Airport", aliases: ["pbi", "palm beach airport"] },
+  { name: "Miami-Opa Locka Executive Airport", aliases: ["opf", "opa locka airport"] },
+  { name: "Fort Lauderdale Executive Airport", aliases: ["fxe", "executive airport"] },
+  { name: "PortMiami", aliases: ["port miami", "miami cruise port"] },
+  { name: "Port Everglades", aliases: ["fort lauderdale port", "cruise port"] },
+  { name: "Miami Beach Marina", aliases: ["miami marina", "marina"] },
+  { name: "Bayside Marketplace", aliases: ["bayside"] },
+  { name: "Brickell", aliases: ["brickell"] },
+  { name: "Miami Beach", aliases: ["south beach", "sobe"] },
+  { name: "Bal Harbour", aliases: ["bal harbour"] },
+  { name: "Aventura", aliases: ["aventura"] },
+  { name: "Sunny Isles Beach", aliases: ["sunny isles"] },
+  { name: "Kendall", aliases: ["kendall"] },
+  { name: "Key Biscayne", aliases: ["key biscayne"] },
+  { name: "Key Largo", aliases: ["key largo"] },
+  { name: "Coral Gables", aliases: ["coral gables"] },
+  { name: "Coconut Grove", aliases: ["coconut grove", "the grove"] },
+  { name: "Doral", aliases: ["doral"] },
+  { name: "Kaseya Center", aliases: ["kaseya", "miami heat arena"] },
+  { name: "Hard Rock Stadium", aliases: ["hard rock stadium"] },
+  { name: "Miami Beach Convention Center", aliases: ["miami convention center"] },
+  { name: "Broward County Convention Center", aliases: ["broward convention center"] },
+  { name: "Seminole Hard Rock Hotel & Casino Hollywood", aliases: ["hard rock casino", "guitar hotel"] },
+  { name: "Fontainebleau Miami Beach", aliases: ["fontainebleau"] }
 ];
 
 export async function POST(request: NextRequest) {
@@ -42,12 +48,23 @@ export async function POST(request: NextRequest) {
 
     const input = parsed.data.input.trim();
 
+    const query = input.toLowerCase();
+
     const preferred = B1_KEY_LOCATIONS
-      .filter((name) => name.toLowerCase().includes(input.toLowerCase()))
-      .slice(0, 4)
-      .map((name) => ({
-        id: `b1:${name}`,
-        label: name,
+      .map((item) => {
+        const terms = [item.name, ...item.aliases].map((value) => value.toLowerCase());
+        const exact = terms.some((value) => value === query);
+        const starts = terms.some((value) => value.startsWith(query));
+        const wordStarts = terms.some((value) => value.split(/\\s+/).some((word) => word.startsWith(query)));
+        const score = exact ? 0 : starts ? 1 : wordStarts ? 2 : 99;
+        return { item, score };
+      })
+      .filter(({ score }) => score < 99)
+      .sort((a, b) => a.score - b.score || a.item.name.localeCompare(b.item.name))
+      .slice(0, 5)
+      .map(({ item }) => ({
+        id: `b1:${item.name}`,
+        label: item.name,
         source: "b1"
       }));
 
