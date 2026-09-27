@@ -52,7 +52,8 @@ export default function BookingClient() {
     } catch(error) { setStatus(error instanceof Error ? error.message : "Unable to open checkout."); setLoading(false); }
   }
 
-  const ready=pickup.trim().length>2 && destination.trim().length>2 && !!pickupDate && !!pickupTime && customerEmail.includes("@");
+  const canEstimate=pickup.trim().length>2 && destination.trim().length>2;
+  const canCheckout=!!pickupDate && !!pickupTime && customerEmail.includes("@");
 
   return (
     <form className="bookingCard" onSubmit={(e)=>e.preventDefault()}>
@@ -67,7 +68,7 @@ export default function BookingClient() {
         <label>Service<select value={rideType} onChange={(e)=>setRideType(e.target.value as RideType)}>{serviceOptions.map((item)=><option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
       </div>
       <label>Email<input value={customerEmail} onChange={(e)=>setCustomerEmail(e.target.value)} type="email" placeholder="you@example.com" /></label>
-      <button type="button" onClick={calculate} disabled={!ready || loading}>{loading ? "Calculating..." : "Calculate live trip estimate"}</button>
+      <button type="button" onClick={calculate} disabled={!canEstimate || loading}>{loading ? "Calculating..." : "Calculate live trip estimate"}</button>
       {route && quote && (
         <div className="quoteBox">
           <div><span>Distance</span><strong>{route.distanceMiles.toFixed(1)} mi</strong></div>
@@ -75,10 +76,10 @@ export default function BookingClient() {
           <div><span>Estimated tolls</span><strong>${quote.tolls.toFixed(2)}</strong></div>
           <div><span>Service fee</span><strong>${quote.serviceFee.toFixed(2)}</strong></div>
           <div className="quoteTotal"><span>Estimated total</span><strong>${quote.customerTotal.toFixed(2)}</strong></div>
-          <button type="button" className="payButton" onClick={checkout} disabled={loading}>Continue to secure payment</button>
+          <button type="button" className="payButton" onClick={checkout} disabled={loading || !canCheckout}>Continue to secure payment</button>
         </div>
       )}
-      {status && <p className="formStatus">{status}</p>}
+      {quote && !canCheckout && <p className="formStatus">Add date, time and a valid email to continue to secure payment.</p>}\n      {status && <p className="formStatus">{status}</p>}
       <small>Pricing is calculated server-side. Final operational rules can still adjust vehicle class, waiting time, events and special requests.</small>
     </form>
   );
