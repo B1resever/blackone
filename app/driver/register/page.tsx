@@ -4,10 +4,27 @@ import { FormEvent, useState } from "react";
 
 export default function DriverRegisterPage() {
   const [submitted,setSubmitted]=useState(false);
+  const [loading,setLoading]=useState(false);
+  const [status,setStatus]=useState("");
 
-  function submit(e:FormEvent<HTMLFormElement>){
+  async function submit(e:FormEvent<HTMLFormElement>){
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setStatus("");
+    setSubmitted(false);
+    try {
+      const form = new FormData(e.currentTarget);
+      const response = await fetch("/api/drivers/register",{method:"POST",body:form});
+      const data = await response.json();
+      if(!response.ok) throw new Error(data.error ?? "Unable to submit application");
+      setSubmitted(true);
+      setStatus("Application received. Status: Pending Review.");
+      e.currentTarget.reset();
+    } catch(error) {
+      setStatus(error instanceof Error ? error.message : "Unable to submit application.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -83,8 +100,9 @@ export default function DriverRegisterPage() {
             <h2>Submit for B1 review</h2>
             <p>Approved providers will become eligible to receive B1 trip opportunities through the configured communication channel.</p>
           </div>
-          <button className="primary" type="submit">Submit application</button>
-          {submitted && <p className="formStatus">Onboarding interface validated. Secure document storage and database activation are the next backend step.</p>}
+          <button className="primary" type="submit" disabled={loading}>{loading ? "Submitting..." : "Submit application"}</button>
+          {status && <p className="formStatus">{status}</p>}
+          {submitted && <p className="formStatus">B1 will review the provider profile before trip eligibility is activated.</p>}
         </section>
       </form>
     </main>
