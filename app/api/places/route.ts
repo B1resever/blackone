@@ -6,6 +6,7 @@ const schema = z.object({
 });
 
 const B1_KEY_LOCATIONS = [
+  { name: "Miami, FL", aliases: ["miami", "downtown miami"] },
   { name: "Miami International Airport", aliases: ["mia", "miami airport"] },
   { name: "Fort Lauderdale-Hollywood International Airport", aliases: ["fll", "fort lauderdale airport"] },
   { name: "Palm Beach International Airport", aliases: ["pbi", "palm beach airport"] },
@@ -52,11 +53,16 @@ export async function POST(request: NextRequest) {
 
     const preferred = B1_KEY_LOCATIONS
       .map((item) => {
-        const terms = [item.name, ...item.aliases].map((value) => value.toLowerCase());
-        const exact = terms.some((value) => value === query);
-        const starts = terms.some((value) => value.startsWith(query));
-        const wordStarts = terms.some((value) => value.split(/\\s+/).some((word) => word.startsWith(query)));
-        const score = exact ? 0 : starts ? 1 : wordStarts ? 2 : 99;
+        const name = item.name.toLowerCase();
+        const aliases = item.aliases.map((value) => value.toLowerCase());
+        const nameExact = name === query;
+        const aliasExact = aliases.some((value) => value === query);
+        const nameStarts = name.startsWith(query);
+        const aliasStarts = aliases.some((value) => value.startsWith(query));
+        const wordStarts = [name, ...aliases].some((value) =>
+          value.split(/\\s+/).some((word) => word.startsWith(query))
+        );
+        const score = nameExact ? 0 : aliasExact ? 1 : nameStarts ? 2 : aliasStarts ? 3 : wordStarts ? 4 : 99;
         return { item, score };
       })
       .filter(({ score }) => score < 99)
