@@ -1,21 +1,41 @@
-const tasks = [
-  ["Next trip", "MIA → Miami Beach", "Pickup 8:40 PM"],
-  ["Vehicle", "Cadillac Escalade ESV", "Unit B1-01"],
-  ["Trip status", "Assigned", "Awaiting driver confirmation"]
+const stages = [
+  ["01", "Trip Offer", "Review pickup area, destination, time, vehicle requirement and estimated payout."],
+  ["02", "Accept", "Accept the specific trip and confirm responsibility with the B1 verification code."],
+  ["03", "Location", "Location sharing becomes required only after the trip is Accepted & Verified."],
+  ["04", "Trip", "En Route → Arrived → Passenger Onboard → Completed."],
+  ["05", "Closeout", "Extras, incidents and final payout are resolved before the trip is Closed."]
 ];
 
 export default function DriverPage() {
   return (
     <main className="portalPage">
-      <header className="portalHeader"><a href="/">← B1 Reserve</a><span>DRIVER PORTAL · PREVIEW</span></header>
+      <header className="portalHeader"><a href="/">← B1</a><span>B1 DRIVER · PREVIEW</span></header>
       <section className="portalHero">
-        <div><div className="eyebrow dark">CHAUFFEUR OPERATIONS</div><h1>Your trips, route and payout in one place.</h1><p>Secure driver authentication and live dispatch will be connected in the next backend phase.</p></div>
-        <button>Go online</button>
+        <div>
+          <div className="eyebrow dark">INDEPENDENT TRANSPORTATION PROVIDER</div>
+          <h1>Offers, verified acceptance and trip execution.</h1>
+          <p>B1 provides the connection and operating workflow. Each accepted trip is confirmed individually by the independent transportation provider.</p>
+        </div>
       </section>
       <section className="dashboardGrid">
-        {tasks.map(([a,b,c]) => <article className="metric" key={a}><small>{a}</small><strong>{b}</strong><span>{c}</span></article>)}
+        <article className="metric"><small>Provider status</small><strong>Pending setup</strong><span>Trips are available only to approved providers.</span></article>
+        <article className="metric"><small>Trip offers</small><strong>WhatsApp</strong><span>B1 sends trip opportunities through the communication channel.</span></article>
+        <article className="metric"><small>Acceptance</small><strong>Code verified</strong><span>A trip is assigned only after B1 verification.</span></article>
+        <article className="metric"><small>Location</small><strong>Trip only</strong><span>Required after acceptance and during the active service.</span></article>
       </section>
-      <section className="panel"><h2>Driver workflow</h2><p>Accept trip → Navigate to pickup → Arrived → Passenger onboard → Complete trip → Earnings recorded.</p></section>
+      <section className="panel">
+        <h2>B1 Driver Flow</h2>
+        {stages.map(([n,title,copy]) => (
+          <div className="queue" key={n}>
+            <span><strong>{n} · {title}</strong><br />{copy}</span>
+            <b>Defined</b>
+          </div>
+        ))}
+      </section>
+      <section className="panel">
+        <h2>Cancellation rule</h2>
+        <p>A provider cancellation after verified acceptance requires a reason, is recorded in the provider profile and immediately returns the trip to dispatch for re-offer.</p>
+      </section>
     </main>
   );
 }
