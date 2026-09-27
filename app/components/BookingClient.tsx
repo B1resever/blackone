@@ -22,6 +22,9 @@ export default function BookingClient() {
   const [passengers,setPassengers]=useState("2");
   const [customerEmail,setCustomerEmail]=useState("");
   const [rideType,setRideType]=useState<RideType>("point_to_point");
+  const [medicalRide,setMedicalRide]=useState(false);
+  const [petFriendly,setPetFriendly]=useState(false);
+  const [specialNotes,setSpecialNotes]=useState("");
   const [route,setRoute]=useState<RouteResult|null>(null);
   const [quote,setQuote]=useState<Quote|null>(null);
   const [status,setStatus]=useState("");
@@ -77,7 +80,7 @@ export default function BookingClient() {
     if(!route || !quote) return;
     setLoading(true); setStatus("Opening secure payment...");
     try {
-      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail})});
+      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail,medicalRide,petFriendly,specialNotes})});
       const d=await r.json();
       if(!r.ok || !d.url) throw new Error(d.error ?? "Checkout is not available yet");
       window.location.href=d.url;
@@ -104,6 +107,12 @@ export default function BookingClient() {
       <div className="row">
         <label>Passengers<select value={passengers} onChange={(e)=>setPassengers(e.target.value)}><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select></label>
         <label>Service<select value={rideType} onChange={(e)=>setRideType(e.target.value as RideType)}>{serviceOptions.map((item)=><option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
+      </div>
+      <div className="tripNeeds">
+        <div className="tripNeedsTitle">Trip needs</div>
+        <label className="needOption"><input type="checkbox" checked={medicalRide} onChange={(e)=>setMedicalRide(e.target.checked)} /><span><strong>Medical / Healthcare Ride</strong><small>Clinic, treatment, research center, rehab or recurring medical visit.</small></span></label>
+        <label className="needOption"><input type="checkbox" checked={petFriendly} onChange={(e)=>setPetFriendly(e.target.checked)} /><span><strong>Pet Friendly</strong><small>Passenger will travel with a pet.</small></span></label>
+        {(medicalRide || petFriendly) && <label>Special instructions<textarea value={specialNotes} onChange={(e)=>setSpecialNotes(e.target.value)} maxLength={500} placeholder="Pickup instructions, mobility needs, pet size/carrier, recurring visit notes..." /></label>}
       </div>
       <label>Email<input value={customerEmail} onChange={(e)=>setCustomerEmail(e.target.value)} type="email" placeholder="you@example.com" /></label>
       <button type="button" onClick={calculate} disabled={!canEstimate || loading}>{loading ? "Calculating..." : "Calculate live trip estimate"}</button>
