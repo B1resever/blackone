@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type RideType = "point_to_point" | "airport" | "hourly" | "event";
 type RouteResult = { distanceMiles: number; durationMinutes: number; tolls: number };
 type Quote = { baseFare:number; distanceFare:number; timeFare:number; tolls:number; serviceFee:number; customerTotal:number };
+type PlaceSuggestion = { id:string; label:string; source:"b1"|"google" };
 
 const serviceOptions = [
   { value: "point_to_point", label: "Point to Point" },
@@ -25,6 +26,37 @@ export default function BookingClient() {
   const [quote,setQuote]=useState<Quote|null>(null);
   const [status,setStatus]=useState("");
   const [loading,setLoading]=useState(false);
+  const [activeField,setActiveField]=useState<"pickup"|"destination"|null>(null);
+  const [suggestions,setSuggestions]=useState<PlaceSuggestion[]>([]);
+  const [placesLoading,setPlacesLoading]=useState(false);
+
+
+  useEffect(()=>{
+    if(!activeField) { setSuggestions([]); return; }
+    const value=activeField==="pickup"?pickup:destination;
+    if(value.trim().length<2) { setSuggestions([]); return; }
+    const controller=new AbortController();
+    const timer=setTimeout(async()=>{
+      try{
+        setPlacesLoading(true);
+        const r=await fetch("/api/places",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({input:value}),signal:controller.signal});
+        const d=await r.json();
+        if(r.ok) setSuggestions(Array.isArray(d.suggestions)?d.suggestions:[]);
+      }catch(error){
+        if(!(error instanceof DOMException && error.name==="AbortError")) setSuggestions([]);
+      }finally{
+        setPlacesLoading(false);
+      }
+    },250);
+    return ()=>{ clearTimeout(timer); controller.abort(); };
+  },[pickup,destination,activeField]);
+
+  function choosePlace(label:string){
+    if(activeField==="pickup") setPickup(label);
+    if(activeField==="destination") setDestination(label);
+    setSuggestions([]);
+    setActiveField(null);
+  }
 
   async function calculate(){
     setLoading(true); setStatus(""); setQuote(null);
@@ -57,8 +89,14 @@ export default function BookingClient() {
 
   return (
     <form className="bookingCard" onSubmit={(e)=>e.preventDefault()}>
-      <label>Pickup<input value={pickup} onChange={(e)=>setPickup(e.target.value)} placeholder="Airport, hotel, FBO or address" /></label>
-      <label>Destination<input value={destination} onChange={(e)=>setDestination(e.target.value)} placeholder="Where are you going?" /></label>
+      <div className="placeField">
+        <label>Pickup<input value={pickup} onFocus={()=>setActiveField("pickup")} onChange={(e)=>{setPickup(e.target.value);setActiveField("pickup");}} placeholder="Airport, hotel, marina, venue or address" autoComplete="off" /></label>
+        {activeField==="pickup" && (placesLoading || suggestions.length>0) && <div className="placeSuggestions">{placesLoading && <div className="placeLoading">Searching B1 locations...</div>}{suggestions.map(item=><button type="button" key={item.id} onClick={()=>choosePlace(item.label)}><span>{item.label}</span><small>{item.source==="b1"?"B1 key location":"Google Places"}</small></button>)}</div>}
+      </div>
+      <div className="placeField">
+        <label>Destination<input value={destination} onFocus={()=>setActiveField("destination")} onChange={(e)=>{setDestination(e.target.value);setActiveField("destination");}} placeholder="Where are you going?" autoComplete="off" /></label>
+        {activeField==="destination" && (placesLoading || suggestions.length>0) && <div className="placeSuggestions">{placesLoading && <div className="placeLoading">Searching B1 locations...</div>}{suggestions.map(item=><button type="button" key={item.id} onClick={()=>choosePlace(item.label)}><span>{item.label}</span><small>{item.source==="b1"?"B1 key location":"Google Places"}</small></button>)}</div>}
+      </div>
       <div className="row">
         <label>Date<input value={pickupDate} onChange={(e)=>setPickupDate(e.target.value)} type="date" /></label>
         <label>Time<input value={pickupTime} onChange={(e)=>setPickupTime(e.target.value)} type="time" /></label>
