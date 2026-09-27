@@ -14,7 +14,10 @@ const schema = z.object({
   pickupDate: z.string().min(1),
   pickupTime: z.string().min(1),
   passengers: z.string().min(1).max(20),
-  customerEmail: z.string().email()
+  customerEmail: z.string().email(),
+  medicalRide: z.boolean().optional().default(false),
+  petFriendly: z.boolean().optional().default(false),
+  specialNotes: z.string().max(500).optional().default("")
 });
 
 export async function POST(request: Request) {
@@ -54,7 +57,10 @@ export async function POST(request: Request) {
         distanceMiles: String(parsed.data.distanceMiles),
         durationMinutes: String(parsed.data.durationMinutes),
         tolls: String(parsed.data.tolls ?? 0),
-        quotedTotal: String(quote.customerTotal)
+        quotedTotal: String(quote.customerTotal),
+        medicalRide: String(parsed.data.medicalRide),
+        petFriendly: String(parsed.data.petFriendly),
+        specialNotes: parsed.data.specialNotes.slice(0, 490)
       },
       success_url: appUrl + "/success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: appUrl + "/#book"
