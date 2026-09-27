@@ -30,3 +30,18 @@
 .needOption span{display:grid;gap:3px}
 .needOption small{font-size:11px;color:var(--muted);font-weight:500;line-height:1.35}
 .tripNeeds textarea{width:100%;min-height:86px;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;resize:vertical;font:inherit}
+
+.onboardingForm{padding-bottom:60px}
+.onboardingSection{display:grid;gap:18px}
+.onboardingSection h2,.onboardingSubmit h2{margin:0}
+.onboardingGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.onboardingGrid label{display:grid;gap:7px;font-size:12px;font-weight:700}
+.onboardingGrid input{width:100%;min-height:50px;border:1px solid var(--line);border-radius:12px;padding:0 13px;background:#fbfaf7}
+.onboardingGrid input[type="file"]{padding:13px}
+.agreementBox{display:grid;gap:12px}
+.agreementCheck{display:flex!important;align-items:flex-start;gap:10px;font-size:13px!important;font-weight:500!important;line-height:1.5}
+.agreementCheck input{margin-top:3px}
+.onboardingSubmit{display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px}
+.onboardingSubmit p{margin:0;color:var(--muted);line-height:1.6}
+.onboardingSubmit .formStatus{grid-column:1/-1}
+@media(max-width:700px){.onboardingGrid,.onboardingSubmit{grid-template-columns:1fr}}
