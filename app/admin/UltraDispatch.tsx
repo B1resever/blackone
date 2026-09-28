@@ -28,6 +28,17 @@ export type UltraFleetVehicle = {
   color:string;
   plate:string;
   capacity:number;
+  luggage_capacity?:number|null;
+  hourly_rate?:number|null;
+  minimum_hours?:number|null;
+  day_rate?:number|null;
+  included_miles?:number|null;
+  extra_mile_rate?:number|null;
+  waiting_hourly_rate?:number|null;
+  airport_base_rate?:number|null;
+  meet_greet_rate?:number|null;
+  gratuity_percent?:number|null;
+  cancellation_hours?:number|null;
 };
 
 export default function UltraDispatch({
