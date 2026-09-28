@@ -1,3 +1,4 @@
+import DriverOffers from "@/app/driver/DriverOffers";
 const stages = [
   ["01", "Trip Offer", "Review pickup area, destination, time, vehicle requirement and estimated payout."],
   ["02", "Accept", "Accept the specific trip and confirm responsibility with the B1 verification code."],
@@ -23,6 +24,7 @@ export default function DriverPage() {
         <article className="metric"><small>Acceptance</small><strong>Code verified</strong><span>A trip is assigned only after B1 verification.</span></article>
         <article className="metric"><small>Location</small><strong>Trip only</strong><span>Required after acceptance and during the active service.</span></article>
       </section>
+      <DriverOffers />
       <section className="panel">
         <h2>B1 Driver Flow</h2>
         {stages.map(([n,title,copy]) => (
