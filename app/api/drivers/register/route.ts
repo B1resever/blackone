@@ -121,11 +121,11 @@ export async function POST(request: NextRequest) {
 
     if (!email.includes("@")) throw new Error("Enter a valid email");
     if (!Number.isInteger(year) || year < 2000 || year > 2030) throw new Error("Invalid vehicle year");
-    if (!["comfort","xl","black"].includes(vehicleClass)) throw new Error("Invalid B1 vehicle class");
+    if (!["comfort","xl","suv"].includes(vehicleClass)) throw new Error("Invalid B1 vehicle class");
     if (!Number.isInteger(capacity) || capacity < 1 || capacity > 20) throw new Error("Invalid capacity");
     if (vehicleClass === "xl" && capacity < 7) throw new Error("B1 XL requires at least 7 passenger seats");
-    if (vehicleClass === "black" && vehicleType !== "suv" && vehicleType !== "luxury_suv") throw new Error("B1 Black is SUV only");
-    if (vehicleClass === "black" && (year < 2022 || year > 2026)) throw new Error("B1 Black requires model year 2022–2026");
+    if (vehicleClass === "suv" && vehicleType !== "suv" && vehicleType !== "luxury_suv") throw new Error("B1 SUV is SUV only");
+    if (vehicleClass === "suv" && (year < 2022 || year > 2026)) throw new Error("B1 SUV requires model year 2022–2026");
     if (vin.length < 11 || vin.length > 17) throw new Error("Invalid VIN");
 
     const [photo,licenseFront,licenseBack,registration,insurance] = await Promise.all([
