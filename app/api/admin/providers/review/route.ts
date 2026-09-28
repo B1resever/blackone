@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
 
         await client.query(
           `insert into vehicles (driver_id,make,model,year,color,plate,capacity,class,active)
-           values ($1,$2,$3,$4,$5,$6,$7,'private_transportation',true)`,
-          [driver.rows[0].id,row.vehicle_make,row.vehicle_model,row.vehicle_year,row.vehicle_color,row.vehicle_plate,row.vehicle_capacity]
+           values ($1,$2,$3,$4,$5,$6,$7,$8,true)`,
+          [driver.rows[0].id,row.vehicle_make,row.vehicle_model,row.vehicle_year,row.vehicle_color,row.vehicle_plate,row.vehicle_capacity,row.vehicle_class ?? "comfort"]
         );
 
         await client.query(
