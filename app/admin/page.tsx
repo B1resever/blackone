@@ -1,3 +1,4 @@
+import UltraRequests, { type UltraRequest } from "@/app/admin/UltraRequests";
 import ProviderApplications from "@/app/admin/ProviderApplications";
 import { getDbPool } from "@/lib/db";
 
@@ -12,6 +13,8 @@ type DriverApplicationRow = {
   status: string;
   submitted_at: string;
 };
+
+type UltraRequestRow = UltraRequest;
 
 type QueueRow = {
   public_code: string;
@@ -36,7 +39,7 @@ function shortPlace(value: string) {
 async function getOperationsData() {
   const pool = getDbPool();
 
-  const [open, today, drivers, pending, queue, driverApplications] = await Promise.all([
+  const [open, today, drivers, pending, queue, driverApplications, ultraRequests] = await Promise.all([
     pool.query(
       `select count(*)::int as count
        from reservations
@@ -86,7 +89,16 @@ async function getOperationsData() {
        where status in ('pending','needs_update')
        order by submitted_at asc
        limit 20`
-    ).catch(() => ({ rows: [] as DriverApplicationRow[] }))
+    ).catch(() => ({ rows: [] as DriverApplicationRow[] })),
+    pool.query<UltraRequestRow>(
+      `select id, public_code, service_type, vehicle_class, pickup, destination,
+              service_date::text, start_time::text, reserved_hours, passengers, luggage,
+              customer_name, phone, email, status
+       from ultra_reservation_requests
+       where status in ('quote_requested','quoted')
+       order by created_at desc
+       limit 25`
+    ).catch(() => ({ rows: [] as UltraRequestRow[] }))
   ]);
 
   return {
@@ -97,7 +109,8 @@ async function getOperationsData() {
       ["Pending assignments", String(pending.rows[0]?.count ?? 0)]
     ],
     queue: queue.rows,
-    driverApplications: driverApplications.rows
+    driverApplications: driverApplications.rows,
+    ultraRequests: ultraRequests.rows
   };
 }
 
@@ -158,6 +171,11 @@ export default async function AdminPage() {
       <section className="panel">
         <h2>Provider applications</h2>
         <ProviderApplications applications={data?.driverApplications ?? []} />
+      </section>
+
+      <section className="panel">
+        <h2>Ultra Exclusive requests</h2>
+        <UltraRequests requests={data?.ultraRequests ?? []} />
       </section>
 
       <section className="panel">
