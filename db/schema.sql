@@ -83,3 +83,32 @@ create index if not exists reservations_pickup_at_idx on reservations(pickup_at)
 create index if not exists reservations_trip_status_idx on reservations(trip_status);
 create index if not exists drivers_status_online_idx on drivers(status, online);
 create index if not exists reservation_events_reservation_id_idx on reservation_events(reservation_id);
+
+
+-- B1 provider system fee: $25/month.
+-- Providers may pay upfront or contribute 5% from completed trip payouts.
+-- Per-trip contributions first satisfy the current month, then build up to one $25 credit for the following month.
+create table if not exists driver_billing_accounts (
+  driver_id uuid primary key references drivers(id) on delete cascade,
+  collection_method text not null default 'per_trip' check (collection_method in ('upfront','per_trip')),
+  monthly_fee numeric(10,2) not null default 25.00,
+  trip_percentage numeric(6,5) not null default 0.05000,
+  current_service_month date not null default date_trunc('month', now())::date,
+  current_month_paid numeric(10,2) not null default 0,
+  next_month_credit numeric(10,2) not null default 0,
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists driver_billing_ledger (
+  id bigserial primary key,
+  driver_id uuid not null references drivers(id) on delete cascade,
+  reservation_id uuid references reservations(id) on delete set null,
+  entry_type text not null check (entry_type in ('monthly_charge','upfront_payment','trip_withholding','credit_rollover','adjustment')),
+  amount numeric(10,2) not null,
+  service_month date not null,
+  details jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists driver_billing_ledger_driver_idx
+  on driver_billing_ledger(driver_id, service_month, created_at);
