@@ -3,9 +3,16 @@
 import { useEffect, useState } from "react";
 
 type RideType = "point_to_point" | "airport" | "hourly" | "event";
+type VehicleClass = "comfort" | "xl" | "black";
 type RouteResult = { distanceMiles: number; durationMinutes: number; tolls: number };
 type Quote = { baseFare:number; distanceFare:number; timeFare:number; tolls:number; serviceFee:number; customerTotal:number };
 type PlaceSuggestion = { id:string; label:string; source:"b1"|"google" };
+
+const vehicleOptions = [
+  { value: "comfort", label: "Comfort", note: "Luxury vehicles approved by B1" },
+  { value: "xl", label: "XL", note: "7 seats + luggage space" },
+  { value: "black", label: "Black", note: "SUV only · model years 2022–2026" }
+] as const;
 
 const serviceOptions = [
   { value: "point_to_point", label: "Point to Point" },
@@ -22,6 +29,7 @@ export default function BookingClient() {
   const [passengers,setPassengers]=useState("2");
   const [customerEmail,setCustomerEmail]=useState("");
   const [rideType,setRideType]=useState<RideType>("point_to_point");
+  const [vehicleClass,setVehicleClass]=useState<VehicleClass>("comfort");
   const [medicalRide,setMedicalRide]=useState(false);
   const [petFriendly,setPetFriendly]=useState(false);
   const [specialNotes,setSpecialNotes]=useState("");
@@ -68,7 +76,7 @@ export default function BookingClient() {
       const rd=await rr.json();
       if(!rr.ok) throw new Error(rd.error ?? "Route calculation failed");
       const routeResult:RouteResult=rd; setRoute(routeResult);
-      const qr=await fetch("/api/quote",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,distanceMiles:routeResult.distanceMiles,durationMinutes:routeResult.durationMinutes,tolls:routeResult.tolls})});
+      const qr=await fetch("/api/quote",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,vehicleClass,distanceMiles:routeResult.distanceMiles,durationMinutes:routeResult.durationMinutes,tolls:routeResult.tolls})});
       const qd=await qr.json();
       if(!qr.ok) throw new Error(qd.error ?? "Quote calculation failed");
       setQuote(qd.quote); setStatus("Live trip estimate calculated.");
@@ -80,7 +88,7 @@ export default function BookingClient() {
     if(!route || !quote) return;
     setLoading(true); setStatus("Opening secure payment...");
     try {
-      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail,medicalRide,petFriendly,specialNotes})});
+      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,vehicleClass,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail,medicalRide,petFriendly,specialNotes})});
       const d=await r.json();
       if(!r.ok || !d.url) throw new Error(d.error ?? "Checkout is not available yet");
       window.location.href=d.url;
@@ -105,9 +113,10 @@ export default function BookingClient() {
         <label>Time<input value={pickupTime} onChange={(e)=>setPickupTime(e.target.value)} type="time" /></label>
       </div>
       <div className="row">
-        <label>Passengers<select value={passengers} onChange={(e)=>setPassengers(e.target.value)}><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6+</option></select></label>
+        <label>Passengers<select value={passengers} onChange={(e)=>setPassengers(e.target.value)}><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option></select></label>
         <label>Service<select value={rideType} onChange={(e)=>setRideType(e.target.value as RideType)}>{serviceOptions.map((item)=><option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
       </div>
+      <label>Vehicle class<select value={vehicleClass} onChange={(e)=>setVehicleClass(e.target.value as VehicleClass)}>{vehicleOptions.map((item)=><option key={item.value} value={item.value}>{item.label} · {item.note}</option>)}</select></label>
       <div className="tripNeeds">
         <div className="tripNeedsTitle">Trip needs</div>
         <label className="needOption"><input type="checkbox" checked={medicalRide} onChange={(e)=>setMedicalRide(e.target.checked)} /><span><strong>Medical / Healthcare Ride</strong><small>Clinic, treatment, research center, rehab or recurring medical visit.</small></span></label>
