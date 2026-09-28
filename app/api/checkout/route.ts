@@ -5,6 +5,7 @@ import { getStripe } from "@/lib/stripe";
 
 const schema = z.object({
   rideType: z.enum(["point_to_point", "airport", "hourly", "event"]),
+  vehicleClass: z.enum(["comfort","xl","black"]),
   distanceMiles: z.number().min(0).max(1500),
   durationMinutes: z.number().min(0).max(1440),
   tolls: z.number().min(0).max(500).optional(),
@@ -42,13 +43,14 @@ export async function POST(request: Request) {
           currency: "usd",
           unit_amount: Math.round(quote.customerTotal * 100),
           product_data: {
-            name: "B1 Reserve Private Transportation",
+            name: `B1 ${parsed.data.vehicleClass.toUpperCase()} Transportation`,
             description: parsed.data.pickup + " -> " + parsed.data.destination
           }
         }
       }],
       metadata: {
         rideType: parsed.data.rideType,
+        vehicleClass: parsed.data.vehicleClass,
         pickup: parsed.data.pickup.slice(0, 490),
         destination: parsed.data.destination.slice(0, 490),
         pickupDate: parsed.data.pickupDate,
