@@ -1,3 +1,5 @@
+import UltraDispatch, { type UltraConfirmed, type UltraDriver, type UltraFleetVehicle } from "@/app/admin/UltraDispatch";
+import UltraFleet from "@/app/admin/UltraFleet";
 import UltraRequests, { type UltraRequest } from "@/app/admin/UltraRequests";
 import ProviderApplications from "@/app/admin/ProviderApplications";
 import { getDbPool } from "@/lib/db";
@@ -15,6 +17,9 @@ type DriverApplicationRow = {
 };
 
 type UltraRequestRow = UltraRequest;
+type UltraConfirmedRow = UltraConfirmed;
+type UltraDriverRow = UltraDriver;
+type UltraFleetVehicleRow = UltraFleetVehicle;
 
 type QueueRow = {
   public_code: string;
@@ -39,7 +44,7 @@ function shortPlace(value: string) {
 async function getOperationsData() {
   const pool = getDbPool();
 
-  const [open, today, drivers, pending, queue, driverApplications, ultraRequests] = await Promise.all([
+  const [open, today, drivers, pending, queue, driverApplications, ultraRequests, ultraConfirmed, ultraDrivers, ultraFleet] = await Promise.all([
     pool.query(
       `select count(*)::int as count
        from reservations
@@ -98,7 +103,28 @@ async function getOperationsData() {
        where status in ('quote_requested','quoted')
        order by created_at desc
        limit 25`
-    ).catch(() => ({ rows: [] as UltraRequestRow[] }))
+    ).catch(() => ({ rows: [] as UltraRequestRow[] })),
+    pool.query<UltraConfirmedRow>(
+      `select r.id,r.public_code,r.service_type,r.vehicle_class,r.pickup,r.destination,
+              r.service_date::text,r.start_time::text,r.customer_name,r.status
+       from ultra_reservation_requests r
+       left join ultra_assignments a on a.request_id=r.id
+       where r.status='confirmed' and a.id is null
+       order by r.service_date asc, r.start_time asc
+       limit 25`
+    ).catch(() => ({ rows: [] as UltraConfirmedRow[] })),
+    pool.query<UltraDriverRow>(
+      `select id, trim(concat(first_name,' ',last_name)) as name
+       from drivers
+       where status='approved'
+       order by first_name,last_name`
+    ).catch(() => ({ rows: [] as UltraDriverRow[] })),
+    pool.query<UltraFleetVehicleRow>(
+      `select id,make,model,year,color,plate,capacity
+       from ultra_fleet_vehicles
+       where active=true
+       order by year desc,make,model`
+    ).catch(() => ({ rows: [] as UltraFleetVehicleRow[] }))
   ]);
 
   return {
@@ -110,7 +136,10 @@ async function getOperationsData() {
     ],
     queue: queue.rows,
     driverApplications: driverApplications.rows,
-    ultraRequests: ultraRequests.rows
+    ultraRequests: ultraRequests.rows,
+    ultraConfirmed: ultraConfirmed.rows,
+    ultraDrivers: ultraDrivers.rows,
+    ultraFleet: ultraFleet.rows
   };
 }
 
@@ -176,6 +205,16 @@ export default async function AdminPage() {
       <section className="panel">
         <h2>Ultra Exclusive requests</h2>
         <UltraRequests requests={data?.ultraRequests ?? []} />
+      </section>
+
+      <section className="panel">
+        <h2>Ultra Exclusive fleet</h2>
+        <UltraFleet initialVehicles={data?.ultraFleet ?? []} />
+      </section>
+
+      <section className="panel">
+        <h2>Ultra Exclusive dispatch</h2>
+        <UltraDispatch reservations={data?.ultraConfirmed ?? []} drivers={data?.ultraDrivers ?? []} vehicles={data?.ultraFleet ?? []} />
       </section>
 
       <section className="panel">
