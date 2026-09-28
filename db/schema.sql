@@ -43,6 +43,7 @@ create table if not exists reservations (
   public_code text not null unique,
   customer_id uuid references customers(id) on delete set null,
   ride_type text not null,
+  vehicle_class text not null default 'comfort',
   pickup_address text not null,
   destination_address text not null,
   pickup_at timestamptz not null,
