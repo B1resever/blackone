@@ -4,12 +4,11 @@ import { calculateQuote } from "@/lib/pricing";
 import { getStripe } from "@/lib/stripe";
 
 const schema = z.object({
-  rideType: z.enum(["point_to_point", "airport", "hourly", "event"]),
-  vehicleClass: z.enum(["comfort","xl","black"]),
+  rideType: z.enum(["point_to_point", "airport"]),
+  vehicleClass: z.enum(["comfort","xl","suv"]),
   distanceMiles: z.number().min(0).max(1500),
   durationMinutes: z.number().min(0).max(1440),
   tolls: z.number().min(0).max(500).optional(),
-  hourlyHours: z.number().min(1).max(24).optional(),
   pickup: z.string().min(3).max(300),
   destination: z.string().min(3).max(300),
   pickupDate: z.string().min(1),
