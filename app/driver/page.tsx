@@ -15,7 +15,7 @@ export default function DriverPage() {
           <div className="eyebrow dark">INDEPENDENT TRANSPORTATION PROVIDER</div>
           <h1>Offers, verified acceptance and trip execution.</h1>
           <p>B1 provides the connection and operating workflow. Each accepted trip is confirmed individually by the independent transportation provider.</p>
-        </div><a className="primary" href="/driver/register">Register as a provider</a>
+        </div><div className="heroActions"><a className="primary" href="/driver/login">Driver login</a><a className="secondary" href="/driver/register">Register as a provider</a></div>
       </section>
       <section className="dashboardGrid">
         <article className="metric"><small>Provider status</small><strong>Pending setup</strong><span>Trips are available only to approved providers.</span></article>
