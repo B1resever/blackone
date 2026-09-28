@@ -141,3 +141,22 @@
 .ultraSubmit{justify-self:start;background:#fff!important;color:#0b1d31!important}
 @media(max-width:900px){.ultraVehicleGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.ultraVehicleGrid{grid-template-columns:1fr}}
+
+.ultraAdminList{display:grid;gap:14px}
+.ultraAdminCard{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbfaf7}
+.ultraAdminSummary{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.ultraAdminSummary>div:first-child{display:grid;gap:5px}
+.ultraAdminSummary small{font-size:11px;color:#4c7ea4;font-weight:800;text-transform:uppercase;letter-spacing:.6px}
+.ultraAdminSummary strong{font-size:18px}
+.ultraAdminSummary span{font-size:13px;color:var(--muted)}
+.ultraAdminActions{display:flex;align-items:center;gap:10px}
+.ultraAdminActions b{font-size:11px;color:#4c7ea4;text-transform:uppercase}
+.ultraAdminActions button,.ultraQuoteForm button{border:0;border-radius:999px;background:var(--navy);color:#fff;padding:10px 14px;font-weight:800}
+.ultraQuoteForm{display:grid;gap:14px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.ultraQuoteGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ultraQuoteGrid label,.ultraQuoteNote{display:grid;gap:6px;font-size:12px;font-weight:800}
+.ultraQuoteGrid input,.ultraQuoteNote textarea{border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff;font:inherit}
+.ultraQuoteNote textarea{min-height:84px;resize:vertical}
+.ultraQuoteForm button{justify-self:start}
+@media(max-width:800px){.ultraQuoteGrid{grid-template-columns:1fr 1fr}.ultraAdminSummary{flex-direction:column}.ultraAdminActions{width:100%;justify-content:space-between}}
+@media(max-width:520px){.ultraQuoteGrid{grid-template-columns:1fr}}
