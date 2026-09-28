@@ -120,7 +120,9 @@ async function getOperationsData() {
        order by first_name,last_name`
     ).catch(() => ({ rows: [] as UltraDriverRow[] })),
     pool.query<UltraFleetVehicleRow>(
-      `select id,make,model,year,color,plate,capacity
+      `select id,make,model,year,color,plate,capacity,luggage_capacity,
+              hourly_rate,minimum_hours,day_rate,included_miles,extra_mile_rate,
+              waiting_hourly_rate,airport_base_rate,meet_greet_rate,gratuity_percent,cancellation_hours
        from ultra_fleet_vehicles
        where active=true
        order by year desc,make,model`
