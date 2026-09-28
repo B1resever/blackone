@@ -4,6 +4,7 @@ import { calculateQuote } from "@/lib/pricing";
 
 const schema = z.object({
   rideType: z.enum(["point_to_point", "airport", "hourly", "event"]),
+  vehicleClass: z.enum(["comfort","xl","black"]),
   distanceMiles: z.number().min(0).max(1500),
   durationMinutes: z.number().min(0).max(1440),
   tolls: z.number().min(0).max(500).optional(),
