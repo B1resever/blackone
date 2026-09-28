@@ -180,3 +180,23 @@
 .ultraPayBox .primary{justify-self:start}
 @media(max-width:900px){.ultraQuoteFacts{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){.ultraQuoteFacts{grid-template-columns:1fr}.ultraRouteBox{align-items:flex-start;flex-direction:column}}
+
+.ultraRateCard{border:1px solid var(--line);border-radius:16px;padding:16px;background:#fbfaf7}
+.ultraRateSummary{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}
+.ultraRateSummary>div:first-child{display:grid;gap:5px}
+.ultraRateSummary small{font-size:10px;color:#4c7ea4;font-weight:800;letter-spacing:.7px}
+.ultraRateSummary strong{font-size:18px}
+.ultraRateSummary span{font-size:13px;color:var(--muted)}
+.ultraRateQuick{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.ultraRateQuick span{display:grid;gap:3px;min-width:72px}
+.ultraRateQuick b{font-size:14px}
+.ultraRateQuick button,.ultraRateForm button,.ultraFleetForm button{border:0;border-radius:999px;background:var(--navy);color:#fff;padding:10px 14px;font-weight:800}
+.ultraRateForm{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.ultraRateForm label{display:grid;gap:6px;font-size:11px;font-weight:800}
+.ultraRateForm input,.ultraFleetForm input{min-height:42px;border:1px solid var(--line);border-radius:10px;padding:0 10px;background:#fff}
+.ultraRateNote{grid-column:1/-1;font-size:12px;color:var(--muted);line-height:1.5}
+.ultraRateForm button{justify-self:start}
+.ultraFleetForm{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
+.ultraFleetForm button{min-height:42px}
+@media(max-width:900px){.ultraRateForm,.ultraFleetForm{grid-template-columns:1fr 1fr}.ultraRateSummary{flex-direction:column}}
+@media(max-width:560px){.ultraRateForm,.ultraFleetForm{grid-template-columns:1fr}.ultraRateQuick{width:100%}}
