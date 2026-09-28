@@ -1,3 +1,4 @@
+import ProviderApplications from "@/app/admin/ProviderApplications";
 import { getDbPool } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -156,15 +157,7 @@ export default async function AdminPage() {
 
       <section className="panel">
         <h2>Provider applications</h2>
-        {!connectionError && data?.driverApplications.length === 0 && (
-          <div className="queue"><span>No pending provider applications.</span><b>Ready</b></div>
-        )}
-        {data?.driverApplications.map((driver) => (
-          <div className="queue" key={driver.id}>
-            <span>{driver.first_name} {driver.last_name} · {driver.vehicle_make} {driver.vehicle_model}</span>
-            <b>{titleCase(driver.status)}</b>
-          </div>
-        ))}
+        <ProviderApplications applications={data?.driverApplications ?? []} />
       </section>
 
       <section className="panel">
