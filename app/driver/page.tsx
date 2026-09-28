@@ -33,6 +33,13 @@ export default function DriverPage() {
         ))}
       </section>
       <section className="panel">
+        <h2>B1 system fee</h2>
+        <p>The provider system fee is $25 per month. The provider can pay the $25 upfront or choose automatic trip contributions.</p>
+        <div className="queue"><span><strong>Pay upfront</strong><br />One $25 payment covers the current service month.</span><b>$25 / month</b></div>
+        <div className="queue"><span><strong>Pay from trips</strong><br />B1 applies 5% of completed trip earnings toward the $25 monthly fee. Once the current month is covered, contributions begin building the next month's $25 credit.</span><b>5% / trip</b></div>
+        <p>When both the current month and the next-month credit are fully funded, no additional system-fee withholding is taken until a new month opens.</p>
+      </section>
+      <section className="panel">
         <h2>Cancellation rule</h2>
         <p>A provider cancellation after verified acceptance requires a reason, is recorded in the provider profile and immediately returns the trip to dispatch for re-offer.</p>
       </section>
