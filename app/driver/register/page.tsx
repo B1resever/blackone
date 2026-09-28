@@ -119,7 +119,7 @@ export default function DriverRegisterPage() {
             <label>License plate<input required name="plate" /></label>
             <label>Registration state<input required name="registrationState" defaultValue="FL" /></label>
             <label>Registration expiration<input required name="registrationExpires" type="date" /></label>
-            <label>B1 vehicle class<select required name="vehicleClass" defaultValue="comfort"><option value="comfort">Comfort · Luxury vehicle</option><option value="xl">XL · 7 seats + luggage space</option><option value="black">Black · SUV only · 2022–2026</option></select></label>
+            <label>B1 vehicle class<select required name="vehicleClass" defaultValue="comfort"><option value="comfort">Comfort · Luxury vehicle</option><option value="xl">XL · 7 seats + luggage space</option><option value="suv">SUV · Super-luxury SUV · 2022–2026</option></select></label>
             <label>Vehicle type<select required name="vehicleType" defaultValue="suv"><option value="sedan">Sedan</option><option value="suv">SUV</option><option value="luxury_sedan">Luxury Sedan</option><option value="luxury_suv">Luxury SUV</option><option value="van">Van / Sprinter</option></select></label>
             <label>Passenger capacity<input required name="capacity" type="number" min="1" max="20" /></label>
           </div>
