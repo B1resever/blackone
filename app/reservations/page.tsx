@@ -1,3 +1,4 @@
+import UltraExclusiveBooking from "@/app/reservations/UltraExclusiveBooking";
 const pricingComponents = [
   ["Hourly", "Vehicle + chauffeur reserved by the hour. A minimum number of hours can apply depending on the vehicle and service."],
   ["Full Day", "Dedicated vehicle and chauffeur for a defined daily service window. Overtime is billed separately."],
@@ -42,6 +43,12 @@ export default function ReservationsPage(){
         <h1>A dedicated luxury service with its own fleet, pricing and rules.</h1>
         <p>This is not the regular B1 ride product. Ultra Exclusive reservations use only specifically approved luxury vehicles and a chauffeur-service pricing model built around time, day, mileage and operating costs.</p>
         <a className="primary" href="/#book">Request a reservation</a>
+      </section>
+
+      <section className="reservationSection">
+        <div className="eyebrow dark">REQUEST A QUOTE</div>
+        <h2>Build an Ultra Exclusive reservation.</h2>
+        <UltraExclusiveBooking />
       </section>
 
       <section className="reservationSection">
