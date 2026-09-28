@@ -3,12 +3,11 @@ import { z } from "zod";
 import { calculateQuote } from "@/lib/pricing";
 
 const schema = z.object({
-  rideType: z.enum(["point_to_point", "airport", "hourly", "event"]),
-  vehicleClass: z.enum(["comfort","xl","black"]),
+  rideType: z.enum(["point_to_point", "airport"]),
+  vehicleClass: z.enum(["comfort","xl","suv"]),
   distanceMiles: z.number().min(0).max(1500),
   durationMinutes: z.number().min(0).max(1440),
-  tolls: z.number().min(0).max(500).optional(),
-  hourlyHours: z.number().min(1).max(24).optional()
+  tolls: z.number().min(0).max(500).optional()
 });
 
 export async function POST(request: Request) {
