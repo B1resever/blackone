@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-type RideType = "point_to_point" | "airport" | "hourly" | "event";
-type VehicleClass = "comfort" | "xl" | "black";
+type RideType = "point_to_point" | "airport";
+type VehicleClass = "comfort" | "xl" | "suv";
 type RouteResult = { distanceMiles: number; durationMinutes: number; tolls: number };
 type Quote = { baseFare:number; distanceFare:number; timeFare:number; tolls:number; serviceFee:number; customerTotal:number };
 type PlaceSuggestion = { id:string; label:string; source:"b1"|"google" };
@@ -11,14 +11,12 @@ type PlaceSuggestion = { id:string; label:string; source:"b1"|"google" };
 const vehicleOptions = [
   { value: "comfort", label: "Comfort", note: "Luxury vehicles approved by B1" },
   { value: "xl", label: "XL", note: "7 seats + luggage space" },
-  { value: "black", label: "Black", note: "SUV only · model years 2022–2026" }
+  { value: "suv", label: "SUV", note: "Super-luxury SUV · model years 2022–2026" }
 ] as const;
 
 const serviceOptions = [
   { value: "point_to_point", label: "Point to Point" },
-  { value: "airport", label: "Airport Transfer" },
-  { value: "hourly", label: "Hourly Chauffeur" },
-  { value: "event", label: "Event / VIP" }
+  { value: "airport", label: "Airport Transfer" }
 ] as const;
 
 export default function BookingClient() {
@@ -30,9 +28,6 @@ export default function BookingClient() {
   const [customerEmail,setCustomerEmail]=useState("");
   const [rideType,setRideType]=useState<RideType>("point_to_point");
   const [vehicleClass,setVehicleClass]=useState<VehicleClass>("comfort");
-  const [medicalRide,setMedicalRide]=useState(false);
-  const [petFriendly,setPetFriendly]=useState(false);
-  const [specialNotes,setSpecialNotes]=useState("");
   const [route,setRoute]=useState<RouteResult|null>(null);
   const [quote,setQuote]=useState<Quote|null>(null);
   const [status,setStatus]=useState("");
@@ -88,7 +83,7 @@ export default function BookingClient() {
     if(!route || !quote) return;
     setLoading(true); setStatus("Opening secure payment...");
     try {
-      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,vehicleClass,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail,medicalRide,petFriendly,specialNotes})});
+      const r=await fetch("/api/checkout",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rideType,vehicleClass,distanceMiles:route.distanceMiles,durationMinutes:route.durationMinutes,tolls:route.tolls,pickup,destination,pickupDate,pickupTime,passengers,customerEmail})});
       const d=await r.json();
       if(!r.ok || !d.url) throw new Error(d.error ?? "Checkout is not available yet");
       window.location.href=d.url;
@@ -137,7 +132,7 @@ export default function BookingClient() {
       )}
       {quote && !canCheckout && <p className="formStatus">Add date, time and a valid email to continue to secure payment.</p>}
       {status && <p className="formStatus">{status}</p>}
-      <small>Pricing is calculated server-side. Final operational rules can still adjust vehicle class, waiting time, events and special requests.</small>
+      <small>B1 Ride is the direct transportation product. Hourly, Full Day, VIP and chauffeur reservations are handled separately through B1 Ultra.</small>
     </form>
   );
 }
