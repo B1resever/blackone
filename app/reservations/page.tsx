@@ -1,49 +1,32 @@
-const vehicleClasses = [
-  {
-    name: "Comfort",
-    subtitle: "Luxury vehicle",
-    details: ["B1-approved luxury vehicles", "Premium interior and presentation", "Best for executive and private travel"]
-  },
-  {
-    name: "XL",
-    subtitle: "7 seats + luggage",
-    details: ["Seven passenger seats", "Dedicated luggage capacity", "Best for families, groups and airport travel"]
-  },
-  {
-    name: "SUV",
-    subtitle: "Super luxury SUV · 2022–2026",
-    details: ["Cadillac Escalade / equivalent super-luxury SUV", "Model years 2022–2026", "Premium group, airport and VIP transportation"]
-  }
+const pricingComponents = [
+  ["Hourly", "Vehicle + chauffeur reserved by the hour. A minimum number of hours can apply depending on the vehicle and service."],
+  ["Full Day", "Dedicated vehicle and chauffeur for a defined daily service window. Overtime is billed separately."],
+  ["Mileage", "Mileage can apply to long-distance, out-of-area or custom itineraries in addition to the reserved service block."],
+  ["Tolls & Parking", "Actual tolls, parking, airport, venue and access charges are added when applicable."],
+  ["Waiting", "Complimentary waiting is defined by reservation type. Additional waiting is billed at the vehicle's waiting rate."],
+  ["Gratuity", "Gratuity is shown separately and transparently. It can be optional or included only when the booking terms expressly disclose it before payment."]
 ];
 
-const reservationTypes = [
-  {
-    name: "Point to Point",
-    details: ["Fixed pickup and destination", "Price calculated before confirmation", "Short complimentary pickup wait window", "Additional stops or extended waiting may change the final amount"]
-  },
-  {
-    name: "Airport & FBO",
-    details: ["Flight information requested when applicable", "Flight-aware pickup coordination", "Extended complimentary waiting window for arriving flights", "Meet & Greet may be offered as an additional service"]
-  },
-  {
-    name: "Hourly",
-    details: ["Vehicle and provider remain reserved for the booked period", "Minimum booking time may apply", "Stops within the reserved time are handled as part of the hourly service", "Extensions are billed according to the active hourly rate"]
-  },
-  {
-    name: "Event / VIP",
-    details: ["Event-specific pickup and traffic planning", "Minimum time or special pricing may apply", "Waiting, staging, parking and access requirements can affect the reservation", "Final terms are shown before payment"]
-  }
+const serviceTypes = [
+  ["Airport / FBO", "Premium airport or private aviation coordination, flight-aware pickup, luggage planning and chauffeur waiting rules."],
+  ["Hourly Chauffeur", "Dedicated ultra-luxury vehicle and chauffeur kept available for multiple stops during the reserved period."],
+  ["Full Day", "Vehicle and chauffeur reserved for an extended service day with itinerary coordination and overtime rules."],
+  ["Point to Point", "Prearranged ultra-luxury transfer with a specific vehicle, pickup, destination and confirmed price."],
+  ["Event / VIP", "High-touch transportation for events, hospitality, executive movement and controlled arrival/departure timing."],
+  ["Custom / Long Distance", "Individually quoted itinerary using time, mileage, route, overnight needs and destination requirements."]
 ];
 
-const generalRules = [
-  ["Pricing", "B1 shows the reservation price before payment. Distance, estimated time, vehicle class, tolls, airport/event conditions and applicable extras may affect the total."],
-  ["Waiting time", "Complimentary waiting time depends on the reservation type. Additional waiting is billable after the included period."],
-  ["Stops & changes", "Additional stops, destination changes or extended service may produce an updated trip amount."],
-  ["Cancellation", "The applicable cancellation charge depends on how close the cancellation is to pickup and whether a provider has already accepted and verified the trip."],
-  ["No-show", "A no-show may be charged according to the reservation terms shown before confirmation."],
-  ["Luggage", "Passenger count and luggage must match the selected vehicle class. B1 may require a larger vehicle when luggage volume exceeds safe capacity."],
-  ["Cleaning / damage", "Extraordinary cleaning or documented damage may result in an additional charge after B1 review."],
-  ["Provider assignment", "B1 connects the reservation with an eligible independent transportation provider. A specific provider is not confirmed until the assignment is accepted and verified."]
+const rules = [
+  ["Dedicated fleet only", "This reservation product is restricted to B1-approved ultra-luxury vehicles. Standard B1 Comfort, XL and regular transportation vehicles do not qualify for this service."],
+  ["Specific vehicle", "The reservation is tied to an eligible vehicle class or specifically confirmed vehicle. Substitutions require B1 approval and must remain within the same or a higher approved luxury level."],
+  ["Chauffeur standard", "The service is chauffeur-based, prearranged and high-touch. Presentation, punctuality, luggage assistance and professional conduct form part of the operating standard."],
+  ["Pricing model", "This product does not use the same pricing engine as regular B1 transportation. The quote can combine hourly, daily, mileage, tolls, parking, waiting and other disclosed service components."],
+  ["Waiting", "Waiting time is tracked separately after the complimentary period included with the reservation type."],
+  ["Changes", "Extra stops, route changes, extended service time or itinerary changes can update the final reservation amount."],
+  ["Cancellation", "Cancellation rules are stricter for dedicated ultra-luxury inventory because the vehicle and chauffeur are blocked for the reservation. The exact cancellation window and charge are shown before confirmation."],
+  ["No-show", "A no-show can be charged up to the applicable reservation amount based on the terms accepted at booking."],
+  ["Damage / cleaning", "Extraordinary cleaning or documented damage is reviewed by B1 and may result in an additional charge."],
+  ["Tips / gratuity", "Gratuity is never hidden. If a reservation includes a service gratuity, the percentage or amount is disclosed before payment; otherwise the customer can choose an optional tip."]
 ];
 
 export default function ReservationsPage(){
@@ -51,48 +34,55 @@ export default function ReservationsPage(){
     <main className="reservationsPage">
       <header className="portalHeader reservationHeader">
         <a href="/">← B1</a>
-        <span>RESERVATIONS</span>
+        <span>ULTRA EXCLUSIVE RESERVATIONS</span>
       </header>
 
       <section className="reservationHero">
-        <div className="eyebrow">B1 · RESERVATION STANDARD</div>
-        <h1>Know the service before you reserve.</h1>
-        <p>Vehicle class, service conditions, waiting rules, luggage requirements and cancellation terms are organized in one place before the customer confirms a B1 reservation.</p>
-        <a className="primary" href="/#book">Start a reservation</a>
+        <div className="eyebrow">B1 · ULTRA EXCLUSIVE</div>
+        <h1>A dedicated luxury service with its own fleet, pricing and rules.</h1>
+        <p>This is not the regular B1 ride product. Ultra Exclusive reservations use only specifically approved luxury vehicles and a chauffeur-service pricing model built around time, day, mileage and operating costs.</p>
+        <a className="primary" href="/#book">Request a reservation</a>
       </section>
 
       <section className="reservationSection">
-        <div className="eyebrow dark">VEHICLE CLASSES</div>
-        <h2>Choose the vehicle level that fits the trip.</h2>
-        <div className="reservationCards">
-          {vehicleClasses.map((vehicle)=>(
-            <article className="reservationCard" key={vehicle.name}>
-              <span className="reservationTag">{vehicle.subtitle}</span>
-              <h3>{vehicle.name}</h3>
-              <ul>{vehicle.details.map((item)=><li key={item}>{item}</li>)}</ul>
-            </article>
-          ))}
+        <div className="eyebrow dark">ELIGIBLE VEHICLES</div>
+        <h2>Only the dedicated B1 ultra-luxury fleet qualifies.</h2>
+        <div className="reservationNotice">
+          Standard Comfort, XL and other regular B1 vehicles are excluded from this product. The exact approved makes, models, model years and configurations will be maintained as a separate B1 fleet list.
         </div>
       </section>
 
       <section className="reservationSection reservationDark">
-        <div className="eyebrow">RESERVATION TYPES</div>
-        <h2>Different trips use different operating rules.</h2>
-        <div className="reservationCards four">
-          {reservationTypes.map((service)=>(
-            <article className="reservationCard darkCard" key={service.name}>
-              <h3>{service.name}</h3>
-              <ul>{service.details.map((item)=><li key={item}>{item}</li>)}</ul>
+        <div className="eyebrow">SERVICE TYPES</div>
+        <h2>Different reservations. Different operating structure.</h2>
+        <div className="reservationCards">
+          {serviceTypes.map(([title,copy])=>(
+            <article className="reservationCard darkCard" key={title}>
+              <h3>{title}</h3>
+              <p>{copy}</p>
             </article>
           ))}
         </div>
       </section>
 
       <section className="reservationSection">
-        <div className="eyebrow dark">GENERAL CONDITIONS</div>
-        <h2>What applies to a B1 reservation.</h2>
+        <div className="eyebrow dark">PRICE STRUCTURE</div>
+        <h2>The customer sees every component before confirmation.</h2>
+        <div className="reservationCards">
+          {pricingComponents.map(([title,copy])=>(
+            <article className="reservationCard" key={title}>
+              <h3>{title}</h3>
+              <p>{copy}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="reservationSection">
+        <div className="eyebrow dark">ULTRA EXCLUSIVE CONDITIONS</div>
+        <h2>Rules designed for dedicated vehicle and chauffeur reservations.</h2>
         <div className="rulesList">
-          {generalRules.map(([title,copy])=>(
+          {rules.map(([title,copy])=>(
             <div className="ruleRow" key={title}>
               <strong>{title}</strong>
               <p>{copy}</p>
@@ -100,7 +90,7 @@ export default function ReservationsPage(){
           ))}
         </div>
         <div className="reservationNotice">
-          <strong>Important:</strong> exact prices, complimentary waiting periods, cancellation windows and additional service charges may vary by reservation type and will be presented before final confirmation.
+          <strong>Pricing formula:</strong> reserved time or day rate + applicable mileage + tolls/parking/access fees + waiting/extension charges + disclosed gratuity or optional tip + approved extras.
         </div>
       </section>
     </main>
