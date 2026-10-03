@@ -8,7 +8,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') return methodNotAllowed(res, ['GET']);
 
   const user = await getSessionUser(req);
-  if (!user || user.role !== 'passenger') return res.status(401).json({ error: 'passenger_unauthorized' });
+  if (!user || ['admin', 'dispatcher'].includes(user.role)) return res.status(401).json({ error: 'passenger_unauthorized' });
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) return res.status(503).json({ error: 'backend_not_configured' });
