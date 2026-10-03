@@ -4,6 +4,9 @@ import { initialReservation, ReservationDraft } from './reservation';
 export type ReservationReceipt = {
   requestCode: string;
   channel: 'one-api' | 'reservation-desk';
+  quoteStatus?: 'quoted' | 'manual_confirmation' | 'rate_card_required';
+  amountMinor?: number | null;
+  currency?: string | null;
 };
 
 type ReservationContextValue = {
