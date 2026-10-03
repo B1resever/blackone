@@ -1,0 +1,22 @@
+{
+  "name": "@blackone/one-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "drizzle-orm": "^0.44.6",
+    "stripe": "^18.5.0",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.7.0",
+    "@vercel/node": "^5.5.5",
+    "drizzle-kit": "^0.31.5",
+    "typescript": "^5.9.3"
+  }
+}

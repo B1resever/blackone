@@ -1,0 +1,50 @@
+name: ONE Mobile and API CI
+
+on:
+  push:
+    branches:
+      - one-mobile-foundation
+    paths:
+      - 'apps/one-mobile/**'
+      - 'services/one-api/**'
+      - '.github/workflows/one-mobile-api-ci.yml'
+  pull_request:
+    paths:
+      - 'apps/one-mobile/**'
+      - 'services/one-api/**'
+      - '.github/workflows/one-mobile-api-ci.yml'
+
+jobs:
+  mobile:
+    name: Mobile typecheck
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/one-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+          cache: 'npm'
+          cache-dependency-path: apps/one-mobile/package-lock.json
+      - run: npm install --package-lock-only
+      - run: npm ci
+      - run: npm run typecheck
+
+  api:
+    name: API typecheck
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/one-api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+          cache: 'npm'
+          cache-dependency-path: services/one-api/package-lock.json
+      - run: npm install --package-lock-only
+      - run: npm ci
+      - run: npm run typecheck
