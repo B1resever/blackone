@@ -29,7 +29,7 @@ function render(list){rows.innerHTML=list.map(a=>`<tr>
 <td><b>${esc(a.application_code)}</b><div class="muted">${new Date(a.created_at).toLocaleString()}</div></td>
 <td><b>${esc(a.full_name)}</b><div class="muted">${esc(a.email)}<br>${esc(a.phone)}</div></td>
 <td>${esc(a.market_id)}</td>
-<td>${esc(a.vehicle_year)} ${esc(a.vehicle_make)} ${esc(a.vehicle_model)}<div class="muted">${esc(a.plate_number||'Plate pending')}</div></td>
+<td>${esc(a.vehicle_year)} ${esc(a.vehicle_make)} ${esc(a.vehicle_model)}<div class="muted">${esc(a.vehicle_class_id||'Class pending')} · ${esc(a.plate_number||'Plate pending')}</div></td>
 <td>${esc(a.license_region)}</td><td class="status">${esc(a.status)}</td>
 <td><div class="actions"><button onclick="setStatus('${esc(a.application_code)}','reviewing')">Review</button><button onclick="setStatus('${esc(a.application_code)}','documents_required')">Docs</button><button onclick="setStatus('${esc(a.application_code)}','approved')">Approve</button><button onclick="setStatus('${esc(a.application_code)}','rejected')">Reject</button></div></td></tr>`).join('')}
 async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-driver-applications');render(d.applications||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}

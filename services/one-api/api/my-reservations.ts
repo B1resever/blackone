@@ -29,11 +29,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status,
       quote_amount_minor,
       quote_currency,
-      created_at,
-      updated_at
-    from one_reservations
-    where passenger_user_id = ${user.id}
-    order by created_at desc
+      u.full_name as driver_name,
+      u.phone as driver_phone,
+      v.make as vehicle_make,
+      v.model as vehicle_model,
+      v.vehicle_year,
+      v.color as vehicle_color,
+      v.plate_number,
+      r.created_at,
+      r.updated_at
+    from one_reservations r
+    left join one_users u on u.id = r.assigned_driver_user_id
+    left join one_driver_vehicles v on v.id = r.assigned_vehicle_id
+    where r.passenger_user_id = ${user.id}
+    order by r.created_at desc
     limit 100
   `;
 

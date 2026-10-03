@@ -34,6 +34,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       full_name,
       email,
       phone,
+      license_region,
+      vehicle_year,
+      vehicle_make,
+      vehicle_model,
+      plate_number,
+      vehicle_class_id,
       status,
       review_notes,
       updated_at
@@ -43,6 +49,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!application) return res.status(404).json({ error: 'application_not_found' });
 
   let driverUserId: string | null = null;
+  let driverVehicleId: string | null = null;
 
   if (parsed.data.status === 'approved') {
     const existing = await sql`
@@ -117,7 +124,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         percent_per_trip = excluded.percent_per_trip,
         updated_at = now()
     `;
+
+    if (application.vehicle_class_id) {
+      const vehicleRows = await sql`
+        insert into one_driver_vehicles (
+          driver_user_id,
+          vehicle_class_id,
+          make,
+          model,
+          vehicle_year,
+          plate_number,
+          status
+        ) values (
+          ${driverUserId},
+          ${application.vehicle_class_id},
+          ${application.vehicle_make},
+          ${application.vehicle_model},
+          ${application.vehicle_year},
+          ${application.plate_number},
+          'approved'
+        )
+        returning id
+      `;
+      driverVehicleId = vehicleRows[0]?.id ? String(vehicleRows[0].id) : null;
+    }
   }
 
-  return res.status(200).json({ application, driverUserId });
+  return res.status(200).json({ application, driverUserId, driverVehicleId });
 }

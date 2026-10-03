@@ -14,6 +14,7 @@ type DriverApplication = {
   vehicleMake: string;
   vehicleModel: string;
   plateNumber: string;
+  vehicleClassId: 'confort' | 'xl' | 'suv-black' | 'ultra-exclusive';
 };
 
 const initialApplication: DriverApplication = {
@@ -26,6 +27,7 @@ const initialApplication: DriverApplication = {
   vehicleMake: '',
   vehicleModel: '',
   plateNumber: '',
+  vehicleClassId: 'confort',
 };
 
 export default function DriverScreen() {
@@ -153,6 +155,27 @@ export default function DriverScreen() {
         <Text style={styles.label}>Model</Text>
         <TextInput style={styles.input} value={application.vehicleModel} onChangeText={(vehicleModel) => patch({ vehicleModel })} placeholder="Escalade ESV" placeholderTextColor={theme.colors.muted} />
 
+        <Text style={styles.label}>ONE vehicle category</Text>
+        <View style={styles.categoryGrid}>
+          {[
+            ['confort', 'CONFORT'],
+            ['xl', 'XL'],
+            ['suv-black', 'SUV BLACK'],
+            ['ultra-exclusive', 'ULTRA EXCLUSIVE'],
+          ].map(([id, label]) => {
+            const active = application.vehicleClassId === id;
+            return (
+              <Pressable
+                key={id}
+                style={[styles.categoryButton, active ? styles.categoryActive : null]}
+                onPress={() => patch({ vehicleClassId: id as DriverApplication['vehicleClassId'] })}
+              >
+                <Text style={[styles.categoryText, active ? styles.categoryTextActive : null]}>{label}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+
         <Text style={styles.label}>Plate number · optional at first step</Text>
         <TextInput style={styles.input} value={application.plateNumber} onChangeText={(plateNumber) => patch({ plateNumber })} placeholder="Vehicle plate" placeholderTextColor={theme.colors.muted} autoCapitalize="characters" />
 
@@ -193,6 +216,11 @@ const styles = StyleSheet.create({
   marketActive: { borderColor: theme.colors.cyan, backgroundColor: '#04202A' },
   marketText: { color: theme.colors.white, fontWeight: '800', fontSize: 11 },
   twoCol: { flexDirection: 'row', gap: 12 },
+  categoryGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  categoryButton: { width: '48%', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface, borderRadius: theme.radius.md, padding: 12, alignItems: 'center' },
+  categoryActive: { borderColor: theme.colors.cyan, backgroundColor: '#04202A' },
+  categoryText: { color: theme.colors.muted, fontWeight: '900', fontSize: 11 },
+  categoryTextActive: { color: theme.colors.cyanSoft },
   flex: { flex: 1 },
   notice: { borderRadius: theme.radius.md, backgroundColor: theme.colors.surfaceRaised, padding: 18, marginTop: 18 },
   noticeTitle: { color: theme.colors.white, fontSize: 16, fontWeight: '900' },
