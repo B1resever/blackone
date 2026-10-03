@@ -2,11 +2,13 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ReservationProvider } from '../src/reservation-context';
+import { AuthProvider } from '../src/auth-context';
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <ReservationProvider>
+      <AuthProvider>
+        <ReservationProvider>
         <StatusBar style="light" />
         <Stack
           screenOptions={{
@@ -17,6 +19,7 @@ export default function RootLayout() {
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="account" options={{ title: 'My ONE' }} />
           <Stack.Screen name="book" options={{ title: 'Book a Ride' }} />
           <Stack.Screen name="vehicles" options={{ title: 'Choose Vehicle' }} />
           <Stack.Screen name="review" options={{ title: 'Review Reservation' }} />
@@ -26,7 +29,8 @@ export default function RootLayout() {
           <Stack.Screen name="driver" options={{ title: 'Drive with ONE' }} />
           <Stack.Screen name="safety" options={{ title: 'ONE Safety' }} />
         </Stack>
-      </ReservationProvider>
+        </ReservationProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
