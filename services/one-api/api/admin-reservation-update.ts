@@ -55,6 +55,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         and p.verification_status = 'approved'
         and p.compliance_status = 'approved'
         and p.available_for_assignment = true
+        and (
+          select count(distinct d.document_type)
+          from one_driver_documents d
+          where d.driver_user_id = u.id
+            and d.document_type in ('driver_license','insurance','vehicle_registration','background_check')
+            and d.status = 'approved'
+            and (d.expires_on is null or d.expires_on >= current_date)
+        ) = 4
         and v.status = 'approved'
         and v.vehicle_class_id = r.vehicle_class_id
       order by v.updated_at desc
