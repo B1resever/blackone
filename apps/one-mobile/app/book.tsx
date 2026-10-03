@@ -114,6 +114,54 @@ export default function BookScreen() {
           </View>
         </View>
 
+        {draft.rideType === 'round-trip' ? (
+          <View style={styles.twoCol}>
+            <View style={styles.flex}>
+              <Text style={styles.label}>Return date</Text>
+              <TextInput
+                value={draft.returnDate}
+                onChangeText={(returnDate) => updateDraft({ returnDate })}
+                placeholder="YYYY-MM-DD"
+                placeholderTextColor={theme.colors.muted}
+                style={styles.input}
+                keyboardType="numbers-and-punctuation"
+              />
+            </View>
+            <View style={styles.flex}>
+              <Text style={styles.label}>Return time</Text>
+              <TextInput
+                value={draft.returnTime}
+                onChangeText={(returnTime) => updateDraft({ returnTime })}
+                placeholder="6:00 PM"
+                placeholderTextColor={theme.colors.muted}
+                style={styles.input}
+              />
+            </View>
+          </View>
+        ) : null}
+
+        {draft.rideType === 'hourly' ? (
+          <>
+            <Text style={styles.label}>Hours</Text>
+            <View style={styles.passengerRow}>
+              {[1, 2, 3, 4, 5, 6, 8, 10, 12].map((hours) => {
+                const active = draft.hourlyHours === hours;
+                return (
+                  <Pressable
+                    key={hours}
+                    style={[styles.passengerButton, active ? styles.passengerButtonActive : null]}
+                    onPress={() => updateDraft({ hourlyHours: hours })}
+                    accessibilityRole="button"
+                    accessibilityState={{ selected: active }}
+                  >
+                    <Text style={[styles.passengerText, active ? styles.passengerTextActive : null]}>{hours}h</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          </>
+        ) : null}
+
         <Text style={styles.label}>Passengers</Text>
         <View style={styles.passengerRow}>
           {[1, 2, 3, 4, 5, 6, 7].map((count) => {
