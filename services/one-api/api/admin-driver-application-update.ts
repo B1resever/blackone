@@ -46,10 +46,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (parsed.data.status === 'approved') {
     const existing = await sql`
-      select id
+      select id, role
       from one_users
-      where role = 'driver'
-        and lower(email) = lower(${application.email})
+      where lower(email) = lower(${application.email})
+        and deleted_at is null
       limit 1
     `;
 
@@ -59,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         update one_users
         set full_name = ${application.full_name},
             phone = ${application.phone},
+            role = 'driver',
             status = 'active',
             updated_at = now()
         where id = ${driverUserId}

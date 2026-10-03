@@ -1,5 +1,7 @@
 import { getMarketLabel, getVehicleLabel, ReservationDraft } from './reservation';
 import type { ReservationReceipt } from './reservation-context';
+import { getSessionToken } from './auth-client';
+import { getSessionToken } from './auth-client';
 
 const RESERVATION_DESK_ENDPOINT = 'https://formspree.io/f/xjgldvyj';
 
@@ -43,11 +45,13 @@ export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuoteP
 }
 
 async function submitToOneApi(draft: ReservationDraft, baseUrl: string): Promise<ReservationReceipt> {
+  const token = await getSessionToken();
   const response = await fetch(baseUrl + '/one/api/reservations', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
+      ...(token ? { Authorization: 'Bearer ' + token } : {}),
     },
     body: JSON.stringify(draft),
   });
