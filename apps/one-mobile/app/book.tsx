@@ -7,6 +7,7 @@ import { isTripDetailsComplete, RideType } from '../src/reservation';
 import { useReservation } from '../src/reservation-context';
 import { theme } from '../src/theme';
 import { useAuth } from '../src/auth-context';
+import { LocationInput } from '../src/location-input';
 
 const rideTypes: Array<{ id: RideType; label: string }> = [
   { id: 'one-way', label: 'One Way' },
@@ -76,27 +77,21 @@ export default function BookScreen() {
         </View>
 
         <Text style={styles.label}>Pickup location</Text>
-        <TextInput
+        <LocationInput
           value={draft.pickup}
-          onChangeText={(pickup) => updateDraft({ pickup })}
+          onChange={(pickup) => updateDraft({ pickup })}
+          marketId={draft.marketId}
           placeholder="Airport, hotel, address..."
-          placeholderTextColor={theme.colors.muted}
-          style={styles.input}
-          autoComplete="street-address"
-          returnKeyType="next"
         />
 
         {draft.rideType !== 'hourly' ? (
           <>
             <Text style={styles.label}>Drop-off location</Text>
-            <TextInput
+            <LocationInput
               value={draft.dropoff}
-              onChangeText={(dropoff) => updateDraft({ dropoff })}
+              onChange={(dropoff) => updateDraft({ dropoff })}
+              marketId={draft.marketId}
               placeholder="Enter destination"
-              placeholderTextColor={theme.colors.muted}
-              style={styles.input}
-              autoComplete="street-address"
-              returnKeyType="next"
             />
           </>
         ) : null}
