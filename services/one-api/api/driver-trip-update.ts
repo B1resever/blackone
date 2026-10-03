@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
 import { sendPushToUser } from '../src/notifications.js';
+import { postDriverTripFee } from '../src/driver-fees.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -83,8 +84,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     { requestCode: parsed.data.requestCode, status: parsed.data.status, url: '/trips' },
   );
 
+  let driverFee = null;
+  if (parsed.data.status === 'completed') {
+    driverFee = await postDriverTripFee(String(trip.id));
+  }
+
   return res.status(200).json({
     requestCode: parsed.data.requestCode,
     status: parsed.data.status,
+    driverFee,
   });
 }
