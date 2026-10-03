@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { isAdminAuthorized } from '../src/admin-auth.js';
+import { sendPushToUser } from '../src/notifications.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -52,6 +53,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         and u.role = 'driver'
         and u.status = 'active'
         and p.verification_status = 'approved'
+        and p.compliance_status = 'approved'
+        and p.available_for_assignment = true
         and v.status = 'approved'
         and v.vehicle_class_id = r.vehicle_class_id
       order by v.updated_at desc
@@ -77,6 +80,28 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from one_reservations
       where request_code = ${input.requestCode}
     `;
+
+    const assignmentRows = await sql`
+      select passenger_user_id, pickup_text, pickup_date_text, pickup_time_text
+      from one_reservations
+      where request_code = ${input.requestCode}
+      limit 1
+    `;
+    const assigned = assignmentRows[0];
+    await Promise.all([
+      sendPushToUser(
+        input.assignedDriverUserId,
+        'New ONE trip assigned',
+        assigned ? String(assigned.pickup_text) + ' · ' + String(assigned.pickup_date_text) + ' ' + String(assigned.pickup_time_text) : 'Open ONE Driver for details.',
+        { requestCode: input.requestCode, url: '/driver-access' },
+      ),
+      sendPushToUser(
+        assigned?.passenger_user_id ? String(assigned.passenger_user_id) : null,
+        'Your ONE driver is assigned',
+        'Open My Reservations to see your driver and vehicle.',
+        { requestCode: input.requestCode, url: '/trips' },
+      ),
+    ]);
   }
 
   if (input.status) {
@@ -93,6 +118,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       from one_reservations
       where request_code = ${input.requestCode}
     `;
+
+    const statusRows = await sql`
+      select passenger_user_id
+      from one_reservations
+      where request_code = ${input.requestCode}
+      limit 1
+    `;
+    const passengerUserId = statusRows[0]?.passenger_user_id ? String(statusRows[0].passenger_user_id) : null;
+    const statusMessages: Record<string, string> = {
+      confirmed: 'Your reservation is confirmed.',
+      driver_en_route: 'Your ONE driver is on the way.',
+      arrived: 'Your ONE driver has arrived.',
+      passenger_onboard: 'Your ONE trip has started.',
+      completed: 'Your ONE trip is complete.',
+      cancelled: 'Your ONE reservation was cancelled.',
+    };
+    if (statusMessages[input.status]) {
+      await sendPushToUser(
+        passengerUserId,
+        'ONE trip update',
+        statusMessages[input.status],
+        { requestCode: input.requestCode, status: input.status, url: '/trips' },
+      );
+    }
   }
 
   const rows = await sql`
