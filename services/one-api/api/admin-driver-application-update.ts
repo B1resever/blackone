@@ -94,6 +94,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const feeModel = application.market_id === 'buenos-aires' ? 'percentage' : 'monthly_cap';
     const monthlyCap = application.market_id === 'south-florida' ? 2500 : null;
     const tripPercent = application.market_id === 'buenos-aires' ? 0.10 : 0.05;
+    const feeExemptUntil =
+      application.market_id === 'buenos-aires'
+        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        : null;
 
     await sql`
       insert into one_driver_profiles (
@@ -104,6 +108,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         driver_fee_model,
         monthly_cap_amount_minor,
         percent_per_trip,
+        fee_exempt_until,
         updated_at
       ) values (
         ${driverUserId},
@@ -113,6 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ${feeModel},
         ${monthlyCap},
         ${tripPercent},
+        ${feeExemptUntil},
         now()
       )
       on conflict (user_id) do update set
@@ -122,6 +128,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         driver_fee_model = excluded.driver_fee_model,
         monthly_cap_amount_minor = excluded.monthly_cap_amount_minor,
         percent_per_trip = excluded.percent_per_trip,
+        fee_exempt_until = coalesce(one_driver_profiles.fee_exempt_until, excluded.fee_exempt_until),
         updated_at = now()
     `;
 
