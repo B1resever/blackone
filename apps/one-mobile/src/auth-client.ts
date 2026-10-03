@@ -55,6 +55,7 @@ export async function registerAccount(input: {
   const data = await response.json() as { user?: OneUser; session?: { token?: string }; error?: string };
   if (!response.ok || !data.user || !data.session?.token) throw new Error(data.error ?? 'registration_failed');
   await setSessionToken(data.session.token);
+  try { await api('claim-reservations', { method: 'POST', body: '{}' }); } catch {}
   return data.user;
 }
 
@@ -66,6 +67,7 @@ export async function loginAccount(email: string, password: string) {
   const data = await response.json() as { user?: OneUser; session?: { token?: string }; error?: string };
   if (!response.ok || !data.user || !data.session?.token) throw new Error(data.error ?? 'login_failed');
   await setSessionToken(data.session.token);
+  try { await api('claim-reservations', { method: 'POST', body: '{}' }); } catch {}
   return data.user;
 }
 
