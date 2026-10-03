@@ -85,7 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         quote_confirmed_at
       ) values (
         ${requestCode},
-        ${accountUser?.role === 'passenger' ? accountUser.id : null},
+        ${accountUser && !['admin', 'dispatcher'].includes(accountUser.role) ? accountUser.id : null},
         ${data.marketId},
         ${data.rideType},
         ${data.pickup},
