@@ -22,6 +22,7 @@ export default function RootLayout() {
           <Stack.Screen name="review" options={{ title: 'Review Reservation' }} />
           <Stack.Screen name="confirmation" options={{ headerShown: false }} />
           <Stack.Screen name="status" options={{ title: 'My Reservation' }} />
+          <Stack.Screen name="legal" options={{ title: 'Help & Legal' }} />
           <Stack.Screen name="driver" options={{ title: 'Drive with ONE' }} />
           <Stack.Screen name="safety" options={{ title: 'ONE Safety' }} />
         </Stack>
