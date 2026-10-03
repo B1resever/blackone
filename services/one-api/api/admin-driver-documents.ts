@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { isAdminAuthorized } from '../src/admin-auth.js';
 import { recalculateDriverCompliance } from '../src/compliance.js';
+import { sendPushToUser } from '../src/notifications.js';
 
 const schema = z.object({
   documentId: z.string().uuid(),
@@ -60,6 +61,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (!rows[0]) return res.status(404).json({ error: 'document_not_found' });
 
-  const complianceStatus = await recalculateDriverCompliance(String(rows[0].driver_user_id));
+  const driverUserId = String(rows[0].driver_user_id);
+  const complianceStatus = await recalculateDriverCompliance(driverUserId);
+
+  await sendPushToUser(
+    driverUserId,
+    parsed.data.status === 'approved' ? 'ONE document approved' : 'ONE document needs attention',
+    parsed.data.status === 'approved'
+      ? String(rows[0].document_type).replaceAll('_', ' ') + ' was approved.'
+      : String(rows[0].document_type).replaceAll('_', ' ') + ' was not approved. Open ONE Driver for details.',
+    { url: '/driver-access', documentType: String(rows[0].document_type), status: parsed.data.status },
+  );
+
+  if (complianceStatus === 'approved') {
+    await sendPushToUser(
+      driverUserId,
+      'ONE driver compliance complete',
+      'All required documents are approved. You can now set yourself Available for assignments.',
+      { url: '/driver-access', complianceStatus },
+    );
+  }
+
   return res.status(200).json({ document: rows[0], complianceStatus });
 }
