@@ -51,9 +51,9 @@ async function request(path,options={}){
 }
 function money(v,c){if(!v||!c)return 'Pending';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function driverOptions(marketId){
-  const eligible=drivers.filter(d=>d.home_market_id===marketId);
-  return '<option value="">Assign driver...</option>'+eligible.map(d=>'<option value="'+esc(d.id)+'">'+esc(d.full_name)+'</option>').join('');
+function driverOptions(marketId,vehicleClassId){
+  const eligible=drivers.filter(d=>d.home_market_id===marketId&&d.vehicle_class_id===vehicleClassId);
+  return '<option value="">Assign compatible driver...</option>'+eligible.map(d=>'<option value="'+esc(d.id)+'">'+esc(d.full_name)+' · '+esc(d.vehicle_make||'')+' '+esc(d.vehicle_model||'')+'</option>').join('');
 }
 function render(list){
   rows.innerHTML=list.map(r=>`<tr>
@@ -65,7 +65,7 @@ function render(list){
     <td class="status">${esc(r.status)}</td>
     <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
     <td><div class="actions">
-      <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id)}</select>
+      <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id,r.vehicle_class_id)}</select>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
       <button onclick="setStatus('${esc(r.request_code)}','driver_en_route')">En Route</button>
       <button onclick="setStatus('${esc(r.request_code)}','arrived')">Arrived</button>
