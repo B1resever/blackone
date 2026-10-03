@@ -1,8 +1,8 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { submitReservationRequest } from '../src/reservation-api';
+import { fetchQuotePreview, QuotePreview, submitReservationRequest } from '../src/reservation-api';
 import { useReservation } from '../src/reservation-context';
 import { getMarketLabel, getVehicleLabel } from '../src/reservation';
 import { theme } from '../src/theme';
@@ -20,6 +20,21 @@ export default function ReviewScreen() {
   const { draft, setReceipt } = useReservation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [quote, setQuote] = useState<QuotePreview | null>(null);
+  const [quoteLoading, setQuoteLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    setQuoteLoading(true);
+    fetchQuotePreview(draft).then((next) => {
+      if (!active) return;
+      setQuote(next);
+      setQuoteLoading(false);
+    });
+    return () => {
+      active = false;
+    };
+  }, [draft]);
 
   async function submit() {
     if (submitting) return;
@@ -49,6 +64,8 @@ export default function ReviewScreen() {
           <Row label="Pickup" value={draft.pickup} />
           {draft.rideType !== 'hourly' ? <Row label="Drop-off" value={draft.dropoff} /> : null}
           <Row label="When" value={draft.pickupDate + ' · ' + draft.pickupTime} />
+          {draft.rideType === 'round-trip' ? <Row label="Return" value={draft.returnDate + ' · ' + draft.returnTime} /> : null}
+          {draft.rideType === 'hourly' ? <Row label="Hours" value={String(draft.hourlyHours)} /> : null}
           <Row label="Passengers" value={String(draft.passengers)} />
           <Row label="Vehicle" value={getVehicleLabel(draft.vehicleClass)} />
         </View>
@@ -62,9 +79,26 @@ export default function ReviewScreen() {
 
         <View style={styles.priceCard}>
           <Text style={styles.priceTitle}>Transparent pricing</Text>
-          <Text style={styles.priceText}>
-            ONE will confirm route availability, vehicle assignment, tolls and the final price before dispatch.
-          </Text>
+          {quoteLoading ? (
+            <Text style={styles.priceText}>Calculating route and fare…</Text>
+          ) : quote?.status === 'quoted' && quote.amountMinor != null ? (
+            <>
+              <Text style={styles.quoteAmount}>
+                {new Intl.NumberFormat(undefined, { style: 'currency', currency: quote.currency }).format(quote.amountMinor / 100)}
+              </Text>
+              {quote.distanceMeters ? (
+                <Text style={styles.priceText}>
+                  Approx. {(quote.distanceMeters / 1609.344).toFixed(1)} mi
+                  {quote.durationSeconds ? ' · ' + Math.round(quote.durationSeconds / 60) + ' min' : ''}
+                </Text>
+              ) : null}
+              <Text style={styles.priceText}>Final availability is confirmed before dispatch.</Text>
+            </>
+          ) : (
+            <Text style={styles.priceText}>
+              ONE will confirm route availability, vehicle assignment, tolls and the final price before dispatch.
+            </Text>
+          )}
         </View>
 
         {error ? <Text style={styles.error}>{error}</Text> : null}
@@ -101,6 +135,7 @@ const styles = StyleSheet.create({
   contact: { color: theme.colors.muted, fontSize: 13, marginTop: 4 },
   priceCard: { backgroundColor: '#04202A', borderWidth: 1, borderColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 16, marginBottom: 14 },
   priceTitle: { color: theme.colors.white, fontWeight: '900', fontSize: 15 },
+  quoteAmount: { color: theme.colors.white, fontSize: 28, fontWeight: '900', marginTop: 8 },
   priceText: { color: theme.colors.cyanSoft, lineHeight: 19, marginTop: 6, fontSize: 12 },
   error: { color: theme.colors.danger, marginBottom: 12, fontWeight: '700' },
   button: { backgroundColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 17, alignItems: 'center' },
