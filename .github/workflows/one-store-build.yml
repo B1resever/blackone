@@ -1,0 +1,46 @@
+name: ONE Store Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Store platform
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/one-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+      - run: npm install
+      - run: npx expo-doctor
+      - run: npm run typecheck
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+      - name: Build iOS and Android
+        if: ${{ inputs.platform == 'all' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform all --profile production --non-interactive
+      - name: Build iOS
+        if: ${{ inputs.platform == 'ios' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform ios --profile production --non-interactive
+      - name: Build Android
+        if: ${{ inputs.platform == 'android' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform android --profile production --non-interactive
