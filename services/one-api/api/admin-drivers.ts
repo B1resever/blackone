@@ -23,9 +23,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       p.verification_status,
       p.driver_fee_model,
       p.monthly_cap_amount_minor,
-      p.percent_per_trip
+      p.percent_per_trip,
+      v.id as vehicle_id,
+      v.vehicle_class_id,
+      v.make as vehicle_make,
+      v.model as vehicle_model,
+      v.vehicle_year,
+      v.plate_number
     from one_users u
     join one_driver_profiles p on p.user_id = u.id
+    left join lateral (
+      select id, vehicle_class_id, make, model, vehicle_year, plate_number
+      from one_driver_vehicles
+      where driver_user_id = u.id
+        and status = 'approved'
+      order by updated_at desc
+      limit 1
+    ) v on true
     where u.role = 'driver'
       and u.status = 'active'
       and p.verification_status = 'approved'
