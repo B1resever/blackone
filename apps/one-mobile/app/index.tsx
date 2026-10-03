@@ -133,6 +133,10 @@ export default function HomeScreen() {
           <Text style={styles.body}>{t(language, 'safetyBody')}</Text>
           <Text style={styles.linkText}>{t(language, 'exploreSafety')} →</Text>
         </Pressable>
+
+        <Pressable style={styles.legalButton} onPress={() => router.push('/legal')}>
+          <Text style={styles.legalText}>HELP · PRIVACY · TERMS →</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -192,4 +196,6 @@ const styles = StyleSheet.create({
   safetyCard: { backgroundColor: '#05121B', borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 20 },
   sectionHero: { color: theme.colors.white, fontSize: 30, lineHeight: 31, fontWeight: '900', letterSpacing: -0.8 },
   linkText: { color: theme.colors.cyan, fontSize: 13, fontWeight: '900', marginTop: 18 },
+  legalButton: { alignItems: 'center', paddingVertical: 18 },
+  legalText: { color: theme.colors.muted, fontSize: 11, fontWeight: '900', letterSpacing: 0.8 },
 });
