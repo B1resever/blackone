@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "ONE",
+    "slug": "black-one-one",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "one",
+    "userInterfaceStyle": "dark",
+    "platforms": ["ios", "android", "web"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.blackone.one",
+      "buildNumber": "1",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleDevelopmentRegion": "en",
+        "CFBundleLocalizations": ["en", "es", "pt", "fr"]
+      }
+    },
+    "android": {
+      "package": "com.blackone.one",
+      "versionCode": 1,
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}
