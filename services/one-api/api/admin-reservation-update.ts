@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { isAdminAuthorized } from '../src/admin-auth.js';
 import { sendPushToUser } from '../src/notifications.js';
+import { postDriverTripFee } from '../src/driver-fees.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -149,6 +150,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         statusMessages[input.status],
         { requestCode: input.requestCode, status: input.status, url: '/trips' },
       );
+    }
+
+    if (input.status === 'completed') {
+      const completedRows = await sql`
+        select id
+        from one_reservations
+        where request_code = ${input.requestCode}
+        limit 1
+      `;
+      if (completedRows[0]?.id) {
+        await postDriverTripFee(String(completedRows[0].id));
+      }
     }
   }
 

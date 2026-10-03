@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { neon } from '@neondatabase/serverless';
+import { postDriverTripFee } from '../src/driver-fees.js';
 
 export const config = {
   api: {
@@ -47,9 +48,47 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     if (event.type === 'checkout.session.completed') {
       const session = event.data.object as Stripe.Checkout.Session;
+      const paymentType = session.metadata?.one_payment_type;
       const requestCode = session.metadata?.one_request_code;
 
-      if (requestCode) {
+      if (paymentType === 'driver_monthly_fee') {
+        const driverUserId = session.metadata?.one_driver_user_id;
+        const monthKey = session.metadata?.one_month_key;
+
+        if (driverUserId && monthKey) {
+          await sql`
+            insert into one_driver_fee_ledger (
+              driver_user_id,
+              reservation_id,
+              month_key,
+              fee_type,
+              gross_amount_minor,
+              fee_amount_minor,
+              currency,
+              status,
+              provider_payment_id
+            ) values (
+              ${driverUserId},
+              null,
+              ${monthKey},
+              'monthly_payment',
+              null,
+              ${session.amount_total ?? 0},
+              ${String(session.currency ?? 'usd').toUpperCase()},
+              'paid',
+              ${typeof session.payment_intent === 'string' ? session.payment_intent : session.id}
+            )
+            on conflict (driver_user_id, month_key, fee_type)
+            where fee_type = 'monthly_payment'
+            do update set
+              fee_amount_minor = excluded.fee_amount_minor,
+              currency = excluded.currency,
+              status = 'paid',
+              provider_payment_id = excluded.provider_payment_id,
+              updated_at = now()
+          `;
+        }
+      } else if (requestCode) {
         await sql`
           update one_reservations
           set payment_status = 'paid',
@@ -77,6 +116,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           from one_reservations
           where request_code = ${requestCode}
         `;
+
+        const paidRows = await sql`
+          select id, status
+          from one_reservations
+          where request_code = ${requestCode}
+          limit 1
+        `;
+        if (paidRows[0]?.id && paidRows[0]?.status === 'completed') {
+          await postDriverTripFee(String(paidRows[0].id));
+        }
       }
     }
 

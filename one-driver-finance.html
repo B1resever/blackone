@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ONE Driver Finance · BLACK ONE</title>
+<style>
+:root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
+header{padding:18px 24px;border-bottom:1px solid var(--line)}main{padding:22px;max-width:1500px;margin:auto}
+h1{margin:0}.cyan{color:var(--cyan)}.controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:16px}
+input,button{background:#0b1c28;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px}
+button{cursor:pointer;font-weight:800}.primary{background:var(--cyan);color:#001217;border-color:var(--cyan)}
+table{width:100%;border-collapse:collapse;background:var(--panel)}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--cyan);font-size:11px}.muted{color:var(--muted)}.grid{overflow:auto}.status{font-weight:900}.money{font-weight:900}
+@media(max-width:800px){.controls{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><h1><span class="cyan">ONE</span> Driver Finance · BLACK ONE</h1></header>
+<main>
+<div class="controls">
+<input id="api" placeholder="ONE API base URL">
+<input id="token" type="password" placeholder="Admin token">
+<button id="load" class="primary">LOAD DRIVER FEES</button>
+</div>
+<div class="grid"><table>
+<thead><tr><th>DRIVER</th><th>MARKET</th><th>MODEL</th><th>MONTH</th><th>COVERED</th><th>REMAINING</th><th>EXEMPTION</th><th>ENTRIES</th></tr></thead>
+<tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load finance.</td></tr></tbody>
+</table></div>
+</main>
+<script>
+const $=s=>document.querySelector(s),api=$('#api'),token=$('#token'),rows=$('#rows');
+api.value=sessionStorage.getItem('one_api')||location.origin;token.value=sessionStorage.getItem('one_token')||'';
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function money(v,c){if(v===null||v===undefined)return '—';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
+async function request(path){const base=api.value.replace(/\/$/,'');const r=await fetch(base+path,{headers:{'Authorization':'Bearer '+token.value}});if(!r.ok)throw new Error(await r.text());return r.json()}
+function model(d){return d.feeModel==='monthly_cap' ? Math.round(d.percentPerTrip*100)+'% until '+money(d.monthlyCapAmountMinor,d.currency) : Math.round(d.percentPerTrip*100)+'% per trip'}
+function render(list){rows.innerHTML=list.map(d=>`<tr>
+<td><b>${esc(d.fullName)}</b><div class="muted">${esc(d.email)}</div></td>
+<td>${esc(d.marketId)}</td>
+<td>${model(d)}</td>
+<td>${esc(d.monthKey)}</td>
+<td class="money">${money(d.coveredAmountMinor,d.currency)}</td>
+<td class="money">${d.remainingAmountMinor===null?'No cap':money(d.remainingAmountMinor,d.currency)}</td>
+<td>${d.isExempt?'FREE UNTIL '+new Date(d.feeExemptUntil).toLocaleDateString():'Active fees'}</td>
+<td>${(d.ledger||[]).length} entries</td>
+</tr>`).join('')}
+async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-driver-fees');render(d.drivers||[])}catch{rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
+$('#load').addEventListener('click',load);
+</script></body></html>

@@ -202,3 +202,50 @@ export async function submitDriverDocument(input: {
   if (!response.ok) throw new Error(data.error ?? 'driver_document_submit_failed');
   return data.document ?? null;
 }
+
+
+export type DriverFeeLedgerEntry = {
+  id: string;
+  reservation_id?: string | null;
+  fee_type: string;
+  gross_amount_minor?: number | null;
+  fee_amount_minor: number;
+  currency: string;
+  status: string;
+  created_at: string;
+};
+
+export type DriverFeeSummary = {
+  marketId: string;
+  currency: string;
+  feeModel: 'monthly_cap' | 'percentage';
+  percentPerTrip: number;
+  monthlyCapAmountMinor: number | null;
+  monthKey: string;
+  coveredAmountMinor: number;
+  remainingAmountMinor: number | null;
+  feeExemptUntil: string | null;
+  isExempt: boolean;
+  ledger: DriverFeeLedgerEntry[];
+};
+
+export async function loadDriverFees() {
+  const response = await api('driver-fees');
+  if (!response.ok) throw new Error('driver_fees_failed');
+  return (await response.json()) as DriverFeeSummary;
+}
+
+export async function createDriverFeeCheckout() {
+  const response = await api('driver-fee-checkout', {
+    method: 'POST',
+    body: '{}',
+  });
+  const data = await response.json() as {
+    checkoutUrl?: string | null;
+    amountMinor?: number;
+    currency?: string;
+    error?: string;
+  };
+  if (!response.ok || !data.checkoutUrl) throw new Error(data.error ?? 'driver_fee_checkout_failed');
+  return data;
+}

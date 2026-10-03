@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   activateDriverAccount,
   DriverDocument,
+  DriverFeeSummary,
   DriverTrip,
   loadDriverAvailability,
   loadDriverDocuments,
+  loadDriverFees,
   loadDriverTrips,
+  createDriverFeeCheckout,
   setDriverAvailability,
   submitDriverDocument,
   updateDriverTrip,
@@ -42,6 +45,7 @@ export default function DriverAccessScreen() {
   const [trips, setTrips] = useState<DriverTrip[]>([]);
   const [documents, setDocuments] = useState<DriverDocument[]>([]);
   const [availability, setAvailabilityState] = useState(false);
+  const [feeSummary, setFeeSummary] = useState<DriverFeeSummary | null>(null);
   const [complianceStatus, setComplianceStatus] = useState('pending');
   const [selectedDocument, setSelectedDocument] = useState<DocumentType>('driver_license');
   const [documentNumber, setDocumentNumber] = useState('');
@@ -55,13 +59,15 @@ export default function DriverAccessScreen() {
     if (user?.role !== 'driver') return;
     setLoadingTrips(true);
     try {
-      const [nextTrips, nextAvailability, nextDocuments] = await Promise.all([
+      const [nextTrips, nextAvailability, nextDocuments, nextFees] = await Promise.all([
         loadDriverTrips(),
         loadDriverAvailability(),
         loadDriverDocuments(),
+        loadDriverFees(),
       ]);
       setTrips(nextTrips);
       setDocuments(nextDocuments);
+      setFeeSummary(nextFees);
       setAvailabilityState(Boolean(nextAvailability?.available_for_assignment));
       setComplianceStatus(nextAvailability?.compliance_status ?? 'pending');
     } catch {
@@ -125,6 +131,27 @@ export default function DriverAccessScreen() {
     }
   }
 
+  async function payMonthlyFee() {
+    if (working) return;
+    setWorking(true);
+    setMessage('');
+    try {
+      const checkout = await createDriverFeeCheckout();
+      if (checkout.checkoutUrl) {
+        await Linking.openURL(checkout.checkoutUrl);
+      }
+    } catch (error) {
+      const code = error instanceof Error ? error.message : '';
+      setMessage(
+        code === 'monthly_cap_already_covered'
+          ? 'Your ONE monthly platform fee is already covered.'
+          : 'ONE could not open the monthly platform fee payment.',
+      );
+    } finally {
+      setWorking(false);
+    }
+  }
+
   async function submitComplianceDocument() {
     setWorking(true);
     setMessage('');
@@ -182,6 +209,44 @@ export default function DriverAccessScreen() {
               <Text style={styles.availabilityButtonText}>{availability ? 'AVAILABLE' : 'OFFLINE'}</Text>
             </Pressable>
           </View>
+
+          {feeSummary ? (
+            <View style={styles.feeCard}>
+              <Text style={styles.cardLabel}>ONE DRIVER PLATFORM FEE</Text>
+              {feeSummary.isExempt ? (
+                <>
+                  <Text style={styles.feeAmount}>FIRST MONTH FREE</Text>
+                  <Text style={styles.meta}>
+                    Fee exemption through {feeSummary.feeExemptUntil ? new Date(feeSummary.feeExemptUntil).toLocaleDateString() : 'launch period'}.
+                  </Text>
+                </>
+              ) : feeSummary.feeModel === 'monthly_cap' ? (
+                <>
+                  <Text style={styles.feeAmount}>
+                    {new Intl.NumberFormat(undefined, { style: 'currency', currency: feeSummary.currency }).format((feeSummary.coveredAmountMinor ?? 0) / 100)}
+                    <Text style={styles.feeSmall}> / {new Intl.NumberFormat(undefined, { style: 'currency', currency: feeSummary.currency }).format((feeSummary.monthlyCapAmountMinor ?? 0) / 100)}</Text>
+                  </Text>
+                  <Text style={styles.meta}>
+                    5% per completed paid trip until the monthly cap is reached. You can also pay the remaining balance directly.
+                  </Text>
+                  {(feeSummary.remainingAmountMinor ?? 0) > 0 ? (
+                    <Pressable style={styles.secondary} onPress={payMonthlyFee} disabled={working}>
+                      <Text style={styles.secondaryText}>
+                        PAY REMAINING {new Intl.NumberFormat(undefined, { style: 'currency', currency: feeSummary.currency }).format((feeSummary.remainingAmountMinor ?? 0) / 100)}
+                      </Text>
+                    </Pressable>
+                  ) : (
+                    <Text style={styles.feeCovered}>MONTHLY FEE COVERED</Text>
+                  )}
+                </>
+              ) : (
+                <>
+                  <Text style={styles.feeAmount}>{Math.round(feeSummary.percentPerTrip * 100)}% <Text style={styles.feeSmall}>per completed paid trip</Text></Text>
+                  <Text style={styles.meta}>ONE records the platform fee in your monthly driver ledger.</Text>
+                </>
+              )}
+            </View>
+          ) : null}
 
           <Text style={styles.sectionTitle}>Required documents</Text>
           <Text style={styles.sectionHelp}>BLACK ONE must approve all four required items before ONE allows new trip assignments.</Text>
@@ -335,6 +400,10 @@ const styles = StyleSheet.create({
   availabilityButton: { backgroundColor: theme.colors.surface, borderRadius: theme.radius.pill, borderWidth: 1, borderColor: theme.colors.border, paddingHorizontal: 14, paddingVertical: 10 },
   availabilityOn: { backgroundColor: theme.colors.cyan, borderColor: theme.colors.cyan },
   availabilityButtonText: { color: theme.colors.white, fontWeight: '900', fontSize: 10 },
+  feeCard: { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.lg, padding: 16, borderWidth: 1, borderColor: theme.colors.border, marginTop: 16 },
+  feeAmount: { color: theme.colors.white, fontWeight: '900', fontSize: 25, marginTop: 9 },
+  feeSmall: { color: theme.colors.muted, fontSize: 12, fontWeight: '700' },
+  feeCovered: { color: theme.colors.cyan, fontWeight: '900', marginTop: 12 },
   documentRow: { backgroundColor: theme.colors.surface, borderRadius: theme.radius.md, padding: 13, borderWidth: 1, borderColor: theme.colors.border, marginTop: 8, flexDirection: 'row' },
   documentName: { color: theme.colors.white, fontWeight: '900' },
   documentForm: { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.lg, padding: 16, marginTop: 14 },
