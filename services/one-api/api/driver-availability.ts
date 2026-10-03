@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
+import { recalculateDriverCompliance } from '../src/compliance.js';
 
 const schema = z.object({ available: z.boolean() });
 
@@ -17,6 +18,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!databaseUrl) return res.status(503).json({ error: 'backend_not_configured' });
 
   const sql = neon(databaseUrl);
+  await recalculateDriverCompliance(user.id);
 
   if (req.method === 'GET') {
     const rows = await sql`
