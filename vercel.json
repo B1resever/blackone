@@ -1,5 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "*": false
+    }
+  },
+  "github": {
+    "autoJobCancelation": true
+  },
   "functions": {
     "api/one/*.ts": {
       "maxDuration": 30
