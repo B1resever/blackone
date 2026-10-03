@@ -74,6 +74,9 @@ export default function HomeScreen() {
               <Text style={styles.secondaryButtonText}>{t(language, 'driveWithOne')}</Text>
             </Pressable>
           </View>
+          <Pressable style={styles.trackButton} onPress={() => router.push('/status')}>
+            <Text style={styles.trackButtonText}>MY RESERVATION · TRACK STATUS →</Text>
+          </Pressable>
         </View>
 
         <View style={styles.globalCard}>
@@ -158,6 +161,8 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#001217', fontWeight: '900', fontSize: 12 },
   secondaryButton: { flex: 1, borderWidth: 1, borderColor: '#587181', borderRadius: theme.radius.md, paddingVertical: 15, alignItems: 'center' },
   secondaryButtonText: { color: theme.colors.white, fontWeight: '800', fontSize: 11 },
+  trackButton: { marginTop: 10, alignItems: 'center', paddingVertical: 10 },
+  trackButtonText: { color: theme.colors.cyanSoft, fontSize: 11, fontWeight: '900', letterSpacing: 0.5 },
   globalCard: { backgroundColor: '#04202A', borderWidth: 1, borderColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 14, marginBottom: 18 },
   globalTitle: { color: theme.colors.white, fontWeight: '900', fontSize: 14 },
   globalText: { color: theme.colors.cyanSoft, marginTop: 5, fontSize: 12 },
