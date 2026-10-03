@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
@@ -91,6 +92,10 @@ export default function DriverScreen() {
 '}Keep more.</Text>
         <Text style={styles.sub}>Apply to join ONE for scheduled transportation in an active launch market.</Text>
 
+        <Pressable style={styles.accessButton} onPress={() => router.push('/driver-access')}>
+          <Text style={styles.accessText}>ALREADY APPROVED? DRIVER ACCESS →</Text>
+        </Pressable>
+
         <View style={styles.card}>
           <Text style={styles.cardLabel}>USA DRIVER MODEL</Text>
           <Text style={styles.price}>$25<Text style={styles.priceSmall}> / month</Text></Text>
@@ -172,6 +177,8 @@ const styles = StyleSheet.create({
   kicker: { color: theme.colors.cyan, fontSize: 12, fontWeight: '900', letterSpacing: 2.2 },
   title: { color: theme.colors.white, fontSize: 40, lineHeight: 42, fontWeight: '900', marginTop: 8 },
   sub: { color: theme.colors.muted, fontSize: 14, lineHeight: 21, marginTop: 12, marginBottom: 22 },
+  accessButton: { borderWidth: 1, borderColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 14, alignItems: 'center', marginBottom: 18 },
+  accessText: { color: theme.colors.cyanSoft, fontWeight: '900', fontSize: 11 },
   card: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 20, marginBottom: 14 },
   cardLabel: { color: theme.colors.cyan, fontSize: 11, fontWeight: '900', letterSpacing: 1.8 },
   price: { color: theme.colors.white, fontSize: 34, fontWeight: '900', marginTop: 10 },
