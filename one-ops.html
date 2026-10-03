@@ -38,6 +38,7 @@
 <script>
 const $=s=>document.querySelector(s);
 const api=$('#api'),token=$('#token'),rows=$('#rows');
+let drivers=[];
 api.value=sessionStorage.getItem('one_api')||location.origin;
 token.value=sessionStorage.getItem('one_token')||'';
 
@@ -50,6 +51,10 @@ async function request(path,options={}){
 }
 function money(v,c){if(!v||!c)return 'Pending';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function driverOptions(marketId){
+  const eligible=drivers.filter(d=>d.home_market_id===marketId);
+  return '<option value="">Assign driver...</option>'+eligible.map(d=>'<option value="'+esc(d.id)+'">'+esc(d.full_name)+'</option>').join('');
+}
 function render(list){
   rows.innerHTML=list.map(r=>`<tr>
     <td><b>${esc(r.request_code)}</b><div class="muted small">${esc(r.market_id)}</div></td>
@@ -60,9 +65,11 @@ function render(list){
     <td class="status">${esc(r.status)}</td>
     <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
     <td><div class="actions">
+      <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id)}</select>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
-      <button onclick="setStatus('${esc(r.request_code)}','assigned')">Assigned</button>
+      <button onclick="setStatus('${esc(r.request_code)}','driver_en_route')">En Route</button>
       <button onclick="setStatus('${esc(r.request_code)}','arrived')">Arrived</button>
+      <button onclick="setStatus('${esc(r.request_code)}','passenger_onboard')">Onboard</button>
       <button onclick="setStatus('${esc(r.request_code)}','completed')">Complete</button>
     </div></td>
   </tr>`).join('');
@@ -70,8 +77,21 @@ function render(list){
 async function load(){
  sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);
  rows.innerHTML='<tr><td colspan="8" class="muted">Loading…</td></tr>';
- try{const d=await request('/one/api/admin-reservations');render(d.reservations||[])}
- catch(e){rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}
+ try{
+   const [reservationData,driverData]=await Promise.all([
+     request('/one/api/admin-reservations'),
+     request('/one/api/admin-drivers')
+   ]);
+   drivers=driverData.drivers||[];
+   render(reservationData.reservations||[]);
+ } catch(e){
+   rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'
+ }
+}
+async function assignDriver(requestCode,assignedDriverUserId){
+ if(!assignedDriverUserId)return;
+ try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,assignedDriverUserId})});await load()}
+ catch(e){alert('Driver assignment failed')}
 }
 async function setStatus(requestCode,status){
  try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
