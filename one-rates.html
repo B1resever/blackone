@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ONE Rates · BLACK ONE</title>
+<style>
+:root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
+header{padding:18px 24px;border-bottom:1px solid var(--line)}main{padding:22px;max-width:1350px;margin:auto}
+h1,h2{margin:0 0 14px}.cyan{color:var(--cyan)}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:18px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:10px}input,select,button{background:#0b1c28;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px}
+button{cursor:pointer;font-weight:800}.primary{background:var(--cyan);color:#001217;border-color:var(--cyan)}table{width:100%;border-collapse:collapse}
+th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--cyan);font-size:11px}.muted{color:var(--muted)}
+@media(max-width:850px){.grid{grid-template-columns:1fr 1fr}}
+</style></head>
+<body>
+<header><h1><span class="cyan">ONE</span> Rate Control · BLACK ONE</h1></header>
+<main>
+<div class="panel">
+<h2>Connection</h2>
+<div class="grid"><input id="api" placeholder="ONE API base URL"><input id="token" type="password" placeholder="Admin token"><button class="primary" id="load">LOAD RATES</button></div>
+</div>
+<div class="panel">
+<h2>Activate a rate card</h2>
+<p class="muted">Amounts are entered in major currency units and converted to cents internally.</p>
+<div class="grid">
+<select id="market"><option value="south-florida">South Florida</option><option value="buenos-aires">Buenos Aires</option></select>
+<select id="vehicle"><option value="confort">CONFORT</option><option value="xl">XL</option><option value="suv-black">SUV BLACK</option><option value="ultra-exclusive">ULTRA EXCLUSIVE</option></select>
+<select id="ride"><option value="one-way">One Way</option><option value="round-trip">Round Trip</option><option value="hourly">Hourly</option></select>
+<select id="currency"><option value="USD">USD</option><option value="ARS">ARS</option></select>
+<input id="base" type="number" step="0.01" min="0" placeholder="Base amount">
+<input id="minimum" type="number" step="0.01" min="0" placeholder="Minimum fare">
+<input id="distance" type="number" step="0.01" min="0" placeholder="Per mile / km">
+<select id="unit"><option value="mile">mile</option><option value="km">km</option></select>
+<input id="minute" type="number" step="0.01" min="0" placeholder="Per minute">
+<input id="hourly" type="number" step="0.01" min="0" placeholder="Hourly rate">
+<button class="primary" id="save">SAVE & ACTIVATE</button>
+</div>
+</div>
+<div class="panel"><h2>Current and historical rate cards</h2><div style="overflow:auto"><table><thead><tr><th>MARKET</th><th>VEHICLE</th><th>TYPE</th><th>CURRENCY</th><th>BASE</th><th>MIN</th><th>DIST</th><th>MINUTE</th><th>HOURLY</th><th>ACTIVE</th></tr></thead><tbody id="rows"><tr><td colspan="10" class="muted">Load rates.</td></tr></tbody></table></div></div>
+</main>
+<script>
+const $=s=>document.querySelector(s),api=$('#api'),token=$('#token'),rows=$('#rows');
+api.value=sessionStorage.getItem('one_api')||location.origin;token.value=sessionStorage.getItem('one_token')||'';
+async function request(path,options={}){const base=api.value.replace(/\/$/,'');const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+token.value};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
+function amt(v,c){if(v===null||v===undefined)return '—';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(list){rows.innerHTML=list.map(r=>`<tr><td>${esc(r.market_id)}</td><td>${esc(r.vehicle_class_id)}</td><td>${esc(r.ride_type)}</td><td>${esc(r.currency)}</td><td>${amt(r.base_amount_minor,r.currency)}</td><td>${amt(r.minimum_amount_minor,r.currency)}</td><td>${amt(r.per_distance_minor,r.currency)} / ${esc(r.distance_unit||'—')}</td><td>${amt(r.per_minute_minor,r.currency)}</td><td>${amt(r.hourly_amount_minor,r.currency)}</td><td>${r.active?'YES':'no'}</td></tr>`).join('')}
+async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-rates');render(d.rates||[])}catch{rows.innerHTML='<tr><td colspan="10" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
+const minor=id=>Math.round((Number($(id).value)||0)*100);
+async function save(){const body={marketId:$('#market').value,vehicleClassId:$('#vehicle').value,rideType:$('#ride').value,currency:$('#currency').value,baseAmountMinor:minor('#base'),minimumAmountMinor:minor('#minimum'),perDistanceMinor:minor('#distance'),distanceUnit:$('#unit').value,perMinuteMinor:minor('#minute'),hourlyAmountMinor:minor('#hourly')};try{await request('/one/api/admin-rates',{method:'POST',body:JSON.stringify(body)});await load()}catch(e){alert('Rate update failed')}}
+$('#load').addEventListener('click',load);$('#save').addEventListener('click',save);
+</script></body></html>
