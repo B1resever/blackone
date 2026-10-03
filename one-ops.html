@@ -70,11 +70,11 @@ function render(list){
 async function load(){
  sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);
  rows.innerHTML='<tr><td colspan="8" class="muted">Loading…</td></tr>';
- try{const d=await request('/api/admin-reservations');render(d.reservations||[])}
+ try{const d=await request('/one/api/admin-reservations');render(d.reservations||[])}
  catch(e){rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}
 }
 async function setStatus(requestCode,status){
- try{await request('/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
+ try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
  catch(e){alert('Update failed')}
 }
 $('#load').addEventListener('click',load);
