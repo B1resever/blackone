@@ -10,6 +10,9 @@ export type ReservationDraft = {
   dropoff: string;
   pickupDate: string;
   pickupTime: string;
+  returnDate: string;
+  returnTime: string;
+  hourlyHours: number;
   passengers: number;
   fullName: string;
   email: string;
@@ -25,6 +28,9 @@ export const initialReservation: ReservationDraft = {
   dropoff: '',
   pickupDate: '',
   pickupTime: '',
+  returnDate: '',
+  returnTime: '',
+  hourlyHours: 2,
   passengers: 1,
   fullName: '',
   email: '',
@@ -80,11 +86,18 @@ export function getVehicleLabel(vehicleClass: ReservationDraft['vehicleClass']):
 
 export function isTripDetailsComplete(draft: ReservationDraft): boolean {
   const hasDestination = draft.rideType === 'hourly' ? true : draft.dropoff.trim().length > 2;
+  const hasReturn =
+    draft.rideType !== 'round-trip' ||
+    (draft.returnDate.trim().length > 0 && draft.returnTime.trim().length > 0);
+  const hasHours = draft.rideType !== 'hourly' || draft.hourlyHours >= 1;
+
   return (
     draft.pickup.trim().length > 2 &&
     hasDestination &&
     draft.pickupDate.trim().length > 0 &&
     draft.pickupTime.trim().length > 0 &&
+    hasReturn &&
+    hasHours &&
     draft.fullName.trim().length > 2 &&
     draft.email.includes('@') &&
     draft.phone.trim().length >= 7 &&
