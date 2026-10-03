@@ -18,6 +18,13 @@ type Trip = {
   payment_status: string;
   quote_amount_minor?: number | null;
   quote_currency?: string | null;
+  driver_name?: string | null;
+  driver_phone?: string | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_year?: number | null;
+  vehicle_color?: string | null;
+  plate_number?: string | null;
 };
 
 export default function TripsScreen() {
@@ -88,6 +95,16 @@ export default function TripsScreen() {
                 {new Intl.NumberFormat(undefined, { style: 'currency', currency: trip.quote_currency }).format(Number(trip.quote_amount_minor) / 100)}
               </Text>
             ) : null}
+            {trip.driver_name ? (
+              <View style={styles.driverCard}>
+                <Text style={styles.driverLabel}>DRIVER ASSIGNED</Text>
+                <Text style={styles.driverName}>{trip.driver_name}</Text>
+                <Text style={styles.driverMeta}>
+                  {[trip.vehicle_year, trip.vehicle_make, trip.vehicle_model].filter(Boolean).join(' ')}
+                </Text>
+                {trip.plate_number ? <Text style={styles.driverMeta}>Plate · {trip.plate_number}</Text> : null}
+              </View>
+            ) : null}
           </View>
         ))}
 
@@ -114,6 +131,10 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 5, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, fontWeight: '800', marginTop: 12, textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontWeight: '900', fontSize: 22, marginTop: 5 },
+  driverCard: { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.md, borderWidth: 1, borderColor: theme.colors.border, padding: 12, marginTop: 14 },
+  driverLabel: { color: theme.colors.cyan, fontWeight: '900', fontSize: 10, letterSpacing: 1.2 },
+  driverName: { color: theme.colors.white, fontWeight: '900', fontSize: 16, marginTop: 5 },
+  driverMeta: { color: theme.colors.muted, fontSize: 12, marginTop: 3 },
   empty: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 18 },
   emptyTitle: { color: theme.colors.white, fontWeight: '900', fontSize: 17 },
   emptyText: { color: theme.colors.muted, marginTop: 6 },
