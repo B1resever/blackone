@@ -96,3 +96,48 @@ export async function deleteAccount() {
   await clearSessionToken();
   return data.message ?? 'Account deleted.';
 }
+
+
+export async function activateDriverAccount(applicationCode: string, email: string, password: string) {
+  const response = await api('driver-activate', {
+    method: 'POST',
+    body: JSON.stringify({ applicationCode, email, password }),
+  });
+  const data = await response.json() as { user?: OneUser; session?: { token?: string }; error?: string };
+  if (!response.ok || !data.user || !data.session?.token) throw new Error(data.error ?? 'driver_activation_failed');
+  await setSessionToken(data.session.token);
+  return data.user;
+}
+
+export type DriverTrip = {
+  request_code: string;
+  market_id: string;
+  ride_type: string;
+  pickup_text: string;
+  dropoff_text?: string | null;
+  pickup_date_text: string;
+  pickup_time_text: string;
+  passenger_count: number;
+  vehicle_class_id: string;
+  guest_full_name?: string | null;
+  guest_phone?: string | null;
+  status: string;
+  payment_status: string;
+  quote_amount_minor?: number | null;
+  quote_currency?: string | null;
+};
+
+export async function loadDriverTrips() {
+  const response = await api('driver-jobs');
+  if (!response.ok) throw new Error('driver_jobs_failed');
+  const data = await response.json() as { trips?: DriverTrip[] };
+  return data.trips ?? [];
+}
+
+export async function updateDriverTrip(requestCode: string, status: 'driver_en_route' | 'arrived' | 'passenger_onboard' | 'completed') {
+  const response = await api('driver-trip-update', {
+    method: 'POST',
+    body: JSON.stringify({ requestCode, status }),
+  });
+  if (!response.ok) throw new Error('driver_trip_update_failed');
+}
