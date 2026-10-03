@@ -34,11 +34,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status,
       quote_amount_minor,
       quote_currency,
-      created_at,
-      updated_at
-    from one_reservations
-    where request_code = ${parsed.data.requestCode}
-      and lower(guest_email) = lower(${parsed.data.email})
+      u.full_name as driver_name,
+      u.phone as driver_phone,
+      v.make as vehicle_make,
+      v.model as vehicle_model,
+      v.vehicle_year,
+      v.color as vehicle_color,
+      v.plate_number,
+      r.created_at,
+      r.updated_at
+    from one_reservations r
+    left join one_users u on u.id = r.assigned_driver_user_id
+    left join one_driver_vehicles v on v.id = r.assigned_vehicle_id
+    where r.request_code = ${parsed.data.requestCode}
+      and lower(r.guest_email) = lower(${parsed.data.email})
     limit 1
   `;
 
