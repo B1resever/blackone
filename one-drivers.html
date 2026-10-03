@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ONE Drivers · BLACK ONE</title>
+<style>
+:root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
+header{padding:18px 24px;border-bottom:1px solid var(--line)}main{padding:22px;max-width:1500px;margin:auto}
+h1{margin:0}.cyan{color:var(--cyan)}.controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:16px}
+input,select,button{background:#0b1c28;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:11px}
+button{cursor:pointer;font-weight:800}.primary{background:var(--cyan);color:#001217;border-color:var(--cyan)}
+table{width:100%;border-collapse:collapse;background:var(--panel)}th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--cyan);font-size:11px}.muted{color:var(--muted)}.grid{overflow:auto}.status{text-transform:uppercase;font-weight:900}.actions{display:flex;gap:6px;flex-wrap:wrap}
+@media(max-width:800px){.controls{grid-template-columns:1fr}}
+</style></head>
+<body>
+<header><h1><span class="cyan">ONE</span> Drivers · BLACK ONE</h1></header>
+<main>
+<div class="controls"><input id="api" placeholder="ONE API base URL"><input id="token" type="password" placeholder="Admin token"><button id="load" class="primary">LOAD DRIVERS</button></div>
+<div class="grid"><table><thead><tr><th>APPLICATION</th><th>DRIVER</th><th>MARKET</th><th>VEHICLE</th><th>LICENSE</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody id="rows"><tr><td colspan="7" class="muted">Connect ONE API to load driver applications.</td></tr></tbody></table></div>
+</main>
+<script>
+const $=s=>document.querySelector(s),api=$('#api'),token=$('#token'),rows=$('#rows');
+api.value=sessionStorage.getItem('one_api')||location.origin;token.value=sessionStorage.getItem('one_token')||'';
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+async function request(path,options={}){const base=api.value.replace(/\/$/,'');const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+token.value};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
+function render(list){rows.innerHTML=list.map(a=>`<tr>
+<td><b>${esc(a.application_code)}</b><div class="muted">${new Date(a.created_at).toLocaleString()}</div></td>
+<td><b>${esc(a.full_name)}</b><div class="muted">${esc(a.email)}<br>${esc(a.phone)}</div></td>
+<td>${esc(a.market_id)}</td>
+<td>${esc(a.vehicle_year)} ${esc(a.vehicle_make)} ${esc(a.vehicle_model)}<div class="muted">${esc(a.plate_number||'Plate pending')}</div></td>
+<td>${esc(a.license_region)}</td><td class="status">${esc(a.status)}</td>
+<td><div class="actions"><button onclick="setStatus('${esc(a.application_code)}','reviewing')">Review</button><button onclick="setStatus('${esc(a.application_code)}','documents_required')">Docs</button><button onclick="setStatus('${esc(a.application_code)}','approved')">Approve</button><button onclick="setStatus('${esc(a.application_code)}','rejected')">Reject</button></div></td></tr>`).join('')}
+async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-driver-applications');render(d.applications||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
+async function setStatus(applicationCode,status){try{await request('/one/api/admin-driver-application-update',{method:'POST',body:JSON.stringify({applicationCode,status,reviewNotes:''})});await load()}catch{alert('Update failed')}}
+$('#load').addEventListener('click',load);
+</script></body></html>

@@ -27,7 +27,7 @@ export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuoteP
   if (!apiBaseUrl || !draft.vehicleClass) return null;
 
   try {
-    const response = await fetch(apiBaseUrl + '/api/quotes', {
+    const response = await fetch(apiBaseUrl + '/one/api/quotes', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -43,7 +43,7 @@ export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuoteP
 }
 
 async function submitToOneApi(draft: ReservationDraft, baseUrl: string): Promise<ReservationReceipt> {
-  const response = await fetch(baseUrl + '/api/reservations', {
+  const response = await fetch(baseUrl + '/one/api/reservations', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -136,7 +136,7 @@ export async function createCheckoutUrl(requestCode: string): Promise<string | n
   const apiBaseUrl = getApiBaseUrl();
   if (!apiBaseUrl) return null;
 
-  const response = await fetch(apiBaseUrl + '/api/create-checkout-session', {
+  const response = await fetch(apiBaseUrl + '/one/api/create-checkout-session', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

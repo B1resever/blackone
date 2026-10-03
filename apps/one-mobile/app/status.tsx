@@ -25,6 +25,39 @@ export default function ReservationStatusScreen() {
   const [reservation, setReservation] = useState<ReservationStatus | null>(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  async function cancelReservation() {
+    if (!reservation || cancelling) return;
+    const apiBaseUrl = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
+    if (!apiBaseUrl) {
+      setMessage('Cancellation is unavailable until ONE API is connected.');
+      return;
+    }
+
+    setCancelling(true);
+    setMessage('');
+    try {
+      const response = await fetch(apiBaseUrl + '/one/api/cancel-reservation', {
+        method: 'POST',
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestCode: reservation.request_code, email, reason: '' }),
+      });
+
+      const data = (await response.json()) as { message?: string };
+      if (!response.ok) {
+        setMessage(data.message ?? 'This reservation cannot be cancelled in the app.');
+        return;
+      }
+
+      setMessage(data.message ?? 'Cancellation recorded.');
+      setReservation((current) => current ? { ...current, status: 'cancelled' } : current);
+    } catch {
+      setMessage('ONE could not reach the cancellation service.');
+    } finally {
+      setCancelling(false);
+    }
+  }
 
   async function findReservation() {
     const apiBaseUrl = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
@@ -38,7 +71,7 @@ export default function ReservationStatusScreen() {
     setReservation(null);
 
     try {
-      const response = await fetch(apiBaseUrl + '/api/reservation-status', {
+      const response = await fetch(apiBaseUrl + '/one/api/reservation-status', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestCode, email }),
@@ -106,6 +139,12 @@ export default function ReservationStatusScreen() {
                 {new Intl.NumberFormat(undefined, { style: 'currency', currency: reservation.quote_currency }).format(Number(reservation.quote_amount_minor) / 100)}
               </Text>
             ) : null}
+
+            {!['completed', 'cancelled'].includes(reservation.status) ? (
+              <Pressable style={styles.cancelButton} onPress={cancelReservation} disabled={cancelling}>
+                <Text style={styles.cancelText}>{cancelling ? 'CANCELLING…' : 'CANCEL RESERVATION'}</Text>
+              </Pressable>
+            ) : null}
           </View>
         ) : null}
       </ScrollView>
@@ -131,4 +170,6 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 6, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, marginTop: 15, fontWeight: '800', textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontSize: 26, fontWeight: '900', marginTop: 5 },
+  cancelButton: { borderWidth: 1, borderColor: theme.colors.danger, borderRadius: theme.radius.md, padding: 14, marginTop: 18, alignItems: 'center' },
+  cancelText: { color: theme.colors.danger, fontWeight: '900' },
 });
