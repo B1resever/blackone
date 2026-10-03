@@ -17,7 +17,7 @@ function Row({ label, value }: { label: string; value: string }) {
 }
 
 export default function ReviewScreen() {
-  const { draft } = useReservation();
+  const { draft, setReceipt } = useReservation();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,7 +26,8 @@ export default function ReviewScreen() {
     setSubmitting(true);
     setError('');
     try {
-      await submitReservationRequest(draft);
+      const receipt = await submitReservationRequest(draft);
+      setReceipt(receipt);
       router.replace('/confirmation');
     } catch {
       setError('We could not send the reservation request. Please try again.');
@@ -47,7 +48,7 @@ export default function ReviewScreen() {
           <Row label="Service" value={draft.rideType.replace('-', ' ')} />
           <Row label="Pickup" value={draft.pickup} />
           {draft.rideType !== 'hourly' ? <Row label="Drop-off" value={draft.dropoff} /> : null}
-          <Row label="When" value={`${draft.pickupDate} · ${draft.pickupTime}`} />
+          <Row label="When" value={draft.pickupDate + ' · ' + draft.pickupTime} />
           <Row label="Passengers" value={String(draft.passengers)} />
           <Row label="Vehicle" value={getVehicleLabel(draft.vehicleClass)} />
         </View>
