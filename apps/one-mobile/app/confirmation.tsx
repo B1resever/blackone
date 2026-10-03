@@ -5,7 +5,7 @@ import { useReservation } from '../src/reservation-context';
 import { theme } from '../src/theme';
 
 export default function ConfirmationScreen() {
-  const { resetDraft } = useReservation();
+  const { receipt, resetDraft } = useReservation();
 
   function finish() {
     resetDraft();
@@ -23,6 +23,14 @@ export default function ConfirmationScreen() {
         <Text style={styles.body}>
           BLACK ONE received your reservation request. The ride is not dispatched until availability and final pricing are confirmed.
         </Text>
+
+        {receipt ? (
+          <View style={styles.referenceCard}>
+            <Text style={styles.referenceLabel}>REQUEST CODE</Text>
+            <Text style={styles.referenceCode}>{receipt.requestCode}</Text>
+            <Text style={styles.referenceHelp}>Keep this code for reservation support.</Text>
+          </View>
+        ) : null}
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>What happens next</Text>
@@ -47,7 +55,11 @@ const styles = StyleSheet.create({
   kicker: { color: theme.colors.cyan, fontSize: 12, fontWeight: '900', letterSpacing: 2.2 },
   title: { color: theme.colors.white, fontSize: 36, fontWeight: '900', marginTop: 8 },
   body: { color: theme.colors.muted, fontSize: 15, lineHeight: 23, marginTop: 13 },
-  card: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 18, marginTop: 24 },
+  referenceCard: { backgroundColor: '#04202A', borderWidth: 1, borderColor: theme.colors.cyan, borderRadius: theme.radius.lg, padding: 18, marginTop: 24 },
+  referenceLabel: { color: theme.colors.cyanSoft, fontSize: 10, fontWeight: '900', letterSpacing: 2 },
+  referenceCode: { color: theme.colors.white, fontSize: 25, fontWeight: '900', marginTop: 6, letterSpacing: 1 },
+  referenceHelp: { color: theme.colors.muted, fontSize: 12, marginTop: 6 },
+  card: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 18, marginTop: 14 },
   cardTitle: { color: theme.colors.white, fontSize: 16, fontWeight: '900', marginBottom: 8 },
   item: { color: theme.colors.muted, fontSize: 13, lineHeight: 21, marginTop: 5 },
   button: { backgroundColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 17, alignItems: 'center', marginTop: 20 },
