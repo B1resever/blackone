@@ -5,6 +5,7 @@ import { createRequestCode } from '../src/ids.js';
 import { computeRoute } from '../src/maps.js';
 import { calculateQuote } from '../src/pricing.js';
 import { reservationRequestSchema } from '../src/validation.js';
+import { getSessionUser } from '../src/auth.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (allowCors(req, res)) return;
@@ -29,6 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const sql = neon(connectionString);
   const data = parsed.data;
   const requestCode = createRequestCode();
+  const accountUser = await getSessionUser(req);
 
   let route;
   if (data.rideType !== 'hourly' && process.env.GOOGLE_MAPS_SERVER_KEY) {
@@ -63,6 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const rows = await sql`
       insert into one_reservations (
         request_code,
+        passenger_user_id,
         market_id,
         ride_type,
         pickup_text,
@@ -82,6 +85,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         quote_confirmed_at
       ) values (
         ${requestCode},
+        ${accountUser?.role === 'passenger' ? accountUser.id : null},
         ${data.marketId},
         ${data.rideType},
         ${data.pickup},
