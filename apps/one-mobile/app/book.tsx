@@ -1,11 +1,12 @@
 import { router } from 'expo-router';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { serviceMarkets } from '../src/markets';
 import { isTripDetailsComplete, RideType } from '../src/reservation';
 import { useReservation } from '../src/reservation-context';
 import { theme } from '../src/theme';
+import { useAuth } from '../src/auth-context';
 
 const rideTypes: Array<{ id: RideType; label: string }> = [
   { id: 'one-way', label: 'One Way' },
@@ -15,7 +16,17 @@ const rideTypes: Array<{ id: RideType; label: string }> = [
 
 export default function BookScreen() {
   const { draft, updateDraft } = useReservation();
+  const { user } = useAuth();
   const canContinue = useMemo(() => isTripDetailsComplete(draft), [draft]);
+
+  useEffect(() => {
+    if (!user || user.role !== 'passenger') return;
+    updateDraft({
+      fullName: draft.fullName || user.fullName,
+      email: draft.email || user.email || '',
+      phone: draft.phone || user.phone || '',
+    });
+  }, [user?.id]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
