@@ -1,6 +1,7 @@
 import { getMarketLabel, getVehicleLabel, ReservationDraft } from './reservation';
 import type { ReservationReceipt } from './reservation-context';
 import { getSessionToken } from './auth-client';
+import { getSessionToken } from './auth-client';
 
 const RESERVATION_DESK_ENDPOINT = 'https://formspree.io/f/xjgldvyj';
 
