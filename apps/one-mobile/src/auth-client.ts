@@ -143,3 +143,62 @@ export async function updateDriverTrip(requestCode: string, status: 'driver_en_r
   });
   if (!response.ok) throw new Error('driver_trip_update_failed');
 }
+
+
+export type DriverAvailability = {
+  available_for_assignment: boolean;
+  compliance_status: string;
+  verification_status: string;
+};
+
+export type DriverDocument = {
+  id: string;
+  document_type: string;
+  document_number?: string | null;
+  file_url?: string | null;
+  expires_on?: string | null;
+  status: string;
+  review_notes?: string | null;
+  verified_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export async function loadDriverAvailability() {
+  const response = await api('driver-availability');
+  if (!response.ok) throw new Error('driver_availability_failed');
+  const data = await response.json() as { availability?: DriverAvailability };
+  return data.availability ?? null;
+}
+
+export async function setDriverAvailability(available: boolean) {
+  const response = await api('driver-availability', {
+    method: 'POST',
+    body: JSON.stringify({ available }),
+  });
+  const data = await response.json() as { available?: boolean; error?: string; complianceStatus?: string };
+  if (!response.ok) throw new Error(data.error ?? 'driver_availability_failed');
+  return data;
+}
+
+export async function loadDriverDocuments() {
+  const response = await api('driver-documents');
+  if (!response.ok) throw new Error('driver_documents_failed');
+  const data = await response.json() as { documents?: DriverDocument[] };
+  return data.documents ?? [];
+}
+
+export async function submitDriverDocument(input: {
+  documentType: 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check' | 'profile_photo' | 'other';
+  documentNumber?: string;
+  fileUrl?: string;
+  expiresOn?: string;
+}) {
+  const response = await api('driver-documents', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  const data = await response.json() as { document?: DriverDocument; error?: string };
+  if (!response.ok) throw new Error(data.error ?? 'driver_document_submit_failed');
+  return data.document ?? null;
+}
