@@ -17,6 +17,13 @@ type ReservationStatus = {
   payment_status: string;
   quote_amount_minor?: number | null;
   quote_currency?: string | null;
+  driver_name?: string | null;
+  driver_phone?: string | null;
+  vehicle_make?: string | null;
+  vehicle_model?: string | null;
+  vehicle_year?: number | null;
+  vehicle_color?: string | null;
+  plate_number?: string | null;
 };
 
 export default function ReservationStatusScreen() {
@@ -140,6 +147,23 @@ export default function ReservationStatusScreen() {
               </Text>
             ) : null}
 
+            {reservation.driver_name ? (
+              <View style={styles.driverCard}>
+                <Text style={styles.driverLabel}>YOUR DRIVER</Text>
+                <Text style={styles.driverName}>{reservation.driver_name}</Text>
+                {reservation.vehicle_make || reservation.vehicle_model ? (
+                  <Text style={styles.driverMeta}>
+                    {[reservation.vehicle_year, reservation.vehicle_make, reservation.vehicle_model].filter(Boolean).join(' ')}
+                  </Text>
+                ) : null}
+                {reservation.vehicle_color || reservation.plate_number ? (
+                  <Text style={styles.driverMeta}>
+                    {[reservation.vehicle_color, reservation.plate_number].filter(Boolean).join(' · ')}
+                  </Text>
+                ) : null}
+              </View>
+            ) : null}
+
             {!['completed', 'cancelled'].includes(reservation.status) ? (
               <Pressable style={styles.cancelButton} onPress={cancelReservation} disabled={cancelling}>
                 <Text style={styles.cancelText}>{cancelling ? 'CANCELLING…' : 'CANCEL RESERVATION'}</Text>
@@ -170,6 +194,10 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 6, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, marginTop: 15, fontWeight: '800', textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontSize: 26, fontWeight: '900', marginTop: 5 },
+  driverCard: { backgroundColor: theme.colors.surfaceRaised, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md, padding: 14, marginTop: 16 },
+  driverLabel: { color: theme.colors.cyan, fontSize: 10, fontWeight: '900', letterSpacing: 1.5 },
+  driverName: { color: theme.colors.white, fontSize: 17, fontWeight: '900', marginTop: 6 },
+  driverMeta: { color: theme.colors.muted, marginTop: 4, fontSize: 12 },
   cancelButton: { borderWidth: 1, borderColor: theme.colors.danger, borderRadius: theme.radius.md, padding: 14, marginTop: 18, alignItems: 'center' },
   cancelText: { color: theme.colors.danger, fontWeight: '900' },
 });
