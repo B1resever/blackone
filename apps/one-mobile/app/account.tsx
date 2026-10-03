@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../src/auth-context';
@@ -86,6 +87,18 @@ export default function AccountScreen() {
             <Text style={styles.meta}>{user.phone}</Text>
             <Text style={styles.role}>{user.role.toUpperCase()}</Text>
           </View>
+
+          {user.role === 'passenger' ? (
+            <Pressable style={styles.primary} onPress={() => router.push('/trips')}>
+              <Text style={styles.primaryText}>MY RESERVATIONS →</Text>
+            </Pressable>
+          ) : null}
+
+          {user.role === 'driver' ? (
+            <Pressable style={styles.primary} onPress={() => router.push('/driver-access')}>
+              <Text style={styles.primaryText}>DRIVER TRIPS →</Text>
+            </Pressable>
+          ) : null}
 
           <Pressable style={styles.secondary} onPress={logout} disabled={working}>
             <Text style={styles.secondaryText}>SIGN OUT</Text>
