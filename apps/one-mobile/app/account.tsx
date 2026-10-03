@@ -4,6 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
+import { enableOneNotifications } from '../src/push';
 
 type Mode = 'login' | 'register';
 
@@ -43,6 +44,20 @@ export default function AccountScreen() {
             ? 'Email or password is incorrect.'
             : 'ONE could not complete the account request.',
       );
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function enableNotifications() {
+    if (working) return;
+    setWorking(true);
+    setMessage('');
+    try {
+      const result = await enableOneNotifications();
+      setMessage(result.enabled ? 'ONE trip notifications are enabled.' : 'Notifications could not be enabled on this device yet.');
+    } catch {
+      setMessage('ONE could not enable notifications.');
     } finally {
       setWorking(false);
     }
@@ -99,6 +114,10 @@ export default function AccountScreen() {
               <Text style={styles.primaryText}>DRIVER TRIPS →</Text>
             </Pressable>
           ) : null}
+
+          <Pressable style={styles.secondary} onPress={enableNotifications} disabled={working}>
+            <Text style={styles.secondaryText}>ENABLE TRIP NOTIFICATIONS</Text>
+          </Pressable>
 
           <Pressable style={styles.secondary} onPress={logout} disabled={working}>
             <Text style={styles.secondaryText}>SIGN OUT</Text>
