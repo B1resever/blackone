@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ONE Ops · BLACK ONE</title>
+  <style>
+    :root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
+    header{position:sticky;top:0;background:rgba(2,8,14,.94);border-bottom:1px solid var(--line);padding:18px 24px;z-index:5}
+    h1{margin:0;font-size:22px} .cyan{color:var(--cyan)} main{padding:22px;max-width:1500px;margin:auto}
+    .controls,.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
+    .controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:16px}
+    input,select,button{background:#0b1c28;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
+    button{cursor:pointer;font-weight:800} button.primary{background:var(--cyan);color:#001217;border-color:var(--cyan)}
+    table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:18px;overflow:hidden}
+    th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{color:var(--cyan);font-size:11px;letter-spacing:1px}
+    .muted{color:var(--muted)} .status{font-weight:900;text-transform:uppercase}.grid{overflow:auto}
+    .money{font-weight:900}.small{font-size:11px}.actions{display:flex;gap:6px;flex-wrap:wrap}
+    @media(max-width:800px){.controls{grid-template-columns:1fr}.hide-sm{display:none}}
+  </style>
+</head>
+<body>
+<header><h1><span class="cyan">ONE</span> Ops · BLACK ONE</h1></header>
+<main>
+  <div class="controls">
+    <input id="api" placeholder="ONE API base URL">
+    <input id="token" type="password" placeholder="Admin token">
+    <button class="primary" id="load">LOAD RESERVATIONS</button>
+  </div>
+  <div class="grid">
+    <table>
+      <thead><tr><th>REQUEST</th><th>PASSENGER</th><th>TRIP</th><th>WHEN</th><th>VEHICLE</th><th>STATUS</th><th>PAYMENT</th><th>ACTIONS</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load operations.</td></tr></tbody>
+    </table>
+  </div>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const api=$('#api'),token=$('#token'),rows=$('#rows');
+api.value=sessionStorage.getItem('one_api')||location.origin;
+token.value=sessionStorage.getItem('one_token')||'';
+
+async function request(path,options={}){
+  const base=api.value.replace(/\/$/,'');
+  const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+token.value};
+  const res=await fetch(base+path,{...options,headers});
+  if(!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+function money(v,c){if(!v||!c)return 'Pending';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function render(list){
+  rows.innerHTML=list.map(r=>`<tr>
+    <td><b>${esc(r.request_code)}</b><div class="muted small">${esc(r.market_id)}</div></td>
+    <td><b>${esc(r.guest_full_name)}</b><div class="muted small">${esc(r.guest_email)}<br>${esc(r.guest_phone)}</div></td>
+    <td>${esc(r.pickup_text)}<div class="muted">→ ${esc(r.dropoff_text||'Hourly service')}</div></td>
+    <td>${esc(r.pickup_date_text)}<div class="muted">${esc(r.pickup_time_text)}</div></td>
+    <td>${esc(r.vehicle_class_id)}<div class="muted">${esc(r.passenger_count)} pax</div></td>
+    <td class="status">${esc(r.status)}</td>
+    <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
+    <td><div class="actions">
+      <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
+      <button onclick="setStatus('${esc(r.request_code)}','assigned')">Assigned</button>
+      <button onclick="setStatus('${esc(r.request_code)}','arrived')">Arrived</button>
+      <button onclick="setStatus('${esc(r.request_code)}','completed')">Complete</button>
+    </div></td>
+  </tr>`).join('');
+}
+async function load(){
+ sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);
+ rows.innerHTML='<tr><td colspan="8" class="muted">Loading…</td></tr>';
+ try{const d=await request('/api/admin-reservations');render(d.reservations||[])}
+ catch(e){rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}
+}
+async function setStatus(requestCode,status){
+ try{await request('/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
+ catch(e){alert('Update failed')}
+}
+$('#load').addEventListener('click',load);
+</script>
+</body>
+</html>
