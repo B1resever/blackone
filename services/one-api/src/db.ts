@@ -8,5 +8,5 @@ export function getDb() {
   }
 
   const sql = neon(connectionString);
-  return drizzle({ client: sql });
+  return drizzle(sql);
 }
