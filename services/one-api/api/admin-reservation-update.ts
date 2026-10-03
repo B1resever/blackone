@@ -9,6 +9,7 @@ const schema = z.object({
   status: z.enum(['requested','quoted','confirmed','assigned','driver_en_route','arrived','passenger_onboard','completed','cancelled']).optional(),
   quoteAmountMinor: z.number().int().positive().optional(),
   quoteCurrency: z.enum(['USD','ARS']).optional(),
+  assignedDriverUserId: z.string().uuid().optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -33,6 +34,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           quote_confirmed_at = now(),
           status = case when status = 'requested' then 'quoted' else status end,
           updated_at = now()
+      where request_code = ${input.requestCode}
+    `;
+  }
+
+  if (input.assignedDriverUserId) {
+    const driverRows = await sql`
+      select u.id
+      from one_users u
+      join one_driver_profiles p on p.user_id = u.id
+      where u.id = ${input.assignedDriverUserId}
+        and u.role = 'driver'
+        and u.status = 'active'
+        and p.verification_status = 'approved'
+      limit 1
+    `;
+
+    if (!driverRows[0]) {
+      return res.status(400).json({ error: 'driver_not_available' });
+    }
+
+    await sql`
+      update one_reservations
+      set assigned_driver_user_id = ${input.assignedDriverUserId},
+          status = 'assigned',
+          updated_at = now()
+      where request_code = ${input.requestCode}
+    `;
+
+    await sql`
+      insert into one_trip_events (reservation_id, actor_user_id, event_type, payload)
+      select id, ${input.assignedDriverUserId}, 'driver_assigned', jsonb_build_object('source', 'ONE Ops')
+      from one_reservations
       where request_code = ${input.requestCode}
     `;
   }
