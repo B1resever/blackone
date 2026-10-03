@@ -57,45 +57,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const input = parsed.data;
 
-  await sql.transaction(async (tx) => {
-    await tx`
-      update one_market_rates
-      set active = false,
-          effective_to = now()
-      where market_id = ${input.marketId}
-        and vehicle_class_id = ${input.vehicleClassId}
-        and ride_type = ${input.rideType}
-        and active = true
-    `;
+  await sql`
+    update one_market_rates
+    set active = false,
+        effective_to = now()
+    where market_id = ${input.marketId}
+      and vehicle_class_id = ${input.vehicleClassId}
+      and ride_type = ${input.rideType}
+      and active = true
+  `;
 
-    await tx`
-      insert into one_market_rates (
-        market_id,
-        vehicle_class_id,
-        ride_type,
-        currency,
-        base_amount_minor,
-        minimum_amount_minor,
-        per_distance_minor,
-        distance_unit,
-        per_minute_minor,
-        hourly_amount_minor,
-        active
-      ) values (
-        ${input.marketId},
-        ${input.vehicleClassId},
-        ${input.rideType},
-        ${input.currency},
-        ${input.baseAmountMinor},
-        ${input.minimumAmountMinor},
-        ${input.perDistanceMinor ?? null},
-        ${input.distanceUnit ?? null},
-        ${input.perMinuteMinor ?? null},
-        ${input.hourlyAmountMinor ?? null},
-        true
-      )
-    `;
-  });
+  await sql`
+    insert into one_market_rates (
+      market_id,
+      vehicle_class_id,
+      ride_type,
+      currency,
+      base_amount_minor,
+      minimum_amount_minor,
+      per_distance_minor,
+      distance_unit,
+      per_minute_minor,
+      hourly_amount_minor,
+      active
+    ) values (
+      ${input.marketId},
+      ${input.vehicleClassId},
+      ${input.rideType},
+      ${input.currency},
+      ${input.baseAmountMinor},
+      ${input.minimumAmountMinor},
+      ${input.perDistanceMinor ?? null},
+      ${input.distanceUnit ?? null},
+      ${input.perMinuteMinor ?? null},
+      ${input.hourlyAmountMinor ?? null},
+      true
+    )
+  `;
 
   return res.status(200).json({ updated: true });
 }
