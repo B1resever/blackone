@@ -14,6 +14,7 @@ const schema = z.object({
   vehicleMake: z.string().trim().min(2).max(80),
   vehicleModel: z.string().trim().min(2).max(100),
   plateNumber: z.string().trim().max(40).default(''),
+  vehicleClassId: z.enum(['confort','xl','suv-black','ultra-exclusive']),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -45,6 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         vehicle_make,
         vehicle_model,
         plate_number,
+        vehicle_class_id,
         status
       ) values (
         ${applicationCode},
@@ -57,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ${input.vehicleMake},
         ${input.vehicleModel},
         ${input.plateNumber || null},
+        ${input.vehicleClassId},
         'submitted'
       )
     `;
