@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { getDeviceLanguage, Language, supportedLanguages, t } from '../src/i18n';
 import { serviceMarkets } from '../src/markets';
 import { theme } from '../src/theme';
+import { useAuth } from '../src/auth-context';
 
 const categories = [
   { name: 'CONFORT', detail: 'Premium everyday rides', meta: '1–4' },
@@ -41,6 +42,7 @@ function LanguageSelector({ language, onChange }: LanguageSelectorProps) {
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>(getDeviceLanguage);
+  const { user } = useAuth();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -50,9 +52,9 @@ export default function HomeScreen() {
             <Text style={styles.brand}>B1</Text>
             <Text style={styles.brandSub}>BLACK ONE</Text>
           </View>
-          <View style={styles.marketPill}>
-            <Text style={styles.marketText}>🇺🇸 USA · 🇦🇷 ARG</Text>
-          </View>
+          <Pressable style={styles.marketPill} onPress={() => router.push('/account')}>
+            <Text style={styles.marketText}>{user ? 'MY ONE' : 'SIGN IN'}</Text>
+          </Pressable>
         </View>
 
         <LanguageSelector language={language} onChange={setLanguage} />
