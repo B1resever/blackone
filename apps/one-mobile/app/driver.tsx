@@ -58,7 +58,7 @@ export default function DriverScreen() {
     setMessage('');
 
     try {
-      const response = await fetch(base + '/api/driver-applications', {
+      const response = await fetch(base + '/one/api/driver-applications', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify(application),
