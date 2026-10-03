@@ -38,7 +38,7 @@ export default function ReservationStatusScreen() {
     setReservation(null);
 
     try {
-      const response = await fetch(apiBaseUrl + '/api/reservation-status', {
+      const response = await fetch(apiBaseUrl + '/one/api/reservation-status', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestCode, email }),
