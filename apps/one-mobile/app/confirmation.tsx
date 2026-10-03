@@ -1,11 +1,19 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { createCheckoutUrl } from '../src/reservation-api';
 import { useReservation } from '../src/reservation-context';
 import { theme } from '../src/theme';
 
 export default function ConfirmationScreen() {
   const { receipt, resetDraft } = useReservation();
+  const canPay = receipt?.quoteStatus === 'quoted' && (receipt.amountMinor ?? 0) > 0;
+
+  async function payNow() {
+    if (!receipt?.requestCode) return;
+    const url = await createCheckoutUrl(receipt.requestCode);
+    if (url) await Linking.openURL(url);
+  }
 
   function finish() {
     resetDraft();
@@ -39,6 +47,14 @@ export default function ConfirmationScreen() {
           <Text style={styles.item}>3. You receive confirmation before dispatch.</Text>
         </View>
 
+        {canPay ? (
+          <Pressable style={styles.payButton} onPress={payNow} accessibilityRole="button">
+            <Text style={styles.payButtonText}>
+              PAY SECURELY · {new Intl.NumberFormat(undefined, { style: 'currency', currency: receipt?.currency ?? 'USD' }).format((receipt?.amountMinor ?? 0) / 100)}
+            </Text>
+          </Pressable>
+        ) : null}
+
         <Pressable style={styles.button} onPress={finish} accessibilityRole="button">
           <Text style={styles.buttonText}>BACK TO ONE</Text>
         </Pressable>
@@ -62,6 +78,8 @@ const styles = StyleSheet.create({
   card: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 18, marginTop: 14 },
   cardTitle: { color: theme.colors.white, fontSize: 16, fontWeight: '900', marginBottom: 8 },
   item: { color: theme.colors.muted, fontSize: 13, lineHeight: 21, marginTop: 5 },
-  button: { backgroundColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 17, alignItems: 'center', marginTop: 20 },
+  payButton: { backgroundColor: theme.colors.white, borderRadius: theme.radius.md, padding: 17, alignItems: 'center', marginTop: 20 },
+  payButtonText: { color: '#001217', fontWeight: '900', textAlign: 'center' },
+  button: { backgroundColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 17, alignItems: 'center', marginTop: 12 },
   buttonText: { color: '#001217', fontWeight: '900' },
 });
