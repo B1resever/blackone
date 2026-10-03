@@ -40,13 +40,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (input.assignedDriverUserId) {
     const driverRows = await sql`
-      select u.id
+      select
+        u.id,
+        v.id as vehicle_id,
+        v.vehicle_class_id
       from one_users u
       join one_driver_profiles p on p.user_id = u.id
+      join one_driver_vehicles v on v.driver_user_id = u.id
+      join one_reservations r on r.request_code = ${input.requestCode}
       where u.id = ${input.assignedDriverUserId}
         and u.role = 'driver'
         and u.status = 'active'
         and p.verification_status = 'approved'
+        and v.status = 'approved'
+        and v.vehicle_class_id = r.vehicle_class_id
+      order by v.updated_at desc
       limit 1
     `;
 
@@ -57,6 +65,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await sql`
       update one_reservations
       set assigned_driver_user_id = ${input.assignedDriverUserId},
+          assigned_vehicle_id = ${driverRows[0].vehicle_id},
           status = 'assigned',
           updated_at = now()
       where request_code = ${input.requestCode}
