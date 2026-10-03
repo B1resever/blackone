@@ -24,6 +24,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       p.driver_fee_model,
       p.monthly_cap_amount_minor,
       p.percent_per_trip,
+      p.compliance_status,
+      p.available_for_assignment,
+      p.availability_updated_at,
       v.id as vehicle_id,
       v.vehicle_class_id,
       v.make as vehicle_make,
@@ -43,6 +46,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     where u.role = 'driver'
       and u.status = 'active'
       and p.verification_status = 'approved'
+      and p.compliance_status = 'approved'
+      and p.available_for_assignment = true
+      and (
+        select count(distinct d.document_type)
+        from one_driver_documents d
+        where d.driver_user_id = u.id
+          and d.document_type in ('driver_license','insurance','vehicle_registration','background_check')
+          and d.status = 'approved'
+          and (d.expires_on is null or d.expires_on >= current_date)
+      ) = 4
     order by p.home_market_id, u.full_name
   `;
 

@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
+import { sendPushToUser } from '../src/notifications.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -32,7 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const sql = neon(databaseUrl);
 
   const rows = await sql`
-    select id, status
+    select id, status, passenger_user_id
     from one_reservations
     where request_code = ${parsed.data.requestCode}
       and assigned_driver_user_id = ${user.id}
@@ -67,6 +68,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       jsonb_build_object('status', ${parsed.data.status})
     )
   `;
+
+  const passengerMessages: Record<string, string> = {
+    driver_en_route: 'Your ONE driver is on the way.',
+    arrived: 'Your ONE driver has arrived.',
+    passenger_onboard: 'Your ONE trip has started.',
+    completed: 'Your ONE trip is complete.',
+  };
+
+  await sendPushToUser(
+    trip.passenger_user_id ? String(trip.passenger_user_id) : null,
+    'ONE trip update',
+    passengerMessages[parsed.data.status],
+    { requestCode: parsed.data.requestCode, status: parsed.data.status, url: '/trips' },
+  );
 
   return res.status(200).json({
     requestCode: parsed.data.requestCode,
