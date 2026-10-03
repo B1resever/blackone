@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import Stripe from 'stripe';
 import { neon } from '@neondatabase/serverless';
+import { postDriverTripFee } from '../src/driver-fees.js';
 
 export const config = {
   api: {
@@ -115,6 +116,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           from one_reservations
           where request_code = ${requestCode}
         `;
+
+        const paidRows = await sql`
+          select id, status
+          from one_reservations
+          where request_code = ${requestCode}
+          limit 1
+        `;
+        if (paidRows[0]?.id && paidRows[0]?.status === 'completed') {
+          await postDriverTripFee(String(paidRows[0].id));
+        }
       }
     }
 
