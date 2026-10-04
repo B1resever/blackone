@@ -61,6 +61,7 @@ Apply every migration in order to the dedicated ONE production database:
 4. 0004_driver_vehicle_class.sql
 5. 0005_driver_compliance_push.sql
 6. 0006_driver_fees.sql
+7. 0007_payment_idempotency.sql
 
 Do not apply these migrations to AAA, CENTER + NODO, or any unrelated database.
 

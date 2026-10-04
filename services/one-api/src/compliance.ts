@@ -19,7 +19,7 @@ export async function recalculateDriverCompliance(driverUserId: string) {
       expires_on
     from one_driver_documents
     where driver_user_id = ${driverUserId}
-      and document_type = any(${REQUIRED_DOCUMENTS})
+      and document_type in ('driver_license','insurance','vehicle_registration','background_check')
     order by document_type, created_at desc
   `;
 

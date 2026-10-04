@@ -38,6 +38,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     where passenger_user_id = ${user.id}
   `;
 
+  await sql`
+    update one_driver_profiles
+    set available_for_assignment = false,
+        availability_updated_at = now(),
+        updated_at = now()
+    where user_id = ${user.id}
+  `;
+
+  await sql`delete from one_push_tokens where user_id = ${user.id}`;
   await sql`delete from one_auth_sessions where user_id = ${user.id}`;
 
   return res.status(200).json({

@@ -115,6 +115,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             'paid'
           from one_reservations
           where request_code = ${requestCode}
+          on conflict (provider, provider_payment_id)
+          where provider_payment_id is not null
+          do update set
+            reservation_id = excluded.reservation_id,
+            amount_minor = excluded.amount_minor,
+            currency = excluded.currency,
+            status = excluded.status,
+            updated_at = now()
         `;
 
         const paidRows = await sql`
