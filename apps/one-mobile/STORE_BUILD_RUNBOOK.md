@@ -103,9 +103,10 @@ Run one complete end-to-end test before spending store-review builds:
    - USA: 5% per completed paid trip until $25 monthly cap.
    - Argentina: first month fee exemption, then 10% per completed paid trip.
 22. Verify cancellation flow.
-23. Verify My Reservations synchronization on a second device.
-24. Verify BLACK ONE support and emergency-call confirmation screens.
-25. Verify in-app account deletion.
+23. For a paid test reservation, cancel it in ONE Ops and verify the idempotent full Stripe refund updates payment status to refunded.
+24. Verify My Reservations synchronization on a second device.
+25. Verify BLACK ONE support and emergency-call confirmation screens.
+26. Verify in-app account deletion.
 
 ## Store build sequence
 
