@@ -46,7 +46,7 @@
 ### Production backend
 
 - Dedicated ONE Neon project/database identified
-- Migrations 0001 through 0006 applied
+- Migrations 0001 through 0007 applied
 - Production backend deployed
 - Production environment variables configured
 - /one/api/readiness returns ready=true
