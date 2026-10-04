@@ -101,10 +101,12 @@ export default function ConfirmationScreen() {
 
         <Pressable
           style={styles.trackButton}
-          onPress={() => router.push('/trips')}
+          onPress={() => receipt?.requestCode
+            ? router.push({ pathname: '/status', params: { requestCode: receipt.requestCode, email: draft.email } })
+            : router.push('/status')}
           accessibilityRole="button"
         >
-          <Text style={styles.trackButtonText}>MY RESERVATIONS →</Text>
+          <Text style={styles.trackButtonText}>TRACK THIS RESERVATION →</Text>
         </Pressable>
 
         <Pressable style={styles.button} onPress={finish} accessibilityRole="button">
