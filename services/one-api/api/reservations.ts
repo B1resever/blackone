@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { allowCors, methodNotAllowed } from '../src/http.js';
-import { createRequestCode } from '../src/ids.js';
+import { createRequestCode, createRideCode } from '../src/ids.js';
 import { computeRoute } from '../src/maps.js';
 import { calculateQuote } from '../src/pricing.js';
 import { reservationRequestSchema } from '../src/validation.js';
@@ -30,6 +30,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const sql = neon(connectionString);
   const data = parsed.data;
   const requestCode = createRequestCode();
+  const rideCode = createRideCode();
   const accountUser = await getSessionUser(req);
 
   let route;
@@ -82,7 +83,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         payment_status,
         quote_amount_minor,
         quote_currency,
-        quote_confirmed_at
+        quote_confirmed_at,
+        ride_code
       ) values (
         ${requestCode},
         ${accountUser && !['admin', 'dispatcher'].includes(accountUser.role) ? accountUser.id : null},
@@ -109,7 +111,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'not_started',
         ${quote.status === 'quoted' ? quote.amountMinor : null},
         ${quote.currency},
-        ${quote.status === 'quoted' ? new Date().toISOString() : null}
+        ${quote.status === 'quoted' ? new Date().toISOString() : null},
+        ${rideCode}
       )
       returning
         id,
@@ -117,6 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         status,
         quote_amount_minor,
         quote_currency,
+        ride_code,
         created_at
     `;
 
