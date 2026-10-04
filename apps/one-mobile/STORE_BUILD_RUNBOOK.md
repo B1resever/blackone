@@ -63,6 +63,7 @@ Apply every migration in order to the dedicated ONE production database:
 6. 0006_driver_fees.sql
 7. 0007_payment_idempotency.sql
 8. 0008_trip_safety_live.sql
+9. 0009_driver_document_files.sql
 
 Do not apply these migrations to AAA, CENTER + NODO, or any unrelated database.
 
@@ -87,8 +88,8 @@ Run one complete end-to-end test before spending store-review builds:
 7. Verify the Stripe webhook marks payment paid.
 8. Submit a driver application.
 9. Approve the driver and create the operational driver profile/vehicle.
-10. Submit required driver compliance documents.
-11. Approve license, insurance, registration and background check.
+10. Select and upload required driver compliance PDFs/images directly from ONE Driver.
+11. Open each protected uploaded file in ONE Driver Compliance and approve license, insurance, registration and background check.
 12. Set driver Available.
 13. Assign only a compatible driver/vehicle from ONE Ops.
 14. Confirm the passenger sees the assigned driver and vehicle.
