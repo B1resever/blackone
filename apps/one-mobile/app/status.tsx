@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
@@ -29,9 +29,14 @@ type ReservationStatus = {
   ride_code_verified_at?: string | null;
 };
 
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value ?? '';
+}
+
 export default function ReservationStatusScreen() {
-  const [requestCode, setRequestCode] = useState('');
-  const [email, setEmail] = useState('');
+  const params = useLocalSearchParams<{ requestCode?: string; email?: string }>();
+  const [requestCode, setRequestCode] = useState(() => readParam(params.requestCode));
+  const [email, setEmail] = useState(() => readParam(params.email));
   const [reservation, setReservation] = useState<ReservationStatus | null>(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
