@@ -6,7 +6,11 @@
     "orientation": "portrait",
     "scheme": "one",
     "userInterfaceStyle": "dark",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
       "bundler": "metro"
     },
@@ -17,13 +21,22 @@
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleDevelopmentRegion": "en",
-        "CFBundleLocalizations": ["en", "es", "pt", "fr"]
+        "CFBundleLocalizations": [
+          "en",
+          "es",
+          "pt",
+          "fr"
+        ]
       }
     },
     "android": {
       "package": "com.blackone.one",
       "versionCode": 2,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "../../logo.png.png",
+        "backgroundColor": "#020609"
+      }
     },
     "plugins": [
       "expo-router",
@@ -46,6 +59,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "icon": "../../logo.png.png",
+    "splash": {
+      "image": "../../logo.png.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#020609"
     }
   }
 }
