@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
   <title>ONE Ops · BLACK ONE</title>
   <style>
     :root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
@@ -24,8 +24,8 @@
 <header><h1><span class="cyan">ONE</span> Ops · BLACK ONE</h1></header>
 <main>
   <div class="controls">
-    <input id="api" placeholder="ONE API base URL">
-    <input id="token" type="password" placeholder="Admin token">
+    
+    <a href="/one-admin.html" style="display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;padding:11px;color:var(--text);text-decoration:none;font-weight:800">COMMAND CENTER</a>
     <button class="primary" id="load">LOAD RESERVATIONS</button>
   </div>
   <div class="grid">
@@ -36,15 +36,15 @@
   </div>
 </main>
 <script>
+if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
 const $=s=>document.querySelector(s);
-const api=$('#api'),token=$('#token'),rows=$('#rows');
+const rows=$('#rows');
 let drivers=[];
-api.value=sessionStorage.getItem('one_api')||location.origin;
-token.value=sessionStorage.getItem('one_token')||'';
+
 
 async function request(path,options={}){
-  const base=api.value.replace(/\/$/,'');
-  const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+token.value};
+  const base=location.origin;
+  const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('one_session')||'')};
   const res=await fetch(base+path,{...options,headers});
   if(!res.ok) throw new Error(await res.text());
   return res.json();
@@ -75,7 +75,7 @@ function render(list){
   </tr>`).join('');
 }
 async function load(){
- sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);
+ 
  rows.innerHTML='<tr><td colspan="8" class="muted">Loading…</td></tr>';
  try{
    const [reservationData,driverData]=await Promise.all([
@@ -85,7 +85,7 @@ async function load(){
    drivers=driverData.drivers||[];
    render(reservationData.reservations||[]);
  } catch(e){
-   rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Check API URL and admin token.</td></tr>'
+   rows.innerHTML='<tr><td colspan="8" class="muted">Unable to load. Your ONE Operations session expired or the production API is unavailable.</td></tr>'
  }
 }
 async function assignDriver(requestCode,assignedDriverUserId){

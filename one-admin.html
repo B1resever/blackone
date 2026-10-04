@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>ONE Command Center · BLACK ONE</title>
+<style>
+:root{--bg:#03070b;--panel:#0a1117;--line:#26323b;--gold:#e4b85d;--gold2:#ffd98a;--text:#f7f8fa;--muted:#98a4ad;--bad:#ff6575}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#16212b 0,#03070b 42%);color:var(--text);font:14px Inter,Arial,sans-serif}
+header{padding:22px 26px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:20px;align-items:center}
+.brand{font-size:25px;font-weight:900;letter-spacing:1px}.gold{color:var(--gold)}.muted{color:var(--muted)}
+main{max-width:1180px;margin:auto;padding:28px}.panel{background:rgba(10,17,23,.94);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:18px}
+.login{max-width:560px;margin:60px auto}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{display:block;text-decoration:none;color:var(--text);background:#0c151d;border:1px solid var(--line);border-radius:18px;padding:18px;min-height:132px}
+.card:hover{border-color:var(--gold)}.card h3{margin:0 0 8px;font-size:18px}.card p{margin:0;color:var(--muted);line-height:1.5}
+input,button{width:100%;background:#0d1720;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:10px}
+button{cursor:pointer;font-weight:900}.primary{background:var(--gold);border-color:var(--gold);color:#171109}.danger{border-color:var(--bad);color:var(--bad);background:transparent}
+.row{display:flex;gap:10px}.row>*{flex:1}.hidden{display:none!important}.status{margin-top:10px;color:var(--muted);min-height:20px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div><div class="brand"><span class="gold">ONE</span> Command Center</div><div class="muted">BLACK ONE · Operations</div></div><button id="logoutTop" class="danger hidden" style="width:auto">LOG OUT</button></header>
+<main>
+<section id="loginPanel" class="panel login">
+  <div class="muted">AUTHORIZED OPERATIONS ACCESS</div>
+  <h1>Sign in to ONE Ops</h1>
+  <p class="muted">Use an ONE administrator or dispatcher account. The production master token is not shown in this interface.</p>
+  <input id="email" type="email" placeholder="Email" autocomplete="username">
+  <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="primary" id="login">SIGN IN</button>
+  <div class="status" id="loginStatus"></div>
+</section>
+
+<section id="dashboard" class="hidden">
+  <div class="panel">
+    <div class="muted">SIGNED IN</div>
+    <h1 id="welcome">ONE Operations</h1>
+    <p class="muted">Reservations, drivers, compliance, finance and rate controls use the same authenticated ONE session.</p>
+  </div>
+  <div class="grid">
+    <a class="card" href="/one-ops.html"><h3>Reservations & Dispatch</h3><p>Confirm trips, assign compatible drivers and manage trip status.</p></a>
+    <a class="card" href="/one-drivers.html"><h3>Driver Applications</h3><p>Review and approve driver onboarding.</p></a>
+    <a class="card" href="/one-driver-documents.html"><h3>Driver Compliance</h3><p>Review licenses, insurance, registration and background documents.</p></a>
+    <a class="card" href="/one-driver-finance.html"><h3>Driver Finance</h3><p>Track the USA monthly cap and Argentina driver-fee model.</p></a>
+    <a class="card" href="/one-rates.html"><h3>Rate Control</h3><p>Activate market, vehicle and ride-type pricing.</p></a>
+    <a class="card" href="/support.html"><h3>Support</h3><p>Open BLACK ONE customer support information.</p></a>
+  </div>
+</section>
+</main>
+<script>
+const email=document.querySelector('#email'),password=document.querySelector('#password');
+const loginPanel=document.querySelector('#loginPanel'),dashboard=document.querySelector('#dashboard'),loginStatus=document.querySelector('#loginStatus');
+const logoutTop=document.querySelector('#logoutTop'),welcome=document.querySelector('#welcome');
+
+function setSignedIn(user){
+  loginPanel.classList.add('hidden');dashboard.classList.remove('hidden');logoutTop.classList.remove('hidden');
+  welcome.textContent='Welcome, '+(user?.fullName||'ONE Operations');
+}
+function setSignedOut(){
+  loginPanel.classList.remove('hidden');dashboard.classList.add('hidden');logoutTop.classList.add('hidden');
+}
+async function request(path,options={}){
+  const base=location.origin;
+  const token=sessionStorage.getItem('one_session')||'';
+  const headers={...(options.headers||{}),'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})};
+  return fetch(base+path,{...options,headers});
+}
+async function resume(){
+  if(!sessionStorage.getItem('one_session')) return setSignedOut();
+  try{
+    const res=await request('/one/api/auth-me');
+    if(!res.ok) throw new Error();
+    const data=await res.json();
+    if(!['admin','dispatcher'].includes(data.user?.role)) throw new Error();
+    setSignedIn(data.user);
+  }catch{
+    sessionStorage.removeItem('one_session');setSignedOut();
+  }
+}
+document.querySelector('#login').addEventListener('click',async()=>{
+  loginStatus.textContent='Signing in…';
+  try{
+    const res=await request('/one/api/auth-login',{method:'POST',body:JSON.stringify({email:email.value.trim(),password:password.value})});
+    const data=await res.json();
+    if(!res.ok) throw new Error(data.error||'login_failed');
+    if(!['admin','dispatcher'].includes(data.user?.role)) throw new Error('ops_role_required');
+    sessionStorage.setItem('one_session',data.session.token);
+    sessionStorage.removeItem('one_token');
+    loginStatus.textContent='';
+    setSignedIn(data.user);
+  }catch(e){
+    loginStatus.textContent=e.message==='ops_role_required'?'This account is not authorized for ONE Operations.':'Sign-in failed.';
+  }
+});
+logoutTop.addEventListener('click',async()=>{
+  try{await request('/one/api/auth-logout',{method:'POST'})}catch{}
+  sessionStorage.removeItem('one_session');setSignedOut();
+});
+resume();
+</script>
+</body></html>

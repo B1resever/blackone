@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
 <title>ONE Rates · BLACK ONE</title>
 <style>
 :root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
@@ -18,7 +18,7 @@ th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{color:
 <main>
 <div class="panel">
 <h2>Connection</h2>
-<div class="grid"><input id="api" placeholder="ONE API base URL"><input id="token" type="password" placeholder="Admin token"><button class="primary" id="load">LOAD RATES</button></div>
+<div class="grid"><a href="/one-admin.html" style="display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;padding:11px;color:var(--text);text-decoration:none;font-weight:800">COMMAND CENTER</a><button class="primary" id="load">LOAD RATES</button></div>
 </div>
 <div class="panel">
 <h2>Activate a rate card</h2>
@@ -40,13 +40,13 @@ th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{color:
 <div class="panel"><h2>Current and historical rate cards</h2><div style="overflow:auto"><table><thead><tr><th>MARKET</th><th>VEHICLE</th><th>TYPE</th><th>CURRENCY</th><th>BASE</th><th>MIN</th><th>DIST</th><th>MINUTE</th><th>HOURLY</th><th>ACTIVE</th></tr></thead><tbody id="rows"><tr><td colspan="10" class="muted">Load rates.</td></tr></tbody></table></div></div>
 </main>
 <script>
-const $=s=>document.querySelector(s),api=$('#api'),token=$('#token'),rows=$('#rows');
-api.value=sessionStorage.getItem('one_api')||location.origin;token.value=sessionStorage.getItem('one_token')||'';
-async function request(path,options={}){const base=api.value.replace(/\/$/,'');const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+token.value};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
+if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
+const $=s=>document.querySelector(s),rows=$('#rows');
+async function request(path,options={}){const base=location.origin;const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('one_session')||'')};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
 function amt(v,c){if(v===null||v===undefined)return '—';return new Intl.NumberFormat(undefined,{style:'currency',currency:c}).format(Number(v)/100)}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function render(list){rows.innerHTML=list.map(r=>`<tr><td>${esc(r.market_id)}</td><td>${esc(r.vehicle_class_id)}</td><td>${esc(r.ride_type)}</td><td>${esc(r.currency)}</td><td>${amt(r.base_amount_minor,r.currency)}</td><td>${amt(r.minimum_amount_minor,r.currency)}</td><td>${amt(r.per_distance_minor,r.currency)} / ${esc(r.distance_unit||'—')}</td><td>${amt(r.per_minute_minor,r.currency)}</td><td>${amt(r.hourly_amount_minor,r.currency)}</td><td>${r.active?'YES':'no'}</td></tr>`).join('')}
-async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-rates');render(d.rates||[])}catch{rows.innerHTML='<tr><td colspan="10" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
+async function load(){try{const d=await request('/one/api/admin-rates');render(d.rates||[])}catch{rows.innerHTML='<tr><td colspan="10" class="muted">Unable to load. Your ONE Operations session expired or the production API is unavailable.</td></tr>'}}
 const minor=id=>Math.round((Number($(id).value)||0)*100);
 async function save(){const body={marketId:$('#market').value,vehicleClassId:$('#vehicle').value,rideType:$('#ride').value,currency:$('#currency').value,baseAmountMinor:minor('#base'),minimumAmountMinor:minor('#minimum'),perDistanceMinor:minor('#distance'),distanceUnit:$('#unit').value,perMinuteMinor:minor('#minute'),hourlyAmountMinor:minor('#hourly')};try{await request('/one/api/admin-rates',{method:'POST',body:JSON.stringify(body)});await load()}catch(e){alert('Rate update failed')}}
 $('#load').addEventListener('click',load);$('#save').addEventListener('click',save);
