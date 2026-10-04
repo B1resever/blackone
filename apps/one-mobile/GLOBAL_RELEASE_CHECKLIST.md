@@ -25,6 +25,8 @@
 - USA $25 monthly driver cap logic
 - Argentina launch fee model
 - Privacy, terms and account deletion pages
+- Secure ONE Command Center administrator/dispatcher login
+- One-time master-token administrator bootstrap endpoint
 - Automated release-readiness endpoint
 - Manual ONE Release Gate
 - Manual EAS store build workflow
@@ -54,6 +56,7 @@
 - Production backend deployed
 - Production environment variables configured
 - /one/api/readiness returns ready=true
+- First ONE administrator bootstrapped and /one-admin.html login verified
 - Production rate cards entered in ONE Rate Control
 
 ### Payments and maps
