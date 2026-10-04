@@ -3,9 +3,11 @@ import Stripe from 'stripe';
 import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
+import { getSessionUser } from '../src/auth.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
+  email: z.string().email().max(254).optional(),
   successUrl: z.string().url().optional(),
   cancelUrl: z.string().url().optional(),
 });
@@ -34,6 +36,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       quote_currency,
       guest_full_name,
       guest_email,
+      passenger_user_id,
       status,
       payment_status
     from one_reservations
@@ -43,6 +46,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const reservation = rows[0];
   if (!reservation) return res.status(404).json({ error: 'reservation_not_found' });
+
+  const sessionUser = await getSessionUser(req);
+  const sessionOwnsReservation =
+    sessionUser &&
+    reservation.passenger_user_id &&
+    String(reservation.passenger_user_id) === sessionUser.id;
+  const emailOwnsReservation =
+    parsed.data.email &&
+    reservation.guest_email &&
+    String(reservation.guest_email).toLowerCase() === parsed.data.email.toLowerCase();
+
+  if (!sessionOwnsReservation && !emailOwnsReservation) {
+    return res.status(403).json({ error: 'reservation_payment_not_authorized' });
+  }
 
   const amountMinor = Number(reservation.quote_amount_minor ?? 0);
   const currency = String(reservation.quote_currency ?? '').toLowerCase();
