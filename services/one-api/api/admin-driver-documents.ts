@@ -31,6 +31,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         d.document_type,
         d.document_number,
         d.file_url,
+        f.file_name,
+        f.content_type,
+        f.size_bytes,
+        (f.document_id is not null) as has_file,
         d.expires_on,
         d.status,
         d.review_notes,
@@ -38,6 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         d.created_at
       from one_driver_documents d
       join one_users u on u.id = d.driver_user_id
+      left join one_driver_document_files f on f.document_id = d.id
       order by
         case when d.status = 'pending' then 0 else 1 end,
         d.created_at desc
@@ -48,6 +53,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'invalid_request' });
+
+  if (parsed.data.status === 'approved') {
+    const fileRows = await sql`
+      select
+        d.document_type,
+        (f.document_id is not null) as has_file
+      from one_driver_documents d
+      left join one_driver_document_files f on f.document_id = d.id
+      where d.id = ${parsed.data.documentId}
+      limit 1
+    `;
+
+    if (!fileRows[0]) return res.status(404).json({ error: 'document_not_found' });
+
+    const requiredTypes = new Set(['driver_license','insurance','vehicle_registration','background_check']);
+    if (requiredTypes.has(String(fileRows[0].document_type)) && !fileRows[0].has_file) {
+      return res.status(409).json({ error: 'document_file_required' });
+    }
+  }
 
   const rows = await sql`
     update one_driver_documents
