@@ -19,7 +19,7 @@ const upsertSchema = z.object({
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (allowCors(req, res)) return;
-  if (!isAdminAuthorized(req)) return res.status(401).json({ error: 'unauthorized' });
+  if (!(await isAdminAuthorized(req))) return res.status(401).json({ error: 'unauthorized' });
 
   const databaseUrl = process.env.DATABASE_URL;
   if (!databaseUrl) return res.status(503).json({ error: 'backend_not_configured' });
