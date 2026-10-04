@@ -133,27 +133,50 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     if (application.vehicle_class_id) {
-      const vehicleRows = await sql`
-        insert into one_driver_vehicles (
-          driver_user_id,
-          vehicle_class_id,
-          make,
-          model,
-          vehicle_year,
-          plate_number,
-          status
-        ) values (
-          ${driverUserId},
-          ${application.vehicle_class_id},
-          ${application.vehicle_make},
-          ${application.vehicle_model},
-          ${application.vehicle_year},
-          ${application.plate_number},
-          'approved'
-        )
-        returning id
+      const existingVehicle = await sql`
+        select id
+        from one_driver_vehicles
+        where driver_user_id = ${driverUserId}
+          and vehicle_class_id = ${application.vehicle_class_id}
+          and lower(make) = lower(${application.vehicle_make})
+          and lower(model) = lower(${application.vehicle_model})
+          and vehicle_year is not distinct from ${application.vehicle_year}
+          and plate_number is not distinct from ${application.plate_number}
+        order by updated_at desc
+        limit 1
       `;
-      driverVehicleId = vehicleRows[0]?.id ? String(vehicleRows[0].id) : null;
+
+      if (existingVehicle[0]?.id) {
+        driverVehicleId = String(existingVehicle[0].id);
+        await sql`
+          update one_driver_vehicles
+          set status = 'approved',
+              updated_at = now()
+          where id = ${driverVehicleId}
+        `;
+      } else {
+        const vehicleRows = await sql`
+          insert into one_driver_vehicles (
+            driver_user_id,
+            vehicle_class_id,
+            make,
+            model,
+            vehicle_year,
+            plate_number,
+            status
+          ) values (
+            ${driverUserId},
+            ${application.vehicle_class_id},
+            ${application.vehicle_make},
+            ${application.vehicle_model},
+            ${application.vehicle_year},
+            ${application.plate_number},
+            'approved'
+          )
+          returning id
+        `;
+        driverVehicleId = vehicleRows[0]?.id ? String(vehicleRows[0].id) : null;
+      }
     }
   }
 
