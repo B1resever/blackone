@@ -114,11 +114,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (input.status) {
-    const operationsStatuses = new Set(['requested', 'quoted', 'confirmed', 'cancelled']);
-    if (!operationsStatuses.has(input.status)) {
+    const statusRowsBefore = await sql`
+      select id, status, passenger_user_id, assigned_driver_user_id, payment_status
+      from one_reservations
+      where request_code = ${input.requestCode}
+      limit 1
+    `;
+    const current = statusRowsBefore[0];
+    if (!current) return res.status(404).json({ error: 'reservation_not_found' });
+
+    const nextStatus = input.status;
+    const allowedOpsTransitions: Record<string, string[]> = {
+      requested: ['confirmed', 'cancelled'],
+      quoted: ['confirmed', 'cancelled'],
+      confirmed: ['cancelled'],
+      assigned: ['cancelled'],
+      driver_en_route: ['cancelled'],
+      arrived: ['cancelled'],
+      passenger_onboard: [],
+      completed: [],
+      cancelled: [],
+    };
+
+    const allowed = allowedOpsTransitions[String(current.status)] ?? [];
+    if (!allowed.includes(nextStatus)) {
       return res.status(409).json({
-        error: 'driver_trip_state_required',
-        message: 'After driver assignment, En Route, Arrived, Passenger Onboard and Completed are controlled by the authenticated ONE Driver flow.',
+        error: ['driver_en_route', 'arrived', 'passenger_onboard', 'completed'].includes(nextStatus)
+          ? 'driver_trip_state_required'
+          : 'invalid_status_transition',
+        currentStatus: current.status,
+        allowed,
+        message: 'Active-trip progression is controlled by the authenticated ONE Driver flow.',
       });
     }
 
