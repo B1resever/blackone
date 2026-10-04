@@ -98,15 +98,12 @@ export default function HomeScreen() {
           <View style={styles.heroCopy}>
             <Text style={styles.kicker}>TRANSPORTE MODERNO</Text>
             <Text style={styles.headline}>
-              YOUR RIDE.{'
-'}
-              YOUR TIME.{'
-'}
+              YOUR RIDE.{'\n'}
+              YOUR TIME.{'\n'}
               YOUR <Text style={styles.gold}>ONE.</Text>
             </Text>
             <Text style={styles.heroBody}>
-              Professional rides. Transparent pricing.{'
-'}
+              Professional rides. Transparent pricing.{'\n'}
               Verified drivers. Move different.
             </Text>
 
@@ -206,11 +203,9 @@ export default function HomeScreen() {
           <View style={styles.sectionOverlay} />
           <View style={styles.driverCopy}>
             <Text style={styles.kicker}>DRIVE WITH ONE</Text>
-            <Text style={styles.driverTitle}>Drive more.{'
-'}Keep more.</Text>
+            <Text style={styles.driverTitle}>Drive more.{'\n'}Keep more.</Text>
             <Text style={styles.sectionBody}>
-              A simple and fair model. Greater freedom.{'
-'}Be part of a premium network.
+              A simple and fair model. Greater freedom.{'\n'}Be part of a premium network.
             </Text>
             <Pressable style={styles.goldButtonCompact} onPress={() => router.push('/driver')}>
               <Text style={styles.goldButtonText}>JOIN AS A DRIVER  →</Text>
@@ -248,8 +243,7 @@ export default function HomeScreen() {
 
           <View style={styles.safetyCopy}>
             <Text style={styles.kicker}>ONE SAFETY</Text>
-            <Text style={styles.safetyTitle}>Know your driver.{'
-'}Know your ride.</Text>
+            <Text style={styles.safetyTitle}>Know your driver.{'\n'}Know your ride.</Text>
             <Text style={styles.sectionBody}>Verified drivers, live tracking, unique ride code and in-app support.</Text>
             {[
               ['⌖', 'Real-Time Tracking'],
@@ -268,8 +262,7 @@ export default function HomeScreen() {
         <View style={styles.marketGrid}>
           <View style={styles.marketCard}>
             <Text style={styles.marketFlag}>🇺🇸</Text>
-            <Text style={styles.marketTitle}>USA{'
-'}SOUTH FLORIDA</Text>
+            <Text style={styles.marketTitle}>USA{'\n'}SOUTH FLORIDA</Text>
             <Text style={styles.marketBody}>Miami-Dade and surrounding areas with premium transportation services.</Text>
             <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
               <Text style={styles.marketButtonText}>VIEW CITIES  →</Text>
@@ -278,8 +271,7 @@ export default function HomeScreen() {
 
           <View style={styles.marketCard}>
             <Text style={styles.marketFlag}>🇦🇷</Text>
-            <Text style={styles.marketTitle}>ARGENTINA{'
-'}BUENOS AIRES</Text>
+            <Text style={styles.marketTitle}>ARGENTINA{'\n'}BUENOS AIRES</Text>
             <Text style={styles.marketBody}>CABA · Aeroparque · Ezeiza · Zona Norte · Tigre · Pilar</Text>
             <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
               <Text style={styles.marketButtonText}>VER CIUDADES  →</Text>
