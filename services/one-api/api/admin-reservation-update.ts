@@ -114,6 +114,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (input.status) {
+    const operationsStatuses = new Set(['requested', 'quoted', 'confirmed', 'cancelled']);
+    if (!operationsStatuses.has(input.status)) {
+      return res.status(409).json({
+        error: 'driver_trip_state_required',
+        message: 'After driver assignment, En Route, Arrived, Passenger Onboard and Completed are controlled by the authenticated ONE Driver flow.',
+      });
+    }
+
     await sql`
       update one_reservations
       set status = ${input.status},
