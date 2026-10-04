@@ -13,7 +13,7 @@ const schema = z.object({
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (allowCors(req, res)) return;
   if (req.method !== 'POST') return methodNotAllowed(res, ['POST']);
-  if (!isAdminAuthorized(req)) return res.status(401).json({ error: 'unauthorized' });
+  if (!(await isAdminAuthorized(req))) return res.status(401).json({ error: 'unauthorized' });
 
   const parsed = schema.safeParse(req.body);
   if (!parsed.success) return res.status(400).json({ error: 'invalid_request', details: parsed.error.flatten() });
