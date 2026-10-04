@@ -31,6 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status,
       quote_amount_minor,
       quote_currency,
+      (ride_code_verified_at is not null) as ride_code_verified,
       created_at,
       updated_at
     from one_reservations
