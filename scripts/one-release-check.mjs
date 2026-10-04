@@ -56,6 +56,7 @@ if (eas) {
   'privacy.html',
   'terms.html',
   'delete-account.html',
+  'support.html',
   'payment-success.html',
   'payment-cancelled.html',
   'api/one/health.ts',
