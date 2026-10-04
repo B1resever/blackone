@@ -137,6 +137,38 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    if (event.type === 'charge.refunded') {
+      const charge = event.data.object as Stripe.Charge;
+      const paymentIntentId =
+        typeof charge.payment_intent === 'string' ? charge.payment_intent : null;
+
+      if (paymentIntentId) {
+        const paymentRows = await sql`
+          select id, reservation_id, amount_minor
+          from one_payments
+          where provider = 'stripe'
+            and provider_payment_id = ${paymentIntentId}
+          order by created_at desc
+          limit 1
+        `;
+        const payment = paymentRows[0];
+        if (payment && Number(charge.amount_refunded ?? 0) >= Number(payment.amount_minor ?? 0)) {
+          await sql`
+            update one_payments
+            set status = 'refunded',
+                updated_at = now()
+            where id = ${payment.id}
+          `;
+          await sql`
+            update one_reservations
+            set payment_status = 'refunded',
+                updated_at = now()
+            where id = ${payment.reservation_id}
+          `;
+        }
+      }
+    }
+
     if (event.type === 'payment_intent.payment_failed') {
       const intent = event.data.object as Stripe.PaymentIntent;
       const requestCode = intent.metadata?.one_request_code;
