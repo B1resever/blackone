@@ -66,7 +66,10 @@ if (eas) {
   'one-driver-documents.html',
   'one-driver-finance.html',
   'one-rates.html',
+  'one-accounts.html',
   'api/one/admin-bootstrap.ts',
+  'api/one/admin-user-lookup.ts',
+  'api/one/admin-user-reset-password.ts',
   'api/one/admin-refund.ts',
   'api/one/health.ts',
   'api/one/readiness.ts',
@@ -75,7 +78,7 @@ if (eas) {
   '.github/workflows/one-store-submit.yml',
 ].forEach(requireFile);
 
-for (let i = 1; i <= 8; i += 1) {
+for (let i = 1; i <= 9; i += 1) {
   const prefix = String(i).padStart(4, '0') + '_';
   const dir = path.join(root, 'services/one-api/db/migrations');
   const match = fs.existsSync(dir) && fs.readdirSync(dir).some((name) => name.startsWith(prefix));

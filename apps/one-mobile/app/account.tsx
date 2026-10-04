@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
@@ -47,6 +47,13 @@ export default function AccountScreen() {
     } finally {
       setWorking(false);
     }
+  }
+
+  async function recoverAccount() {
+    const address = 'reservations@blackonetransportation.com';
+    const subject = encodeURIComponent('ONE Account Recovery');
+    const body = encodeURIComponent('I need help recovering my ONE account.\n\nAccount email: ' + email.trim() + '\n\nDo not include your password in this message.');
+    await Linking.openURL('mailto:' + address + '?subject=' + subject + '&body=' + body);
   }
 
   async function enableNotifications() {
@@ -185,6 +192,12 @@ export default function AccountScreen() {
           <Text style={styles.primaryText}>{working ? 'PLEASE WAIT…' : registerMode ? 'CREATE MY ONE →' : 'SIGN IN →'}</Text>
         </Pressable>
 
+        {!registerMode ? (
+          <Pressable style={styles.recoveryButton} onPress={recoverAccount}>
+            <Text style={styles.recoveryText}>FORGOT PASSWORD? CONTACT ONE SUPPORT</Text>
+          </Pressable>
+        ) : null}
+
         {message ? <Text style={styles.message}>{message}</Text> : null}
       </ScrollView>
     </SafeAreaView>
@@ -213,6 +226,8 @@ const styles = StyleSheet.create({
   input: { backgroundColor: theme.colors.surface, borderColor: theme.colors.border, borderWidth: 1, borderRadius: theme.radius.md, color: theme.colors.white, paddingHorizontal: 16, paddingVertical: 15, fontSize: 15 },
   primary: { backgroundColor: theme.colors.cyan, borderRadius: theme.radius.md, padding: 17, marginTop: 20, alignItems: 'center' },
   primaryText: { color: '#001217', fontWeight: '900' },
+  recoveryButton: { paddingVertical: 14, alignItems: 'center', marginTop: 8 },
+  recoveryText: { color: theme.colors.goldSoft, fontWeight: '900', fontSize: 10, letterSpacing: 0.7, textAlign: 'center' },
   secondary: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md, padding: 15, alignItems: 'center', marginTop: 16 },
   secondaryText: { color: theme.colors.white, fontWeight: '900' },
   disabled: { opacity: 0.35 },

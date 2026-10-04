@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
+<title>ONE Accounts · BLACK ONE</title>
+<style>
+:root{--bg:#020609;--panel:#071015;--line:#2a3135;--gold:#e7b45a;--gold2:#f7d79a;--text:#f8f5ef;--muted:#9ba3a7;--danger:#ff5a68}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
+header{padding:20px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+main{max-width:820px;margin:auto;padding:28px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px;margin-bottom:16px}
+h1{margin:0}.gold{color:var(--gold)}.muted{color:var(--muted)}input,button,a.btn{width:100%;display:block;background:#0b151b;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:13px;margin-top:10px;text-decoration:none}
+button{cursor:pointer;font-weight:900}.primary{background:var(--gold);border-color:var(--gold);color:#171109}.danger{border-color:var(--danger);color:var(--danger);background:transparent}
+.hidden{display:none}.value{font-size:17px;font-weight:900;margin-top:6px}.label{font-size:10px;letter-spacing:1.4px;color:var(--gold2);font-weight:900;margin-top:14px}
+</style>
+</head>
+<body>
+<header><div><h1><span class="gold">ONE</span> Accounts</h1><div class="muted">Support-assisted account recovery</div></div><a class="btn" style="width:auto" href="/one-admin.html">COMMAND CENTER</a></header>
+<main>
+<section class="panel">
+  <h2>Find ONE account</h2>
+  <p class="muted">Verify the customer through BLACK ONE support procedures before changing credentials. Never ask a customer to send an existing password.</p>
+  <input id="email" type="email" placeholder="Passenger or driver email">
+  <button class="primary" id="find">FIND ACCOUNT</button>
+  <div id="message" class="muted" style="margin-top:12px"></div>
+</section>
+
+<section id="account" class="panel hidden">
+  <div class="label">NAME</div><div class="value" id="name"></div>
+  <div class="label">EMAIL</div><div class="value" id="foundEmail"></div>
+  <div class="label">PHONE</div><div class="value" id="phone"></div>
+  <div class="label">ROLE / STATUS</div><div class="value" id="role"></div>
+
+  <div class="label">NEW TEMPORARY PASSWORD</div>
+  <input id="newPassword" type="password" placeholder="Minimum 12 characters">
+  <button class="danger" id="reset">RESET PASSWORD & REVOKE ALL SESSIONS</button>
+  <p class="muted">After reset, all existing ONE sessions for this account are revoked. Give the temporary password only after identity verification and instruct the customer to sign in again.</p>
+</section>
+</main>
+<script>
+if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
+const $=s=>document.querySelector(s);
+let currentEmail='';
+async function request(path,options={}){
+ const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('one_session')||'')};
+ const r=await fetch(location.origin+path,{...options,headers});
+ const data=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error(data.error||'request_failed');
+ return data;
+}
+$('#find').addEventListener('click',async()=>{
+ const email=$('#email').value.trim();
+ $('#message').textContent='Searching…';$('#account').classList.add('hidden');
+ try{
+  const data=await request('/one/api/admin-user-lookup?email='+encodeURIComponent(email));
+  const u=data.user;currentEmail=u.email;
+  $('#name').textContent=u.fullName||'—';$('#foundEmail').textContent=u.email||'—';$('#phone').textContent=u.phone||'—';
+  $('#role').textContent=(u.role||'').toUpperCase()+' · '+(u.deleted?'DELETED':String(u.status||'').toUpperCase());
+  $('#account').classList.remove('hidden');$('#message').textContent='';
+ }catch(e){$('#message').textContent=e.message==='account_not_found'?'Account not found.':'Unable to load the account.'}
+});
+$('#reset').addEventListener('click',async()=>{
+ const newPassword=$('#newPassword').value;
+ if(newPassword.length<12){alert('Temporary password must contain at least 12 characters.');return;}
+ if(!currentEmail||!confirm('Reset this ONE account password and revoke every existing session?'))return;
+ try{
+  await request('/one/api/admin-user-reset-password',{method:'POST',body:JSON.stringify({email:currentEmail,newPassword})});
+  $('#newPassword').value='';alert('Password reset completed. All previous sessions were revoked.');
+ }catch(e){alert(e.message==='account_not_active'?'This account is not active.':'Password reset failed.');}
+});
+</script>
+</body></html>

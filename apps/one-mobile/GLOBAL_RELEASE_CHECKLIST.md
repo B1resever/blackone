@@ -27,6 +27,7 @@
 - Privacy, terms and account deletion pages
 - Secure ONE Command Center administrator/dispatcher login
 - One-time master-token administrator bootstrap endpoint
+- Support-assisted passenger/driver account recovery with session revocation and audit trail
 - Automated release-readiness endpoint
 - Manual ONE Release Gate
 - Manual EAS store build workflow
@@ -52,11 +53,12 @@
 ### Production backend
 
 - Dedicated ONE Neon project/database identified
-- Migrations 0001 through 0008 applied
+- Migrations 0001 through 0009 applied
 - Production backend deployed
 - Production environment variables configured
 - /one/api/readiness returns ready=true
 - First ONE administrator bootstrapped and /one-admin.html login verified
+- ONE account recovery console verified with identity-verification procedure
 - Production rate cards entered in ONE Rate Control
 
 ### Payments and maps
