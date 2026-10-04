@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
+import { createCheckoutUrl } from '../src/reservation-api';
 
 type ReservationStatus = {
   request_code: string;
@@ -41,6 +42,28 @@ export default function ReservationStatusScreen() {
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [paying, setPaying] = useState(false);
+
+  async function payReservation() {
+    if (!reservation || paying || !email.trim()) return;
+    setPaying(true);
+    setMessage('');
+    try {
+      const url = await createCheckoutUrl(reservation.request_code, email.trim());
+      await Linking.openURL(url);
+    } catch (error) {
+      const code = error instanceof Error ? error.message : '';
+      setMessage(
+        code === 'already_paid'
+          ? 'This reservation is already paid.'
+          : code === 'quote_not_confirmed'
+            ? 'BLACK ONE must confirm the final fare before payment.'
+            : 'Secure payment could not be opened. Your reservation remains saved.',
+      );
+    } finally {
+      setPaying(false);
+    }
+  }
 
   async function cancelReservation() {
     if (!reservation || cancelling) return;
@@ -155,6 +178,16 @@ export default function ReservationStatusScreen() {
               </Text>
             ) : null}
 
+            {reservation.quote_amount_minor && reservation.quote_currency &&
+              !['paid', 'refunded'].includes(reservation.payment_status) &&
+              !['completed', 'cancelled'].includes(reservation.status) ? (
+              <Pressable style={styles.payButton} onPress={payReservation} disabled={paying}>
+                <Text style={styles.payButtonText}>
+                  {paying ? 'OPENING SECURE PAYMENT…' : 'PAY SECURELY →'}
+                </Text>
+              </Pressable>
+            ) : null}
+
             {reservation.ride_code && !['completed', 'cancelled'].includes(reservation.status) ? (
               <View style={styles.rideCodeCard}>
                 <Text style={styles.rideCodeLabel}>ONE RIDE CODE</Text>
@@ -226,6 +259,8 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 6, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, marginTop: 15, fontWeight: '800', textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontSize: 26, fontWeight: '900', marginTop: 5 },
+  payButton: { backgroundColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 15, alignItems: 'center', marginTop: 14 },
+  payButtonText: { color: '#16100A', fontWeight: '900' },
   rideCodeCard: { backgroundColor: '#171108', borderWidth: 1, borderColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 14, marginTop: 16 },
   rideCodeLabel: { color: theme.colors.gold, fontSize: 10, fontWeight: '900', letterSpacing: 1.4 },
   rideCode: { color: theme.colors.goldSoft, fontSize: 30, fontWeight: '900', letterSpacing: 4, marginTop: 5 },

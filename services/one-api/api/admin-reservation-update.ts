@@ -29,6 +29,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const input = parsed.data;
 
   if (input.quoteAmountMinor && input.quoteCurrency) {
+    const quoteTargets = await sql`
+      select id, status, payment_status
+      from one_reservations
+      where request_code = ${input.requestCode}
+      limit 1
+    `;
+    const quoteTarget = quoteTargets[0];
+    if (!quoteTarget) return res.status(404).json({ error: 'reservation_not_found' });
+    if (!['requested', 'quoted'].includes(String(quoteTarget.status)) || quoteTarget.payment_status === 'paid') {
+      return res.status(409).json({
+        error: 'quote_locked',
+        currentStatus: quoteTarget.status,
+        paymentStatus: quoteTarget.payment_status,
+      });
+    }
+
     await sql`
       update one_reservations
       set quote_amount_minor = ${input.quoteAmountMinor},
@@ -51,6 +67,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       join one_driver_vehicles v on v.driver_user_id = u.id
       join one_reservations r on r.request_code = ${input.requestCode}
       where u.id = ${input.assignedDriverUserId}
+        and r.status = 'confirmed'
+        and r.payment_status = 'paid'
         and u.role = 'driver'
         and u.status = 'active'
         and p.verification_status = 'approved'
@@ -114,6 +132,40 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   if (input.status) {
+    const statusRowsBefore = await sql`
+      select id, status, passenger_user_id, assigned_driver_user_id, payment_status
+      from one_reservations
+      where request_code = ${input.requestCode}
+      limit 1
+    `;
+    const current = statusRowsBefore[0];
+    if (!current) return res.status(404).json({ error: 'reservation_not_found' });
+
+    const nextStatus = input.status;
+    const allowedOpsTransitions: Record<string, string[]> = {
+      requested: ['confirmed', 'cancelled'],
+      quoted: ['confirmed', 'cancelled'],
+      confirmed: ['cancelled'],
+      assigned: ['cancelled'],
+      driver_en_route: ['cancelled'],
+      arrived: ['cancelled'],
+      passenger_onboard: [],
+      completed: [],
+      cancelled: [],
+    };
+
+    const allowed = allowedOpsTransitions[String(current.status)] ?? [];
+    if (!allowed.includes(nextStatus)) {
+      return res.status(409).json({
+        error: ['driver_en_route', 'arrived', 'passenger_onboard', 'completed'].includes(nextStatus)
+          ? 'driver_trip_state_required'
+          : 'invalid_status_transition',
+        currentStatus: current.status,
+        allowed,
+        message: 'Active-trip progression is controlled by the authenticated ONE Driver flow.',
+      });
+    }
+
     await sql`
       update one_reservations
       set status = ${input.status},

@@ -65,12 +65,14 @@ function render(list){
     <td class="status">${esc(r.status)}</td>
     <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
     <td><div class="actions">
-      <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id,r.vehicle_class_id)}</select>
+      ${r.status==='confirmed'&&r.payment_status==='paid'
+        ? '<select onchange="assignDriver(\''+esc(r.request_code)+'\',this.value)">'+driverOptions(r.market_id,r.vehicle_class_id)+'</select>'
+        : '<span class="muted small">Driver assignment unlocks after confirmation + payment.</span>'}
+      <button onclick="setQuote('${esc(r.request_code)}','${esc(r.quote_currency || (r.market_id==='buenos-aires'?'ARS':'USD'))}')">Set Quote</button>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
-      <button onclick="setStatus('${esc(r.request_code)}','driver_en_route')">En Route</button>
-      <button onclick="setStatus('${esc(r.request_code)}','arrived')">Arrived</button>
-      <button onclick="setStatus('${esc(r.request_code)}','passenger_onboard')">Onboard</button>
-      <button onclick="setStatus('${esc(r.request_code)}','completed')">Complete</button>
+      <button onclick="setStatus('${esc(r.request_code)}','cancelled')">Cancel</button>
+      ${r.status==='cancelled'&&r.payment_status==='paid'?'<button onclick="refundReservation(\''+esc(r.request_code)+'\')">Refund</button>':''}
+      <span class="muted small">Active-trip states are controlled by ONE Driver.</span>
     </div></td>
   </tr>`).join('');
 }
@@ -93,9 +95,38 @@ async function assignDriver(requestCode,assignedDriverUserId){
  try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,assignedDriverUserId})});await load()}
  catch(e){alert('Driver assignment failed')}
 }
+async function setQuote(requestCode,defaultCurrency){
+ const value=prompt('Final ONE fare amount (major currency units):');
+ if(value===null)return;
+ const amount=Number(value);
+ if(!Number.isFinite(amount)||amount<=0){alert('Enter a valid fare amount.');return;}
+ const currency=(prompt('Currency: USD or ARS',defaultCurrency)||defaultCurrency).toUpperCase();
+ if(!['USD','ARS'].includes(currency)){alert('Currency must be USD or ARS.');return;}
+ try{
+   await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({
+     requestCode,
+     quoteAmountMinor:Math.round(amount*100),
+     quoteCurrency:currency
+   })});
+   await load();
+ }catch(e){alert('Quote update failed.');}
+}
+async function refundReservation(requestCode){
+ if(!confirm('Issue a full Stripe refund for this cancelled ONE reservation?'))return;
+ try{
+   const data=await request('/one/api/admin-refund',{method:'POST',body:JSON.stringify({requestCode})});
+   alert(data.alreadyRefunded?'This reservation was already refunded.':'Stripe refund created.');
+   await load();
+ }catch(e){alert('Refund failed. Verify the reservation is cancelled and payment is settled.');}
+}
 async function setStatus(requestCode,status){
- try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
- catch(e){alert('Update failed')}
+ if(status==='cancelled'&&!confirm('Cancel this ONE reservation?'))return;
+ try{
+   await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});
+   await load();
+ } catch(e){
+   alert('Reservation update failed. Active-trip states must be controlled by the assigned ONE Driver.');
+ }
 }
 $('#load').addEventListener('click',load);
 </script>

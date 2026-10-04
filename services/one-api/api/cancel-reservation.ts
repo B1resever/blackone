@@ -31,7 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const reservation = rows[0];
   if (!reservation) return res.status(404).json({ error: 'reservation_not_found' });
 
-  if (['completed','cancelled'].includes(String(reservation.status))) {
+  if (['passenger_onboard','completed','cancelled'].includes(String(reservation.status))) {
     return res.status(409).json({ error: 'reservation_not_cancellable' });
   }
 

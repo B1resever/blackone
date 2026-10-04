@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getSessionToken } from '../src/auth-client';
+import { createCheckoutUrl } from '../src/reservation-api';
+import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
 
 type Trip = {
@@ -31,9 +33,11 @@ type Trip = {
 };
 
 export default function TripsScreen() {
+  const { user } = useAuth();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
+  const [payingCode, setPayingCode] = useState('');
 
   async function load() {
     const base = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
@@ -60,6 +64,27 @@ export default function TripsScreen() {
       setMessage('ONE could not reach the reservation service.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function payReservation(trip: Trip) {
+    if (!user?.email || payingCode) return;
+    setPayingCode(trip.request_code);
+    setMessage('');
+    try {
+      const url = await createCheckoutUrl(trip.request_code, user.email);
+      await Linking.openURL(url);
+    } catch (error) {
+      const code = error instanceof Error ? error.message : '';
+      setMessage(
+        code === 'already_paid'
+          ? 'This reservation is already paid.'
+          : code === 'quote_not_confirmed'
+            ? 'BLACK ONE must confirm the final fare before payment.'
+            : 'Secure payment could not be opened. Your reservation remains saved.',
+      );
+    } finally {
+      setPayingCode('');
     }
   }
 
@@ -98,6 +123,17 @@ export default function TripsScreen() {
                 {new Intl.NumberFormat(undefined, { style: 'currency', currency: trip.quote_currency }).format(Number(trip.quote_amount_minor) / 100)}
               </Text>
             ) : null}
+            {trip.quote_amount_minor && trip.quote_currency &&
+              !['paid', 'refunded'].includes(trip.payment_status) &&
+              !['completed', 'cancelled'].includes(trip.status) &&
+              user?.email ? (
+              <Pressable style={styles.payButton} onPress={() => payReservation(trip)} disabled={Boolean(payingCode)}>
+                <Text style={styles.payButtonText}>
+                  {payingCode === trip.request_code ? 'OPENING SECURE PAYMENT…' : 'PAY SECURELY →'}
+                </Text>
+              </Pressable>
+            ) : null}
+
             {trip.driver_name ? (
               <View style={styles.driverCard}>
                 <Text style={styles.driverLabel}>DRIVER ASSIGNED</Text>
@@ -171,6 +207,8 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 5, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, fontWeight: '800', marginTop: 12, textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontWeight: '900', fontSize: 22, marginTop: 5 },
+  payButton: { backgroundColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 14, alignItems: 'center', marginTop: 12 },
+  payButtonText: { color: '#16100A', fontWeight: '900', fontSize: 11 },
   driverCard: { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.md, borderWidth: 1, borderColor: theme.colors.border, padding: 12, marginTop: 14 },
   driverLabel: { color: theme.colors.cyan, fontWeight: '900', fontSize: 10, letterSpacing: 1.2 },
   driverName: { color: theme.colors.white, fontWeight: '900', fontSize: 16, marginTop: 5 },
