@@ -33,10 +33,12 @@ Publish these files on the production BLACK ONE domain before store submission:
 - /privacy.html
 - /terms.html
 - /delete-account.html
+- /support.html
 
 ## Apple review readiness
 
 - Privacy policy accessible in App Store Connect and inside the app.
+- Support URL points to /support.html with current BLACK ONE contact channels.
 - Manual address entry remains available when location permission is declined.
 - If account creation is enabled, account deletion must be available in-app.
 - Only request device permissions when the related feature is active.
