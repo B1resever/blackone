@@ -92,21 +92,21 @@ Run one complete end-to-end test before spending store-review builds:
 11. Submit required driver compliance documents.
 12. Approve license, insurance, registration and background check.
 13. Set driver Available.
-14. Assign only a compatible driver/vehicle from ONE Ops.
-15. Confirm the passenger sees the assigned driver and vehicle.
-16. Start driver foreground live-location sharing from ONE Driver.
-17. Confirm the passenger sees the latest driver position in ONE Live Tracking.
-18. Send messages both directions through Secure Trip Chat.
-19. Move the driver to Arrived, verify the passenger ride code, then move to Passenger Onboard and Completed.
-20. Verify push notifications reach passenger/driver on physical devices.
-21. Verify driver platform fee ledger:
+15. Assign only a compatible driver/vehicle from ONE Ops.
+16. Confirm the passenger sees the assigned driver and vehicle.
+17. Start driver foreground live-location sharing from ONE Driver.
+18. Confirm the passenger sees the latest driver position in ONE Live Tracking.
+19. Send messages both directions through Secure Trip Chat.
+20. Move the driver to Arrived, verify the passenger ride code, then move to Passenger Onboard and Completed.
+21. Verify push notifications reach passenger/driver on physical devices.
+22. Verify driver platform fee ledger:
    - USA: 5% per completed paid trip until $25 monthly cap.
    - Argentina: first month fee exemption, then 10% per completed paid trip.
-22. Verify cancellation flow.
-23. For a paid test reservation, cancel it in ONE Ops and verify the idempotent full Stripe refund updates payment status to refunded.
-24. Verify My Reservations synchronization on a second device.
-25. Verify BLACK ONE support and emergency-call confirmation screens.
-26. Verify in-app account deletion.
+23. Verify cancellation flow.
+24. For a paid test reservation, cancel it in ONE Ops and verify the idempotent full Stripe refund updates payment status to refunded.
+25. Verify My Reservations synchronization on a second device.
+26. Verify BLACK ONE support and emergency-call confirmation screens.
+27. Verify in-app account deletion.
 
 ## Store build sequence
 
