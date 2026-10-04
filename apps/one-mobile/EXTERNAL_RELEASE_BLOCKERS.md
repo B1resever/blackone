@@ -53,8 +53,14 @@ Still required:
 - Google Maps production server key
 - Stripe production secret and webhook secret
 - ONE backend production URL
+- GitHub Actions secret `ONE_PRODUCTION_URL` pointing to the production BLACK ONE deployment
 - admin token
 - allowed origins
 - payment return URLs
 
 Use GET /one/api/readiness after deployment to verify the backend without exposing secret values.
+
+
+## Automatic release protection
+
+Store build and store submit workflows now stop before EAS if the repository release gate fails or the production ONE API does not pass health, readiness, and active-market smoke checks. This is intentional to avoid spending build credits on an incomplete production configuration.

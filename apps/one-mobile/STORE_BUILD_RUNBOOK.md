@@ -141,3 +141,13 @@ Run one complete end-to-end test before spending store-review builds:
 - Vercel automatic deployment is restricted to main.
 - Feature and pull-request branches must not consume Vercel Hobby build quota.
 - Do not attach ONE to site-flow-research or any unrelated Vercel project.
+
+
+## Automated production gate
+
+Before a store build or submission, GitHub Actions now runs:
+
+1. `node scripts/one-release-check.mjs`
+2. `node scripts/one-production-smoke.mjs`
+
+The smoke test requires GitHub Actions secret `ONE_PRODUCTION_URL` and verifies `/one/api/health`, `/one/api/readiness`, and `/one/api/markets`. Do not bypass this gate for production submissions.

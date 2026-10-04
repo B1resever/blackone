@@ -24,7 +24,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.13'
+      - name: Repository release gate
+        working-directory: ${{ github.workspace }}
+        run: node scripts/one-release-check.mjs
       - run: npm install
+      - name: Verify production API before store submission
+        working-directory: ${{ github.workspace }}
+        env:
+          ONE_PRODUCTION_URL: ${{ secrets.ONE_PRODUCTION_URL }}
+        run: node scripts/one-production-smoke.mjs
       - name: Install EAS CLI
         run: npm install --global eas-cli
       - name: Submit iOS latest build

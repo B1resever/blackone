@@ -1,0 +1,19 @@
+name: ONE Production Smoke
+
+on:
+  workflow_dispatch:
+  deployment_status:
+
+jobs:
+  smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.deployment_status.state == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+      - name: Verify ONE production API
+        env:
+          ONE_PRODUCTION_URL: ${{ secrets.ONE_PRODUCTION_URL }}
+        run: node scripts/one-production-smoke.mjs
