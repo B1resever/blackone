@@ -44,13 +44,13 @@ const vehicles = [
 ] as const;
 
 const features = [
-  ['◇', 'Transparent\nPricing'],
-  ['✓', 'Verified\nDrivers'],
-  ['⌖', 'Live\nTracking'],
-  ['▣', 'Secure\nPayments'],
-  ['▤', 'In-App\nChat'],
-  ['SOS', 'Emergency\nSupport'],
-  ['★', 'Premium\nVehicles'],
+  { icon: '◇', label: 'Transparent\nPricing', route: '/book' },
+  { icon: '✓', label: 'Verified\nDrivers', route: '/safety' },
+  { icon: '⌖', label: 'Live\nTracking', route: '/trips' },
+  { icon: '▣', label: 'Secure\nPayments', route: '/book' },
+  { icon: '▤', label: 'In-App\nChat', route: '/trips' },
+  { icon: 'SOS', label: 'Emergency\nSupport', route: '/trip-support' },
+  { icon: '★', label: 'Premium\nVehicles', route: '/book' },
 ] as const;
 
 export default function HomeScreen() {
@@ -68,8 +68,8 @@ export default function HomeScreen() {
 
           <View style={styles.headerRight}>
             <View style={styles.countryPills}>
-              <View style={styles.countryPill}><Text style={styles.countryText}>🇺🇸 USA</Text></View>
-              <View style={styles.countryPill}><Text style={styles.countryText}>🇦🇷 ARG</Text></View>
+              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇺🇸 USA</Text></Pressable>
+              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇦🇷 ARG</Text></Pressable>
             </View>
 
             <Pressable style={styles.accountPill} onPress={() => router.push('/account')}>
@@ -190,11 +190,11 @@ export default function HomeScreen() {
         </ScrollView>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featureRail}>
-          {features.map(([icon, label]) => (
-            <View key={label} style={styles.featureItem}>
-              <View style={styles.featureIcon}><Text style={styles.featureIconText}>{icon}</Text></View>
-              <Text style={styles.featureLabel}>{label}</Text>
-            </View>
+          {features.map((feature) => (
+            <Pressable key={feature.label} style={styles.featureItem} onPress={() => router.push(feature.route)}>
+              <View style={styles.featureIcon}><Text style={styles.featureIconText}>{feature.icon}</Text></View>
+              <Text style={styles.featureLabel}>{feature.label}</Text>
+            </Pressable>
           ))}
         </ScrollView>
 
