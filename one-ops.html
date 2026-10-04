@@ -65,7 +65,9 @@ function render(list){
     <td class="status">${esc(r.status)}</td>
     <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
     <td><div class="actions">
-      <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id,r.vehicle_class_id)}</select>
+      ${r.status==='confirmed'&&r.payment_status==='paid'
+        ? '<select onchange="assignDriver(\''+esc(r.request_code)+'\',this.value)">'+driverOptions(r.market_id,r.vehicle_class_id)+'</select>'
+        : '<span class="muted small">Driver assignment unlocks after confirmation + payment.</span>'}
       <button onclick="setQuote('${esc(r.request_code)}','${esc(r.quote_currency || (r.market_id==='buenos-aires'?'ARS':'USD'))}')">Set Quote</button>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
       <button onclick="setStatus('${esc(r.request_code)}','cancelled')">Cancel</button>
