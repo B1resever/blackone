@@ -1,0 +1,26 @@
+name: ONE Release Gate
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'apps/one-mobile/**'
+      - 'services/one-api/**'
+      - 'api/one/**'
+      - 'privacy.html'
+      - 'terms.html'
+      - 'delete-account.html'
+      - 'payment-success.html'
+      - 'payment-cancelled.html'
+      - '.github/workflows/one-release-gate.yml'
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+      - name: Validate ONE release prerequisites
+        run: node scripts/one-release-check.mjs
