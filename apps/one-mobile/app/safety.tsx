@@ -35,8 +35,7 @@ export default function SafetyScreen() {
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.kicker}>ONE SAFETY</Text>
-        <Text style={styles.title}>Know your driver.{'
-'}Know your ride.</Text>
+        <Text style={styles.title}>Know your driver.{'\n'}Know your ride.</Text>
         <Text style={styles.sub}>
           Driver verification, vehicle matching, live trip tools and support are connected to the ONE reservation flow.
         </Text>
