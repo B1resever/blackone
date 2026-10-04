@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   cardSelected: { borderColor: theme.colors.gold, borderWidth: 2 },
   image: { width: '100%', height: '100%', resizeMode: 'cover' },
-  overlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,.32)' },
+  overlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,.32)' },
   top: { position: 'absolute', left: 14, right: 14, top: 13, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   category: { color: theme.colors.goldSoft, fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
   selected: { color: '#16100A', backgroundColor: theme.colors.gold, borderRadius: theme.radius.pill, paddingHorizontal: 10, paddingVertical: 6, fontSize: 9, fontWeight: '900' },
