@@ -26,10 +26,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (req.method === 'GET') {
     const rows = await sql`
-      select id, document_type, document_number, file_url, expires_on, status, review_notes, verified_at, created_at, updated_at
-      from one_driver_documents
-      where driver_user_id = ${user.id}
-      order by document_type, created_at desc
+      select
+        d.id,
+        d.document_type,
+        d.document_number,
+        d.file_url,
+        d.expires_on,
+        d.status,
+        d.review_notes,
+        d.verified_at,
+        d.created_at,
+        d.updated_at,
+        f.file_name,
+        f.content_type,
+        f.size_bytes,
+        (f.document_id is not null) as has_file
+      from one_driver_documents d
+      left join one_driver_document_files f on f.document_id = d.id
+      where d.driver_user_id = ${user.id}
+      order by d.document_type, d.created_at desc
     `;
     return res.status(200).json({ documents: rows });
   }
