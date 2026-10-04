@@ -121,6 +121,11 @@ export default function DriverAccessScreen() {
     setMessage('');
     try {
       await updateDriverTrip(trip.request_code, status);
+      if (status === 'completed' && sharingCode === trip.request_code) {
+        locationSubscription.current?.remove();
+        locationSubscription.current = null;
+        setSharingCode('');
+      }
       await refreshDriverData();
     } catch {
       setMessage('Trip status could not be updated.');
