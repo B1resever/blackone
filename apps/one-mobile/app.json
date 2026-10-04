@@ -29,6 +29,12 @@
       "expo-router",
       "expo-notifications",
       [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Allow ONE to share the driver location with the passenger during an active trip."
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
