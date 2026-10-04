@@ -57,17 +57,20 @@
             "enableSceneSupport": true
           }
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "../../logo.png.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#020609"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "icon": "../../logo.png.png",
-    "splash": {
-      "image": "../../logo.png.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#020609"
-    }
+    "icon": "../../logo.png.png"
   }
 }
