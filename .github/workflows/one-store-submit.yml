@@ -1,0 +1,39 @@
+name: ONE Store Submit
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: Store platform
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - ios
+          - android
+
+jobs:
+  submit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/one-mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+      - run: npm install
+      - name: Install EAS CLI
+        run: npm install --global eas-cli
+      - name: Submit iOS latest build
+        if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas submit --platform ios --latest --profile production --non-interactive
+      - name: Submit Android latest build
+        if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas submit --platform android --latest --profile production --non-interactive
