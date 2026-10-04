@@ -38,7 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     limit 1
   `;
 
-  let rows;
+  let rows: Array<Record<string, any>>;
   if (existing[0]?.id) {
     rows = await sql`
       update one_users
