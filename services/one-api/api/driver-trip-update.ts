@@ -51,10 +51,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  if (parsed.data.status === 'passenger_onboard' && !trip.ride_code_verified_at) {
-    return res.status(409).json({ error: 'ride_code_required', message: 'Verify the passenger ride code before starting the trip.' });
-  }
-
   const allowed = allowedTransitions[String(trip.status)] ?? [];
   if (!allowed.includes(parsed.data.status)) {
     return res.status(409).json({
