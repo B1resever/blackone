@@ -127,6 +127,7 @@ export type DriverTrip = {
   payment_status: string;
   quote_amount_minor?: number | null;
   quote_currency?: string | null;
+  ride_code_verified?: boolean;
 };
 
 export async function loadDriverTrips() {
@@ -248,4 +249,71 @@ export async function createDriverFeeCheckout() {
   };
   if (!response.ok || !data.checkoutUrl) throw new Error(data.error ?? 'driver_fee_checkout_failed');
   return data;
+}
+
+
+export type TripMessage = {
+  id: string;
+  sender_user_id: string;
+  sender_role: 'passenger' | 'driver';
+  sender_name: string;
+  body: string;
+  created_at: string;
+};
+
+export type TripLocation = {
+  latitude: number;
+  longitude: number;
+  accuracy_meters?: number | null;
+  heading_degrees?: number | null;
+  speed_mps?: number | null;
+  created_at: string;
+};
+
+export async function loadTripMessages(requestCode: string) {
+  const response = await api('trip-messages?requestCode=' + encodeURIComponent(requestCode));
+  if (!response.ok) throw new Error('trip_messages_failed');
+  const data = await response.json() as { messages?: TripMessage[] };
+  return data.messages ?? [];
+}
+
+export async function sendTripMessage(requestCode: string, body: string) {
+  const response = await api('trip-messages', {
+    method: 'POST',
+    body: JSON.stringify({ requestCode, body }),
+  });
+  const data = await response.json() as { message?: TripMessage; error?: string };
+  if (!response.ok || !data.message) throw new Error(data.error ?? 'trip_message_failed');
+  return data.message;
+}
+
+export async function loadTripLocation(requestCode: string) {
+  const response = await api('trip-location?requestCode=' + encodeURIComponent(requestCode));
+  if (!response.ok) throw new Error('trip_location_failed');
+  return (await response.json()) as { status: string; location: TripLocation | null };
+}
+
+export async function postDriverLocation(input: {
+  requestCode: string;
+  latitude: number;
+  longitude: number;
+  accuracyMeters?: number | null;
+  headingDegrees?: number | null;
+  speedMps?: number | null;
+}) {
+  const response = await api('trip-location', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  if (!response.ok) throw new Error('trip_location_update_failed');
+}
+
+export async function verifyRideCode(requestCode: string, rideCode: string) {
+  const response = await api('driver-verify-ride-code', {
+    method: 'POST',
+    body: JSON.stringify({ requestCode, rideCode }),
+  });
+  const data = await response.json() as { verified?: boolean; error?: string };
+  if (!response.ok || !data.verified) throw new Error(data.error ?? 'ride_code_failed');
+  return true;
 }
