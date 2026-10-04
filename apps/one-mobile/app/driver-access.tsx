@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import type { LocationSubscription } from 'expo-location';
+import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system/legacy';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -14,7 +16,7 @@ import {
   loadDriverTrips,
   createDriverFeeCheckout,
   setDriverAvailability,
-  submitDriverDocument,
+  uploadDriverDocument,
   updateDriverTrip,
   verifyRideCode,
 } from '../src/auth-client';
@@ -54,7 +56,7 @@ export default function DriverAccessScreen() {
   const [selectedDocument, setSelectedDocument] = useState<DocumentType>('driver_license');
   const [documentNumber, setDocumentNumber] = useState('');
   const [expiresOn, setExpiresOn] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState<DocumentPicker.DocumentPickerAsset | null>(null);
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState('');
@@ -217,23 +219,63 @@ export default function DriverAccessScreen() {
     }
   }
 
+  async function chooseComplianceFile() {
+    setMessage('');
+    const result = await DocumentPicker.getDocumentAsync({
+      type: ['application/pdf', 'image/*'],
+      copyToCacheDirectory: true,
+      multiple: false,
+    });
+
+    if (result.canceled || !result.assets[0]) return;
+
+    const asset = result.assets[0];
+    if (asset.size && asset.size > 2_500_000) {
+      setSelectedFile(null);
+      setMessage('Document is too large. Choose a PDF or image up to 2.5 MB.');
+      return;
+    }
+
+    setSelectedFile(asset);
+    setMessage('');
+  }
+
   async function submitComplianceDocument() {
+    if (!selectedFile) {
+      setMessage('Choose the document file before submitting it.');
+      return;
+    }
+
     setWorking(true);
     setMessage('');
     try {
-      await submitDriverDocument({
+      const base64 = await FileSystem.readAsStringAsync(selectedFile.uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      await uploadDriverDocument({
         documentType: selectedDocument,
         documentNumber: documentNumber.trim() || undefined,
         expiresOn: expiresOn.trim() || undefined,
-        fileUrl: fileUrl.trim() || undefined,
+        fileName: selectedFile.name,
+        contentType: selectedFile.mimeType || 'application/octet-stream',
+        base64,
       });
+
       setDocumentNumber('');
       setExpiresOn('');
-      setFileUrl('');
-      setMessage('Document submitted for BLACK ONE review.');
+      setSelectedFile(null);
+      setMessage('Document securely uploaded for BLACK ONE review.');
       await refreshDriverData();
-    } catch {
-      setMessage('Document could not be submitted. Check the expiration date and optional document link.');
+    } catch (error) {
+      const code = error instanceof Error ? error.message : '';
+      setMessage(
+        code === 'document_too_large'
+          ? 'Document is too large. Choose a PDF or image up to 2.5 MB.'
+          : code === 'unsupported_document_type'
+            ? 'Use a PDF, JPEG, PNG, HEIC or HEIF document.'
+            : 'Document could not be uploaded. Check the file and expiration date.',
+      );
     } finally {
       setWorking(false);
     }
@@ -324,7 +366,9 @@ export default function DriverAccessScreen() {
                   <Text style={styles.documentName}>{item.label}</Text>
                   <Text style={styles.meta}>
                     {document
-                      ? document.status.toUpperCase() + (document.expires_on ? ' · expires ' + document.expires_on : '')
+                      ? document.status.toUpperCase() +
+                        (document.expires_on ? ' · expires ' + document.expires_on : '') +
+                        (document.has_file ? ' · file uploaded' : '')
                       : 'NOT SUBMITTED'}
                   </Text>
                 </View>
@@ -352,11 +396,24 @@ export default function DriverAccessScreen() {
             <Text style={styles.label}>Expiration date · YYYY-MM-DD</Text>
             <TextInput style={styles.input} value={expiresOn} onChangeText={setExpiresOn} placeholder="2027-10-03" placeholderTextColor={theme.colors.muted} />
 
-            <Text style={styles.label}>Secure document link · optional until storage is connected</Text>
-            <TextInput style={styles.input} value={fileUrl} onChangeText={setFileUrl} placeholder="https://..." placeholderTextColor={theme.colors.muted} autoCapitalize="none" />
+            <Text style={styles.label}>Document file · required</Text>
+            <Pressable style={styles.filePicker} onPress={chooseComplianceFile} disabled={working}>
+              <Text style={styles.filePickerTitle}>
+                {selectedFile ? '✓ ' + selectedFile.name : 'CHOOSE PDF OR IMAGE'}
+              </Text>
+              <Text style={styles.filePickerMeta}>
+                {selectedFile?.size
+                  ? Math.max(1, Math.round(selectedFile.size / 1024)) + ' KB · tap to replace'
+                  : 'PDF, JPEG, PNG, HEIC or HEIF · maximum 2.5 MB'}
+              </Text>
+            </Pressable>
 
-            <Pressable style={styles.secondary} onPress={submitComplianceDocument} disabled={working}>
-              <Text style={styles.secondaryText}>SUBMIT FOR REVIEW</Text>
+            <Pressable
+              style={[styles.secondary, !selectedFile ? styles.disabled : null]}
+              onPress={submitComplianceDocument}
+              disabled={working || !selectedFile}
+            >
+              <Text style={styles.secondaryText}>{working ? 'UPLOADING…' : 'UPLOAD FOR REVIEW'}</Text>
             </Pressable>
           </View>
 
@@ -527,6 +584,9 @@ const styles = StyleSheet.create({
   documentName: { color: theme.colors.white, fontWeight: '900' },
   documentForm: { backgroundColor: theme.colors.surfaceRaised, borderRadius: theme.radius.lg, padding: 16, marginTop: 14 },
   documentTypes: { flexDirection: 'row', flexWrap: 'wrap', gap: 7, marginTop: 12 },
+  filePicker: { backgroundColor: theme.colors.background, borderWidth: 1, borderColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 14 },
+  filePickerTitle: { color: theme.colors.goldSoft, fontWeight: '900', fontSize: 12 },
+  filePickerMeta: { color: theme.colors.muted, fontSize: 10, marginTop: 5 },
   typeButton: { width: '48%', borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md, padding: 10 },
   typeActive: { borderColor: theme.colors.cyan, backgroundColor: '#04202A' },
   typeText: { color: theme.colors.muted, fontWeight: '800', fontSize: 10 },
