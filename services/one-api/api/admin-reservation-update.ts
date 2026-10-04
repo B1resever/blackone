@@ -68,6 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       join one_reservations r on r.request_code = ${input.requestCode}
       where u.id = ${input.assignedDriverUserId}
         and r.status = 'confirmed'
+        and r.payment_status = 'paid'
         and u.role = 'driver'
         and u.status = 'active'
         and p.verification_status = 'approved'
