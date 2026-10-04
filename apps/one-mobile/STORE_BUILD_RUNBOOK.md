@@ -80,7 +80,7 @@ After backend deployment:
 Run one complete end-to-end test before spending store-review builds:
 
 1. Sign in to /one-admin.html with an ONE administrator or dispatcher account.
-3. Register a passenger ONE account.
+2. Register a passenger ONE account.
 3. Enter pickup and destination with address autocomplete.
 4. Select market, date/time, passenger count and ONE vehicle category.
 5. Confirm route and rate card.
