@@ -21,7 +21,7 @@ A Neon project ID for ONE has not been positively identified through the active 
 
 Still required:
 - identify/create the dedicated ONE project/database
-- apply migrations 0001 through 0007
+- apply migrations 0001 through 0008
 
 Do not guess a project ID and do not apply migrations to AAA or CENTER + NODO.
 
