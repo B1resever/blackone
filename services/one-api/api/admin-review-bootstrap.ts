@@ -16,7 +16,7 @@ function requiredEnv(name: string) {
 }
 
 async function upsertUser(
-  sql: ReturnType<typeof neon>,
+  sql: any,
   input: { role: 'passenger' | 'driver'; fullName: string; email: string; password: string },
 ) {
   const hash = await hashPassword(input.password);
