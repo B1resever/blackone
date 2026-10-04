@@ -74,9 +74,39 @@ If the user explicitly enables trip notifications, ONE stores the Expo push toke
 
 ### Location
 
-Stage 1 reservations use typed/selected addresses. The current mobile design does not require continuous device GPS collection.
+Stage 1 reservations use typed/selected addresses for pickup and destination.
 
-If Stage 2 adds live driver/passenger GPS, Apple App Privacy and Google Data Safety must be updated before that version is submitted.
+For an active assigned trip, an authenticated driver may explicitly start foreground live-location sharing. ONE may then process:
+
+- driver latitude/longitude
+- location accuracy
+- heading
+- speed
+- location timestamp
+- reservation/driver identifiers needed to restrict the location to the assigned trip
+
+Purpose:
+
+- show the passenger the latest driver position
+- coordinate pickup and active-trip operations
+- support trip safety and operational review
+
+Stage 1 does not request background location permission and does not continuously collect passenger GPS.
+
+### Trip communications and safety
+
+For an active reservation, ONE may process:
+
+- authenticated passenger/driver chat messages
+- ride-code verification state
+- driver trip-status events
+- support/emergency-flow interactions that occur inside the app
+
+Purpose:
+
+- pickup and trip coordination
+- confirm the correct passenger/driver pairing
+- trip safety and support
 
 ## Data sharing / processors
 
