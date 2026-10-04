@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
 
 const links = [
+  { label: 'Customer Support', url: 'https://blackonetransportation.com/support.html' },
   { label: 'Privacy Policy', url: 'https://blackonetransportation.com/privacy.html' },
   { label: 'Terms of Service', url: 'https://blackonetransportation.com/terms.html' },
   { label: 'Delete Account / Data Request', url: 'https://blackonetransportation.com/delete-account.html' },
