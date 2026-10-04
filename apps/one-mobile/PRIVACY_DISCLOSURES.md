@@ -57,7 +57,7 @@ Driver workflows may process:
 - document type/number
 - document expiration date
 - compliance review status
-- optional secure document URL
+- uploaded compliance document file (PDF or supported image), file name/type/size and integrity hash
 - background-check status/result marker
 - driver availability
 
