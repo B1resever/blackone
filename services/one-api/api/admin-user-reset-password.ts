@@ -43,7 +43,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   `;
 
   await sql`
-    delete from one_sessions
+    delete from one_auth_sessions
     where user_id = ${target.id}
   `;
 

@@ -2,11 +2,15 @@
   "expo": {
     "name": "ONE",
     "slug": "black-one-one",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "one",
     "userInterfaceStyle": "dark",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "web": {
       "bundler": "metro"
     },
@@ -17,13 +21,25 @@
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
         "CFBundleDevelopmentRegion": "en",
-        "CFBundleLocalizations": ["en", "es", "pt", "fr"]
+        "CFBundleLocalizations": [
+          "en",
+          "es",
+          "pt",
+          "fr"
+        ]
+      },
+      "config": {
+        "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.blackone.one",
       "versionCode": 2,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "../../logo.png.png",
+        "backgroundColor": "#020609"
+      }
     },
     "plugins": [
       "expo-router",
@@ -41,11 +57,20 @@
             "enableSceneSupport": true
           }
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "../../logo.png.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#020609"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "icon": "../../logo.png.png"
   }
 }
