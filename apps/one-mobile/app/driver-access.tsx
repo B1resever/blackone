@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { router } from 'expo-router';
+import type { LocationSubscription } from 'expo-location';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -14,9 +16,11 @@ import {
   setDriverAvailability,
   submitDriverDocument,
   updateDriverTrip,
+  verifyRideCode,
 } from '../src/auth-client';
 import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
+import { startOneDriverLocationSharing } from '../src/driver-location';
 
 type DriverStatus = 'driver_en_route' | 'arrived' | 'passenger_onboard' | 'completed';
 type DocumentType = 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check';
@@ -54,6 +58,9 @@ export default function DriverAccessScreen() {
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState('');
+  const [rideCodes, setRideCodes] = useState<Record<string, string>>({});
+  const [sharingCode, setSharingCode] = useState('');
+  const locationSubscription = useRef<LocationSubscription | null>(null);
 
   async function refreshDriverData() {
     if (user?.role !== 'driver') return;
@@ -80,6 +87,13 @@ export default function DriverAccessScreen() {
   useEffect(() => {
     void refreshDriverData();
   }, [user?.id, user?.role]);
+
+  useEffect(() => {
+    return () => {
+      locationSubscription.current?.remove();
+      locationSubscription.current = null;
+    };
+  }, []);
 
   async function activate() {
     if (working) return;
@@ -110,6 +124,52 @@ export default function DriverAccessScreen() {
       await refreshDriverData();
     } catch {
       setMessage('Trip status could not be updated.');
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function verifyPassengerCode(trip: DriverTrip) {
+    const code = (rideCodes[trip.request_code] ?? '').trim().toUpperCase();
+    if (!code) {
+      setMessage('Enter the passenger ride code first.');
+      return;
+    }
+
+    setWorking(true);
+    setMessage('');
+    try {
+      await verifyRideCode(trip.request_code, code);
+      setRideCodes((current) => ({ ...current, [trip.request_code]: '' }));
+      setMessage('Ride code verified. The trip can now start.');
+      await refreshDriverData();
+    } catch (error) {
+      const codeName = error instanceof Error ? error.message : '';
+      setMessage(codeName === 'invalid_ride_code' ? 'Ride code does not match.' : 'ONE could not verify the ride code.');
+    } finally {
+      setWorking(false);
+    }
+  }
+
+  async function toggleLiveLocation(trip: DriverTrip) {
+    if (sharingCode === trip.request_code) {
+      locationSubscription.current?.remove();
+      locationSubscription.current = null;
+      setSharingCode('');
+      setMessage('Live location sharing stopped.');
+      return;
+    }
+
+    setWorking(true);
+    setMessage('');
+    try {
+      locationSubscription.current?.remove();
+      locationSubscription.current = await startOneDriverLocationSharing(trip.request_code, setMessage);
+      setSharingCode(trip.request_code);
+      setMessage('Live location is active while ONE Driver remains open.');
+    } catch (error) {
+      const codeName = error instanceof Error ? error.message : '';
+      setMessage(codeName === 'location_permission_denied' ? 'Location permission is required for live trip tracking.' : 'ONE could not start live location sharing.');
     } finally {
       setWorking(false);
     }
@@ -305,7 +365,10 @@ export default function DriverAccessScreen() {
           ) : null}
 
           {trips.map((trip) => {
-            const action = nextStatus[trip.status] ?? null;
+            const action = trip.status === 'arrived' && !trip.ride_code_verified
+              ? null
+              : nextStatus[trip.status] ?? null;
+            const activeForLocation = ['assigned', 'driver_en_route', 'arrived', 'passenger_onboard'].includes(trip.status);
             return (
               <View key={trip.request_code} style={styles.trip}>
                 <View style={styles.tripTop}>
@@ -318,6 +381,57 @@ export default function DriverAccessScreen() {
                 <Text style={styles.meta}>{trip.vehicle_class_id.toUpperCase()} · {trip.passenger_count} passenger(s)</Text>
                 {trip.guest_full_name ? <Text style={styles.passenger}>{trip.guest_full_name}</Text> : null}
                 {trip.guest_phone ? <Text style={styles.meta}>{trip.guest_phone}</Text> : null}
+
+                {activeForLocation ? (
+                  <Pressable
+                    style={[styles.secondary, sharingCode === trip.request_code ? styles.liveActive : null]}
+                    onPress={() => toggleLiveLocation(trip)}
+                    disabled={working}
+                  >
+                    <Text style={styles.secondaryText}>
+                      {sharingCode === trip.request_code ? 'STOP LIVE LOCATION' : 'START LIVE LOCATION'}
+                    </Text>
+                  </Pressable>
+                ) : null}
+
+                <View style={styles.tripTools}>
+                  <Pressable
+                    style={styles.toolButton}
+                    onPress={() => router.push({ pathname: '/chat', params: { requestCode: trip.request_code } })}
+                  >
+                    <Text style={styles.toolText}>SECURE CHAT</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.toolButton}
+                    onPress={() => router.push({ pathname: '/trip-support', params: { requestCode: trip.request_code, marketId: trip.market_id } })}
+                  >
+                    <Text style={styles.toolText}>SUPPORT / SOS</Text>
+                  </Pressable>
+                </View>
+
+                {trip.status === 'arrived' && !trip.ride_code_verified ? (
+                  <View style={styles.codeVerify}>
+                    <Text style={styles.cardLabel}>VERIFY PASSENGER RIDE CODE</Text>
+                    <Text style={styles.meta}>Ask the passenger for the ONE ride code shown in My Reservations.</Text>
+                    <TextInput
+                      style={styles.codeInput}
+                      value={rideCodes[trip.request_code] ?? ''}
+                      onChangeText={(rideCode) => setRideCodes((current) => ({ ...current, [trip.request_code]: rideCode.toUpperCase() }))}
+                      placeholder="ABC234"
+                      placeholderTextColor={theme.colors.muted}
+                      autoCapitalize="characters"
+                      maxLength={12}
+                    />
+                    <Pressable style={styles.primary} onPress={() => verifyPassengerCode(trip)} disabled={working}>
+                      <Text style={styles.primaryText}>VERIFY RIDE CODE</Text>
+                    </Pressable>
+                  </View>
+                ) : null}
+
+                {trip.ride_code_verified ? (
+                  <Text style={styles.verifiedText}>✓ RIDE CODE VERIFIED</Text>
+                ) : null}
+
                 {action ? (
                   <Pressable style={styles.primary} disabled={working} onPress={() => moveTrip(trip, action.status)}>
                     <Text style={styles.primaryText}>{working ? 'UPDATING…' : action.label}</Text>
@@ -423,4 +537,11 @@ const styles = StyleSheet.create({
   route: { color: theme.colors.white, fontWeight: '800', marginTop: 10 },
   meta: { color: theme.colors.muted, marginTop: 5, fontSize: 12 },
   passenger: { color: theme.colors.white, fontWeight: '900', marginTop: 12 },
+  liveActive: { borderColor: theme.colors.green, backgroundColor: '#0A2214' },
+  tripTools: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  toolButton: { flex: 1, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 11, padding: 11, alignItems: 'center' },
+  toolText: { color: theme.colors.white, fontWeight: '900', fontSize: 9 },
+  codeVerify: { backgroundColor: '#171108', borderWidth: 1, borderColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 13, marginTop: 12 },
+  codeInput: { backgroundColor: theme.colors.background, borderWidth: 1, borderColor: theme.colors.gold, borderRadius: 11, color: theme.colors.goldSoft, padding: 13, fontSize: 20, fontWeight: '900', letterSpacing: 3, marginTop: 10, textAlign: 'center' },
+  verifiedText: { color: theme.colors.green, fontWeight: '900', fontSize: 10, marginTop: 10, letterSpacing: .8 },
 });
