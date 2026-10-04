@@ -67,10 +67,8 @@ function render(list){
     <td><div class="actions">
       <select onchange="assignDriver('${esc(r.request_code)}',this.value)">${driverOptions(r.market_id,r.vehicle_class_id)}</select>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
-      <button onclick="setStatus('${esc(r.request_code)}','driver_en_route')">En Route</button>
-      <button onclick="setStatus('${esc(r.request_code)}','arrived')">Arrived</button>
-      <button onclick="setStatus('${esc(r.request_code)}','passenger_onboard')">Onboard</button>
-      <button onclick="setStatus('${esc(r.request_code)}','completed')">Complete</button>
+      <button onclick="setStatus('${esc(r.request_code)}','cancelled')">Cancel</button>
+      <span class="muted small">Active-trip states are controlled by ONE Driver.</span>
     </div></td>
   </tr>`).join('');
 }
@@ -94,8 +92,13 @@ async function assignDriver(requestCode,assignedDriverUserId){
  catch(e){alert('Driver assignment failed')}
 }
 async function setStatus(requestCode,status){
- try{await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});await load()}
- catch(e){alert('Update failed')}
+ if(status==='cancelled'&&!confirm('Cancel this ONE reservation?'))return;
+ try{
+   await request('/one/api/admin-reservation-update',{method:'POST',body:JSON.stringify({requestCode,status})});
+   await load();
+ } catch(e){
+   alert('Reservation update failed. Active-trip states must be controlled by the assigned ONE Driver.');
+ }
 }
 $('#load').addEventListener('click',load);
 </script>
