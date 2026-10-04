@@ -45,7 +45,7 @@ export default function ReviewScreen() {
       setReceipt(receipt);
       router.replace('/confirmation');
     } catch {
-      setError('We could not send the reservation request. Please try again.');
+      setError('ONE could not create the reservation. No reservation was created and no payment was taken. Please try again or contact BLACK ONE Support.');
     } finally {
       setSubmitting(false);
     }
