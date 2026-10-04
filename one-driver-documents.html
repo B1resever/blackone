@@ -20,7 +20,7 @@ a{color:var(--cyan)}
 <header><h1><span class="cyan">ONE</span> Driver Compliance · BLACK ONE</h1></header>
 <main>
 <div class="controls">
-<input id="api" placeholder="ONE API base URL">
+
 <a href="/one-admin.html" style="display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;padding:11px;color:var(--text);text-decoration:none;font-weight:800">COMMAND CENTER</a>
 <button id="load" class="primary">LOAD DOCUMENTS</button>
 </div>
@@ -33,10 +33,9 @@ a{color:var(--cyan)}
 </main>
 <script>
 if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
-const $=s=>document.querySelector(s),api=$('#api'),rows=$('#rows');
-api.value=sessionStorage.getItem('one_api')||location.origin;
+const $=s=>document.querySelector(s),rows=$('#rows');
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-async function request(path,options={}){const base=api.value.replace(/\/$/,'');const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('one_session')||'')};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
+async function request(path,options={}){const base=location.origin;const headers={...(options.headers||{}),'Content-Type':'application/json','Authorization':'Bearer '+(sessionStorage.getItem('one_session')||'')};const r=await fetch(base+path,{...options,headers});if(!r.ok)throw new Error(await r.text());return r.json()}
 function render(list){rows.innerHTML=list.map(d=>`<tr>
 <td><b>${esc(d.full_name)}</b><div class="muted">${esc(d.email)}</div></td>
 <td>${esc(d.document_type)}</td>
@@ -46,7 +45,7 @@ function render(list){rows.innerHTML=list.map(d=>`<tr>
 <td class="status">${esc(d.status)}</td>
 <td><div class="actions"><button onclick="review('${esc(d.id)}','approved')">Approve</button><button class="reject" onclick="review('${esc(d.id)}','rejected')">Reject</button></div></td>
 </tr>`).join('')}
-async function load(){sessionStorage.setItem('one_api',api.value);try{const d=await request('/one/api/admin-driver-documents');render(d.documents||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
+async function load(){try{const d=await request('/one/api/admin-driver-documents');render(d.documents||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Your ONE Operations session expired or the production API is unavailable.</td></tr>'}}
 async function review(documentId,status){try{await request('/one/api/admin-driver-documents',{method:'POST',body:JSON.stringify({documentId,status,reviewNotes:''})});await load()}catch{alert('Review failed')}}
 $('#load').addEventListener('click',load);
 </script>
