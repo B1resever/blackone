@@ -14,7 +14,7 @@
 - Driver activation and driver trip controls
 - Google Places address autocomplete through ONE API
 - Stripe Checkout and webhook payment state
-- Driver compliance and document review
+- Driver compliance, native document upload and protected document review
 - Driver availability control
 - Driver/vehicle class compatibility for dispatch
 - Secure passenger/driver trip chat
@@ -50,7 +50,7 @@
 ### Production backend
 
 - Dedicated ONE Neon project/database identified
-- Migrations 0001 through 0008 applied
+- Migrations 0001 through 0009 applied
 - Production backend deployed
 - Production environment variables configured
 - /one/api/readiness returns ready=true
@@ -86,7 +86,7 @@ Request permissions only when the user activates the related feature.
 
 - Notifications: requested only after explicit opt-in from My ONE
 - Location: requested only from the driver when the driver explicitly starts live trip sharing; no background location permission is requested in Stage 1
-- Camera/photos: do not request until native document/photo upload is connected
+- Documents: selected through the native system document picker; Stage 1 does not request camera/photo-library permission
 - Microphone: not requested in Stage 1
 
 ## Release strategy
