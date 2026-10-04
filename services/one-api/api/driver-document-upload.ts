@@ -15,6 +15,25 @@ const allowedTypes = new Set([
   'image/heif',
 ]);
 
+function fileSignatureMatches(bytes: Buffer, contentType: string) {
+  if (contentType === 'application/pdf') {
+    return bytes.subarray(0, 5).toString('ascii') === '%PDF-';
+  }
+  if (contentType === 'image/jpeg') {
+    return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+  }
+  if (contentType === 'image/png') {
+    return bytes.length >= 8 &&
+      bytes[0] === 0x89 &&
+      bytes.subarray(1, 4).toString('ascii') === 'PNG';
+  }
+  if (contentType === 'image/heic' || contentType === 'image/heif') {
+    const box = bytes.subarray(4, 16).toString('ascii').toLowerCase();
+    return box.includes('ftyp') && (box.includes('heic') || box.includes('heif') || box.includes('mif1'));
+  }
+  return false;
+}
+
 const schema = z.object({
   documentType: z.enum(['driver_license','insurance','vehicle_registration','background_check','profile_photo','other']),
   documentNumber: z.string().trim().max(120).default(''),
@@ -54,6 +73,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       error: 'document_too_large',
       maxBytes: MAX_FILE_BYTES,
     });
+  }
+
+  if (!fileSignatureMatches(bytes, contentType)) {
+    return res.status(415).json({ error: 'document_content_mismatch' });
   }
 
   const databaseUrl = process.env.DATABASE_URL;
