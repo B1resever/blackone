@@ -62,6 +62,7 @@ Apply every migration in order to the dedicated ONE production database:
 5. 0005_driver_compliance_push.sql
 6. 0006_driver_fees.sql
 7. 0007_payment_idempotency.sql
+8. 0008_trip_safety_live.sql
 
 Do not apply these migrations to AAA, CENTER + NODO, or any unrelated database.
 
@@ -91,14 +92,18 @@ Run one complete end-to-end test before spending store-review builds:
 12. Set driver Available.
 13. Assign only a compatible driver/vehicle from ONE Ops.
 14. Confirm the passenger sees the assigned driver and vehicle.
-15. Move the trip through En Route -> Arrived -> Passenger Onboard -> Completed.
-16. Verify push notifications reach passenger/driver on physical devices.
-17. Verify driver platform fee ledger:
+15. Start driver foreground live-location sharing from ONE Driver.
+16. Confirm the passenger sees the latest driver position in ONE Live Tracking.
+17. Send messages both directions through Secure Trip Chat.
+18. Move the driver to Arrived, verify the passenger ride code, then move to Passenger Onboard and Completed.
+19. Verify push notifications reach passenger/driver on physical devices.
+20. Verify driver platform fee ledger:
    - USA: 5% per completed paid trip until $25 monthly cap.
    - Argentina: first month fee exemption, then 10% per completed paid trip.
-18. Verify cancellation flow.
-19. Verify My Reservations synchronization on a second device.
-20. Verify in-app account deletion.
+21. Verify cancellation flow.
+22. Verify My Reservations synchronization on a second device.
+23. Verify BLACK ONE support and emergency-call confirmation screens.
+24. Verify in-app account deletion.
 
 ## Store build sequence
 
