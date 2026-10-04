@@ -41,12 +41,32 @@ function render(list){rows.innerHTML=list.map(d=>`<tr>
 <td>${esc(d.document_type)}</td>
 <td>${esc(d.document_number||'—')}</td>
 <td>${esc(d.expires_on||'—')}</td>
-<td>${d.file_url?'<a href="'+esc(d.file_url)+'" target="_blank" rel="noopener">Open</a>':'No file link'}</td>
+<td>${d.has_file?'<button onclick="openFile(\''+esc(d.id)+'\')">Open '+esc(d.file_name||'document')+'</button>':'No uploaded file'}</td>
 <td class="status">${esc(d.status)}</td>
 <td><div class="actions"><button onclick="review('${esc(d.id)}','approved')">Approve</button><button class="reject" onclick="review('${esc(d.id)}','rejected')">Reject</button></div></td>
 </tr>`).join('')}
 async function load(){sessionStorage.setItem('one_api',api.value);sessionStorage.setItem('one_token',token.value);try{const d=await request('/one/api/admin-driver-documents');render(d.documents||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Check API URL and admin token.</td></tr>'}}
-async function review(documentId,status){try{await request('/one/api/admin-driver-documents',{method:'POST',body:JSON.stringify({documentId,status,reviewNotes:''})});await load()}catch{alert('Review failed')}}
+async function openFile(documentId){
+  try{
+    const d=await request('/one/api/admin-driver-document-file?documentId='+encodeURIComponent(documentId));
+    const binary=atob(d.base64);
+    const bytes=new Uint8Array(binary.length);
+    for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+    const blob=new Blob([bytes],{type:d.content_type||'application/octet-stream'});
+    const url=URL.createObjectURL(blob);
+    window.open(url,'_blank','noopener');
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+  }catch{alert('Unable to open document')}
+}
+async function review(documentId,status){
+  try{
+    await request('/one/api/admin-driver-documents',{method:'POST',body:JSON.stringify({documentId,status,reviewNotes:''})});
+    await load()
+  }catch(e){
+    const message=String(e&&e.message||'');
+    alert(message.includes('document_file_required')?'Upload file required before approval.':'Review failed')
+  }
+}
 $('#load').addEventListener('click',load);
 </script>
 </body></html>
