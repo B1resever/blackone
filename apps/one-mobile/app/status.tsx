@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
@@ -24,11 +25,18 @@ type ReservationStatus = {
   vehicle_year?: number | null;
   vehicle_color?: string | null;
   plate_number?: string | null;
+  ride_code?: string | null;
+  ride_code_verified_at?: string | null;
 };
 
+function readParam(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value ?? '';
+}
+
 export default function ReservationStatusScreen() {
-  const [requestCode, setRequestCode] = useState('');
-  const [email, setEmail] = useState('');
+  const params = useLocalSearchParams<{ requestCode?: string; email?: string }>();
+  const [requestCode, setRequestCode] = useState(() => readParam(params.requestCode));
+  const [email, setEmail] = useState(() => readParam(params.email));
   const [reservation, setReservation] = useState<ReservationStatus | null>(null);
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
@@ -147,6 +155,18 @@ export default function ReservationStatusScreen() {
               </Text>
             ) : null}
 
+            {reservation.ride_code && !['completed', 'cancelled'].includes(reservation.status) ? (
+              <View style={styles.rideCodeCard}>
+                <Text style={styles.rideCodeLabel}>ONE RIDE CODE</Text>
+                <Text style={styles.rideCode}>{reservation.ride_code}</Text>
+                <Text style={styles.rideCodeHelp}>
+                  {reservation.ride_code_verified_at
+                    ? 'Verified with your driver.'
+                    : 'Only give this code to the driver after the driver arrives.'}
+                </Text>
+              </View>
+            ) : null}
+
             {reservation.driver_name ? (
               <View style={styles.driverCard}>
                 <Text style={styles.driverLabel}>YOUR DRIVER</Text>
@@ -163,6 +183,18 @@ export default function ReservationStatusScreen() {
                 ) : null}
               </View>
             ) : null}
+
+            <View style={styles.supportRow}>
+              <Pressable
+                style={styles.supportButton}
+                onPress={() => router.push({ pathname: '/trip-support', params: { requestCode: reservation.request_code, marketId: reservation.market_id } })}
+              >
+                <Text style={styles.supportText}>SUPPORT / SOS</Text>
+              </Pressable>
+              <Pressable style={styles.supportButton} onPress={() => router.push('/account')}>
+                <Text style={styles.supportText}>SIGN IN FOR LIVE + CHAT</Text>
+              </Pressable>
+            </View>
 
             {!['completed', 'cancelled'].includes(reservation.status) ? (
               <Pressable style={styles.cancelButton} onPress={cancelReservation} disabled={cancelling}>
@@ -194,10 +226,17 @@ const styles = StyleSheet.create({
   meta: { color: theme.colors.muted, marginTop: 6, fontSize: 12 },
   payment: { color: theme.colors.cyanSoft, marginTop: 15, fontWeight: '800', textTransform: 'capitalize' },
   amount: { color: theme.colors.white, fontSize: 26, fontWeight: '900', marginTop: 5 },
+  rideCodeCard: { backgroundColor: '#171108', borderWidth: 1, borderColor: theme.colors.gold, borderRadius: theme.radius.md, padding: 14, marginTop: 16 },
+  rideCodeLabel: { color: theme.colors.gold, fontSize: 10, fontWeight: '900', letterSpacing: 1.4 },
+  rideCode: { color: theme.colors.goldSoft, fontSize: 30, fontWeight: '900', letterSpacing: 4, marginTop: 5 },
+  rideCodeHelp: { color: theme.colors.muted, marginTop: 6, fontSize: 10, lineHeight: 15 },
   driverCard: { backgroundColor: theme.colors.surfaceRaised, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md, padding: 14, marginTop: 16 },
   driverLabel: { color: theme.colors.cyan, fontSize: 10, fontWeight: '900', letterSpacing: 1.5 },
   driverName: { color: theme.colors.white, fontSize: 17, fontWeight: '900', marginTop: 6 },
   driverMeta: { color: theme.colors.muted, marginTop: 4, fontSize: 12 },
+  supportRow: { flexDirection: 'row', gap: 8, marginTop: 14 },
+  supportButton: { flex: 1, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.md, padding: 11, alignItems: 'center' },
+  supportText: { color: theme.colors.white, fontWeight: '900', fontSize: 9, textAlign: 'center' },
   cancelButton: { borderWidth: 1, borderColor: theme.colors.danger, borderRadius: theme.radius.md, padding: 14, marginTop: 18, alignItems: 'center' },
   cancelText: { color: theme.colors.danger, fontWeight: '900' },
 });

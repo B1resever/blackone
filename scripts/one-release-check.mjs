@@ -35,6 +35,7 @@ if (app?.expo) {
   requireValue(app.expo.ios?.bundleIdentifier === 'com.blackone.one', 'iOS bundle ID must be com.blackone.one');
   requireValue(app.expo.android?.package === 'com.blackone.one', 'Android package must be com.blackone.one');
   requireValue(Array.isArray(app.expo.plugins) && app.expo.plugins.some((p) => p === 'expo-notifications'), 'expo-notifications plugin is required');
+  requireValue(Array.isArray(app.expo.plugins) && app.expo.plugins.some((p) => Array.isArray(p) && p[0] === 'expo-location'), 'expo-location plugin is required for ONE live trips');
 
   if (!app.expo.extra?.eas?.projectId) {
     failures.push('EAS projectId is not configured in app.json. Run EAS project initialization before store builds.');
@@ -66,7 +67,7 @@ if (eas) {
   '.github/workflows/one-store-submit.yml',
 ].forEach(requireFile);
 
-for (let i = 1; i <= 7; i += 1) {
+for (let i = 1; i <= 8; i += 1) {
   const prefix = String(i).padStart(4, '0') + '_';
   const dir = path.join(root, 'services/one-api/db/migrations');
   const match = fs.existsSync(dir) && fs.readdirSync(dir).some((name) => name.startsWith(prefix));

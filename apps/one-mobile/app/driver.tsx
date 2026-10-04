@@ -90,8 +90,7 @@ export default function DriverScreen() {
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.kicker}>DRIVE WITH ONE</Text>
-        <Text style={styles.title}>Drive more.{'
-'}Keep more.</Text>
+        <Text style={styles.title}>Drive more.{'\n'}Keep more.</Text>
         <Text style={styles.sub}>Apply to join ONE for scheduled transportation in an active launch market.</Text>
 
         <Pressable style={styles.accessButton} onPress={() => router.push('/driver-access')}>

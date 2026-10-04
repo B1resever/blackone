@@ -34,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const sql = neon(databaseUrl);
 
   const rows = await sql`
-    select id, status, passenger_user_id
+    select id, status, passenger_user_id, ride_code_verified_at
     from one_reservations
     where request_code = ${parsed.data.requestCode}
       and assigned_driver_user_id = ${user.id}
@@ -43,6 +43,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   const trip = rows[0];
   if (!trip) return res.status(404).json({ error: 'trip_not_found' });
+
+  if (parsed.data.status === 'passenger_onboard' && !trip.ride_code_verified_at) {
+    return res.status(409).json({
+      error: 'ride_code_required',
+      message: 'Verify the passenger ride code before starting the trip.',
+    });
+  }
+
+  if (parsed.data.status === 'passenger_onboard' && !trip.ride_code_verified_at) {
+    return res.status(409).json({ error: 'ride_code_required', message: 'Verify the passenger ride code before starting the trip.' });
+  }
 
   const allowed = allowedTransitions[String(trip.status)] ?? [];
   if (!allowed.includes(parsed.data.status)) {

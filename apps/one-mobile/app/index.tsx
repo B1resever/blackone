@@ -44,13 +44,13 @@ const vehicles = [
 ] as const;
 
 const features = [
-  ['◇', 'Transparent\nPricing'],
-  ['✓', 'Verified\nDrivers'],
-  ['⌖', 'Live\nTracking'],
-  ['▣', 'Secure\nPayments'],
-  ['▤', 'In-App\nChat'],
-  ['SOS', 'Emergency\nSupport'],
-  ['★', 'Premium\nVehicles'],
+  { icon: '◇', label: 'Transparent\nPricing', route: '/book' },
+  { icon: '✓', label: 'Verified\nDrivers', route: '/safety' },
+  { icon: '⌖', label: 'Live\nTracking', route: '/trips' },
+  { icon: '▣', label: 'Secure\nPayments', route: '/book' },
+  { icon: '▤', label: 'In-App\nChat', route: '/trips' },
+  { icon: 'SOS', label: 'Emergency\nSupport', route: '/trip-support' },
+  { icon: '★', label: 'Premium\nVehicles', route: '/book' },
 ] as const;
 
 export default function HomeScreen() {
@@ -68,8 +68,8 @@ export default function HomeScreen() {
 
           <View style={styles.headerRight}>
             <View style={styles.countryPills}>
-              <View style={styles.countryPill}><Text style={styles.countryText}>🇺🇸 USA</Text></View>
-              <View style={styles.countryPill}><Text style={styles.countryText}>🇦🇷 ARG</Text></View>
+              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇺🇸 USA</Text></Pressable>
+              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇦🇷 ARG</Text></Pressable>
             </View>
 
             <Pressable style={styles.accountPill} onPress={() => router.push('/account')}>
@@ -98,15 +98,12 @@ export default function HomeScreen() {
           <View style={styles.heroCopy}>
             <Text style={styles.kicker}>TRANSPORTE MODERNO</Text>
             <Text style={styles.headline}>
-              YOUR RIDE.{'
-'}
-              YOUR TIME.{'
-'}
+              YOUR RIDE.{'\n'}
+              YOUR TIME.{'\n'}
               YOUR <Text style={styles.gold}>ONE.</Text>
             </Text>
             <Text style={styles.heroBody}>
-              Professional rides. Transparent pricing.{'
-'}
+              Professional rides. Transparent pricing.{'\n'}
               Verified drivers. Move different.
             </Text>
 
@@ -190,11 +187,11 @@ export default function HomeScreen() {
         </ScrollView>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.featureRail}>
-          {features.map(([icon, label]) => (
-            <View key={label} style={styles.featureItem}>
-              <View style={styles.featureIcon}><Text style={styles.featureIconText}>{icon}</Text></View>
-              <Text style={styles.featureLabel}>{label}</Text>
-            </View>
+          {features.map((feature) => (
+            <Pressable key={feature.label} style={styles.featureItem} onPress={() => router.push(feature.route)}>
+              <View style={styles.featureIcon}><Text style={styles.featureIconText}>{feature.icon}</Text></View>
+              <Text style={styles.featureLabel}>{feature.label}</Text>
+            </Pressable>
           ))}
         </ScrollView>
 
@@ -206,11 +203,9 @@ export default function HomeScreen() {
           <View style={styles.sectionOverlay} />
           <View style={styles.driverCopy}>
             <Text style={styles.kicker}>DRIVE WITH ONE</Text>
-            <Text style={styles.driverTitle}>Drive more.{'
-'}Keep more.</Text>
+            <Text style={styles.driverTitle}>Drive more.{'\n'}Keep more.</Text>
             <Text style={styles.sectionBody}>
-              A simple and fair model. Greater freedom.{'
-'}Be part of a premium network.
+              A simple and fair model. Greater freedom.{'\n'}Be part of a premium network.
             </Text>
             <Pressable style={styles.goldButtonCompact} onPress={() => router.push('/driver')}>
               <Text style={styles.goldButtonText}>JOIN AS A DRIVER  →</Text>
@@ -248,8 +243,7 @@ export default function HomeScreen() {
 
           <View style={styles.safetyCopy}>
             <Text style={styles.kicker}>ONE SAFETY</Text>
-            <Text style={styles.safetyTitle}>Know your driver.{'
-'}Know your ride.</Text>
+            <Text style={styles.safetyTitle}>Know your driver.{'\n'}Know your ride.</Text>
             <Text style={styles.sectionBody}>Verified drivers, live tracking, unique ride code and in-app support.</Text>
             {[
               ['⌖', 'Real-Time Tracking'],
@@ -268,8 +262,7 @@ export default function HomeScreen() {
         <View style={styles.marketGrid}>
           <View style={styles.marketCard}>
             <Text style={styles.marketFlag}>🇺🇸</Text>
-            <Text style={styles.marketTitle}>USA{'
-'}SOUTH FLORIDA</Text>
+            <Text style={styles.marketTitle}>USA{'\n'}SOUTH FLORIDA</Text>
             <Text style={styles.marketBody}>Miami-Dade and surrounding areas with premium transportation services.</Text>
             <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
               <Text style={styles.marketButtonText}>VIEW CITIES  →</Text>
@@ -278,8 +271,7 @@ export default function HomeScreen() {
 
           <View style={styles.marketCard}>
             <Text style={styles.marketFlag}>🇦🇷</Text>
-            <Text style={styles.marketTitle}>ARGENTINA{'
-'}BUENOS AIRES</Text>
+            <Text style={styles.marketTitle}>ARGENTINA{'\n'}BUENOS AIRES</Text>
             <Text style={styles.marketBody}>CABA · Aeroparque · Ezeiza · Zona Norte · Tigre · Pilar</Text>
             <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
               <Text style={styles.marketButtonText}>VER CIUDADES  →</Text>
@@ -318,7 +310,7 @@ const styles = StyleSheet.create({
   langTextActive: { color: '#16100A' },
   hero: { height: 410, marginHorizontal: 12, borderRadius: 22, overflow: 'hidden', justifyContent: 'flex-end' },
   heroImage: { borderRadius: 22 },
-  heroOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,4,7,.48)' },
+  heroOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,4,7,.48)' },
   heroCopy: { padding: 20 },
   kicker: { color: theme.colors.gold, fontSize: 11, fontWeight: '900', letterSpacing: 2.5, marginBottom: 8 },
   headline: { color: theme.colors.white, fontSize: 42, lineHeight: 39, fontWeight: '900', letterSpacing: -1.8 },
@@ -351,7 +343,7 @@ const styles = StyleSheet.create({
   vehicleRail: { paddingHorizontal: 12, gap: 10, paddingBottom: 14 },
   vehicleCard: { width: 242, height: 205, borderRadius: 18, overflow: 'hidden', borderWidth: 1, borderColor: '#30383D', backgroundColor: '#05090C' },
   vehicleImage: { width: '100%', height: '100%', resizeMode: 'cover' },
-  vehicleShade: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,.30)' },
+  vehicleShade: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,.30)' },
   vehicleCopy: { position: 'absolute', left: 14, right: 46, bottom: 14 },
   vehicleName: { color: theme.colors.white, fontSize: 17, fontWeight: '900' },
   vehicleDetail: { color: '#E1E1DE', fontSize: 11, marginTop: 3 },
@@ -365,7 +357,7 @@ const styles = StyleSheet.create({
   featureLabel: { color: theme.colors.white, fontSize: 9, lineHeight: 12, textAlign: 'center', marginTop: 7, fontWeight: '700' },
   driverHero: { height: 270, marginHorizontal: 12, marginTop: 14, borderRadius: 20, overflow: 'hidden', justifyContent: 'center' },
   sectionImage: { borderRadius: 20 },
-  sectionOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,4,7,.55)' },
+  sectionOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,4,7,.55)' },
   driverCopy: { padding: 20 },
   driverTitle: { color: theme.colors.white, fontSize: 34, lineHeight: 33, fontWeight: '900' },
   sectionBody: { color: '#E4E3DE', fontSize: 12, lineHeight: 18, marginTop: 10 },

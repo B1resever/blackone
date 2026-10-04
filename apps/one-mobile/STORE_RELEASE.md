@@ -58,11 +58,11 @@ Publish these files on the production BLACK ONE domain before store submission:
 
 Do not ask for permissions before the feature needs them.
 
-- Location: pickup assistance, driver arrival, live trip tracking.
+- Location: foreground driver live-location sharing during an active assigned trip; no Stage 1 background location permission and no continuous passenger GPS.
 - Notifications: booking confirmation, driver assigned, driver arriving, trip updates.
 - Camera/photos: driver documents, profile image, optional trip documentation.
 - Microphone: not requested unless a future feature has a clear user-facing need.
 
 ## Review notes
 
-Stage 1 launches with scheduled reservations. Stage 2 adds live dispatch. The app is internationally downloadable while actual ride service remains limited to activated markets.
+Stage 1 launches with scheduled reservations plus assigned-trip live safety tools. Stage 2 adds on-demand live dispatch. The app is internationally downloadable while actual ride service remains limited to activated markets.
