@@ -163,6 +163,10 @@ export type DriverDocument = {
   verified_at?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
+  file_name?: string | null;
+  content_type?: string | null;
+  size_bytes?: number | null;
+  has_file?: boolean;
 };
 
 export async function loadDriverAvailability() {
@@ -316,4 +320,22 @@ export async function verifyRideCode(requestCode: string, rideCode: string) {
   const data = await response.json() as { verified?: boolean; error?: string };
   if (!response.ok || !data.verified) throw new Error(data.error ?? 'ride_code_failed');
   return true;
+}
+
+
+export async function uploadDriverDocument(input: {
+  documentType: 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check' | 'profile_photo' | 'other';
+  documentNumber?: string;
+  expiresOn?: string;
+  fileName: string;
+  contentType: string;
+  base64: string;
+}) {
+  const response = await api('driver-document-upload', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+  const data = await response.json() as { document?: DriverDocument; error?: string; maxBytes?: number };
+  if (!response.ok || !data.document) throw new Error(data.error ?? 'driver_document_upload_failed');
+  return data.document;
 }
