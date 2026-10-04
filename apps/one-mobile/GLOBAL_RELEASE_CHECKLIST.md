@@ -17,6 +17,10 @@
 - Driver compliance and document review
 - Driver availability control
 - Driver/vehicle class compatibility for dispatch
+- Secure passenger/driver trip chat
+- Passenger ride-code verification before onboard
+- Driver foreground live-location sharing and passenger live tracking
+- BLACK ONE trip support / emergency call flow
 - Push notification architecture
 - USA $25 monthly driver cap logic
 - Argentina launch fee model
@@ -46,7 +50,7 @@
 ### Production backend
 
 - Dedicated ONE Neon project/database identified
-- Migrations 0001 through 0007 applied
+- Migrations 0001 through 0008 applied
 - Production backend deployed
 - Production environment variables configured
 - /one/api/readiness returns ready=true
@@ -81,7 +85,7 @@
 Request permissions only when the user activates the related feature.
 
 - Notifications: requested only after explicit opt-in from My ONE
-- Location: not required for Stage 1 manual-address reservations
+- Location: requested only from the driver when the driver explicitly starts live trip sharing; no background location permission is requested in Stage 1
 - Camera/photos: do not request until native document/photo upload is connected
 - Microphone: not requested in Stage 1
 
