@@ -69,6 +69,7 @@ function render(list){
       <button onclick="setQuote('${esc(r.request_code)}','${esc(r.quote_currency || (r.market_id==='buenos-aires'?'ARS':'USD'))}')">Set Quote</button>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
       <button onclick="setStatus('${esc(r.request_code)}','cancelled')">Cancel</button>
+      ${r.status==='cancelled'&&r.payment_status==='paid'?'<button onclick="refundReservation(\''+esc(r.request_code)+'\')">Refund</button>':''}
       <span class="muted small">Active-trip states are controlled by ONE Driver.</span>
     </div></td>
   </tr>`).join('');
@@ -107,6 +108,14 @@ async function setQuote(requestCode,defaultCurrency){
    })});
    await load();
  }catch(e){alert('Quote update failed.');}
+}
+async function refundReservation(requestCode){
+ if(!confirm('Issue a full Stripe refund for this cancelled ONE reservation?'))return;
+ try{
+   const data=await request('/one/api/admin-refund',{method:'POST',body:JSON.stringify({requestCode})});
+   alert(data.alreadyRefunded?'This reservation was already refunded.':'Stripe refund created.');
+   await load();
+ }catch(e){alert('Refund failed. Verify the reservation is cancelled and payment is settled.');}
 }
 async function setStatus(requestCode,status){
  if(status==='cancelled'&&!confirm('Cancel this ONE reservation?'))return;
