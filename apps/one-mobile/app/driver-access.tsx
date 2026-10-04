@@ -36,6 +36,17 @@ const nextStatus: Record<string, { status: DriverStatus; label: string } | null>
   completed: null,
 };
 
+function documentMimeType(asset: DocumentPicker.DocumentPickerAsset) {
+  if (asset.mimeType && asset.mimeType !== 'application/octet-stream') return asset.mimeType;
+  const name = asset.name.toLowerCase();
+  if (name.endsWith('.pdf')) return 'application/pdf';
+  if (name.endsWith('.jpg') || name.endsWith('.jpeg')) return 'image/jpeg';
+  if (name.endsWith('.png')) return 'image/png';
+  if (name.endsWith('.heic')) return 'image/heic';
+  if (name.endsWith('.heif')) return 'image/heif';
+  return 'application/octet-stream';
+}
+
 const requiredDocuments: Array<{ id: DocumentType; label: string }> = [
   { id: 'driver_license', label: 'Driver License' },
   { id: 'insurance', label: 'Insurance' },
@@ -258,7 +269,7 @@ export default function DriverAccessScreen() {
         documentNumber: documentNumber.trim() || undefined,
         expiresOn: expiresOn.trim() || undefined,
         fileName: selectedFile.name,
-        contentType: selectedFile.mimeType || 'application/octet-stream',
+        contentType: documentMimeType(selectedFile),
         base64,
       });
 
@@ -272,8 +283,8 @@ export default function DriverAccessScreen() {
       setMessage(
         code === 'document_too_large'
           ? 'Document is too large. Choose a PDF or image up to 2.5 MB.'
-          : code === 'unsupported_document_type'
-            ? 'Use a PDF, JPEG, PNG, HEIC or HEIF document.'
+          : code === 'unsupported_document_type' || code === 'document_content_mismatch'
+            ? 'Use a valid PDF, JPEG, PNG, HEIC or HEIF document.'
             : 'Document could not be uploaded. Check the file and expiration date.',
       );
     } finally {
@@ -383,7 +394,12 @@ export default function DriverAccessScreen() {
                 <Pressable
                   key={item.id}
                   style={[styles.typeButton, selectedDocument === item.id ? styles.typeActive : null]}
-                  onPress={() => setSelectedDocument(item.id)}
+                  onPress={() => {
+                    setSelectedDocument(item.id);
+                    setSelectedFile(null);
+                    setDocumentNumber('');
+                    setExpiresOn('');
+                  }}
                 >
                   <Text style={[styles.typeText, selectedDocument === item.id ? styles.typeTextActive : null]}>{item.label}</Text>
                 </Pressable>
