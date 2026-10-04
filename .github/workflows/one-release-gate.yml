@@ -1,0 +1,15 @@
+name: ONE Release Gate
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13'
+      - name: Validate ONE release prerequisites
+        run: node scripts/one-release-check.mjs
