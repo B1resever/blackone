@@ -67,6 +67,7 @@ if (eas) {
   'one-driver-finance.html',
   'one-rates.html',
   'api/one/admin-bootstrap.ts',
+  'api/one/admin-refund.ts',
   'api/one/health.ts',
   'api/one/readiness.ts',
   'api/one/stripe-webhook.ts',
