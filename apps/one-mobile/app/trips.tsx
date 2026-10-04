@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { getSessionToken } from '../src/auth-client';
@@ -25,6 +26,8 @@ type Trip = {
   vehicle_year?: number | null;
   vehicle_color?: string | null;
   plate_number?: string | null;
+  ride_code?: string | null;
+  ride_code_verified_at?: string | null;
 };
 
 export default function TripsScreen() {
@@ -105,6 +108,43 @@ export default function TripsScreen() {
                 {trip.plate_number ? <Text style={styles.driverMeta}>Plate · {trip.plate_number}</Text> : null}
               </View>
             ) : null}
+
+            {trip.ride_code && !['completed', 'cancelled'].includes(trip.status) ? (
+              <View style={styles.rideCodeCard}>
+                <Text style={styles.rideCodeLabel}>ONE RIDE CODE</Text>
+                <Text style={styles.rideCode}>{trip.ride_code}</Text>
+                <Text style={styles.rideCodeHelp}>
+                  {trip.ride_code_verified_at
+                    ? 'Verified with your driver.'
+                    : 'Give this code to your driver after the driver arrives. Do not send it in chat before pickup.'}
+                </Text>
+              </View>
+            ) : null}
+
+            <View style={styles.actions}>
+              {trip.driver_name && !['completed', 'cancelled'].includes(trip.status) ? (
+                <>
+                  <Pressable
+                    style={styles.actionPrimary}
+                    onPress={() => router.push({ pathname: '/live', params: { requestCode: trip.request_code, marketId: trip.market_id } })}
+                  >
+                    <Text style={styles.actionPrimaryText}>LIVE TRACKING</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.actionSecondary}
+                    onPress={() => router.push({ pathname: '/chat', params: { requestCode: trip.request_code } })}
+                  >
+                    <Text style={styles.actionSecondaryText}>SECURE CHAT</Text>
+                  </Pressable>
+                </>
+              ) : null}
+              <Pressable
+                style={styles.actionSecondary}
+                onPress={() => router.push({ pathname: '/trip-support', params: { requestCode: trip.request_code, marketId: trip.market_id } })}
+              >
+                <Text style={styles.actionSecondaryText}>SUPPORT / SOS</Text>
+              </Pressable>
+            </View>
           </View>
         ))}
 
@@ -135,6 +175,15 @@ const styles = StyleSheet.create({
   driverLabel: { color: theme.colors.cyan, fontWeight: '900', fontSize: 10, letterSpacing: 1.2 },
   driverName: { color: theme.colors.white, fontWeight: '900', fontSize: 16, marginTop: 5 },
   driverMeta: { color: theme.colors.muted, fontSize: 12, marginTop: 3 },
+  rideCodeCard: { backgroundColor: '#171108', borderRadius: theme.radius.md, borderWidth: 1, borderColor: theme.colors.gold, padding: 13, marginTop: 12 },
+  rideCodeLabel: { color: theme.colors.gold, fontSize: 9, fontWeight: '900', letterSpacing: 1.4 },
+  rideCode: { color: theme.colors.goldSoft, fontSize: 28, fontWeight: '900', letterSpacing: 4, marginTop: 5 },
+  rideCodeHelp: { color: theme.colors.muted, fontSize: 10, lineHeight: 15, marginTop: 6 },
+  actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 12 },
+  actionPrimary: { backgroundColor: theme.colors.gold, borderRadius: 11, paddingHorizontal: 12, paddingVertical: 11 },
+  actionPrimaryText: { color: '#16100A', fontWeight: '900', fontSize: 10 },
+  actionSecondary: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: 11, paddingHorizontal: 12, paddingVertical: 11 },
+  actionSecondaryText: { color: theme.colors.white, fontWeight: '900', fontSize: 10 },
   empty: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 18 },
   emptyTitle: { color: theme.colors.white, fontWeight: '900', fontSize: 17 },
   emptyText: { color: theme.colors.muted, marginTop: 6 },
