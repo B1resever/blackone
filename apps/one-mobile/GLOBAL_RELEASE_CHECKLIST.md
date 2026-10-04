@@ -1,59 +1,97 @@
 # ONE — Global Store Release Checklist
 
-## Already prepared in the codebase
+## Repository-side foundation already prepared
 
-- Separate iOS and Android application identifiers
-- Store-oriented EAS production profile
-- International language framework
-- English fallback for unsupported device languages
-- Locale-aware money formatting utility
-- Market-based service availability
-- Worldwide-download architecture separate from operational coverage
-- Accessibility labels on primary selectors
-- Responsive React Native foundation
+- iOS bundle ID: com.blackone.one
+- Android package: com.blackone.one
+- EAS production build profile
+- EAS production environment binding
+- English / Spanish / Portuguese / French application language framework
+- Worldwide-download architecture
+- Backend-controlled service markets
+- Passenger accounts and secure mobile sessions
+- Synchronized reservation history
+- Driver activation and driver trip controls
+- Google Places address autocomplete through ONE API
+- Stripe Checkout and webhook payment state
+- Driver compliance and document review
+- Driver availability control
+- Driver/vehicle class compatibility for dispatch
+- Push notification architecture
+- USA $25 monthly driver cap logic
+- Argentina launch fee model
+- Privacy, terms and account deletion pages
+- Automated release-readiness endpoint
+- Manual ONE Release Gate
+- Manual EAS store build workflow
+- Manual EAS store submission workflow
+- Vercel preview-build suppression
 
-## Required before App Store / Google Play submission
+## External items still required before the first store binary
 
 ### Brand assets
-- Final 1024x1024 App Store icon
-- Android adaptive icon
-- Splash screen
-- Phone screenshots for every store listing locale
-- Optional tablet screenshots if tablet distribution remains enabled
 
-### Legal and customer support
-- Public privacy-policy URL
-- Public terms-of-service URL
-- Support URL and support email
-- Account deletion inside the app if user accounts can be created
-- Clear payment/refund/cancellation rules
-- Driver and passenger safety terms
+- Final 1024x1024 ONE App Store icon
+- Android adaptive foreground/background icon assets
+- Final launch/splash artwork
+- Final phone screenshots after physical-device acceptance
 
-### Privacy and permissions
-- Ask only for permissions that are necessary for an active feature
-- Add precise location permission when live pickup/tracking is implemented
-- Add notification permission when push notifications are implemented
-- Add camera/photo permission only when document/photo upload is implemented
-- Complete Apple privacy disclosures and Google Play Data Safety based on the final data flows
+### Expo / EAS
 
-### International distribution
-- App Store Connect: select the countries/regions where the binary may be downloaded
-- Google Play Console: select the countries/regions where the production release may be downloaded
-- Keep ride-service markets controlled by backend configuration rather than store country
-- Add local taxes, pricing, consumer terms and transportation requirements before enabling rides in a new jurisdiction
+- Create or identify the ONE Expo project
+- Add expo.extra.eas.projectId to app.json
+- Add EXPO_TOKEN to GitHub Actions
+- Add EXPO_PUBLIC_ONE_API_URL to EAS production environment
 
-### Production testing
-- iPhone and iPad layout verification
-- Android phone and tablet verification
-- Low-bandwidth and offline-state tests
-- Time-zone tests
-- Currency/decimal formatting tests
-- Right-to-left layout review before adding Arabic/Hebrew
-- Store review build with no demo-only or dead controls
+### Production backend
+
+- Dedicated ONE Neon project/database identified
+- Migrations 0001 through 0006 applied
+- Production backend deployed
+- Production environment variables configured
+- /one/api/readiness returns ready=true
+- Production rate cards entered in ONE Rate Control
+
+### Payments and maps
+
+- Stripe production keys connected
+- Stripe webhook endpoint registered
+- Google Maps server key connected
+- Places and routing verified for South Florida and Buenos Aires
+
+### Apple
+
+- Apple Developer account connected
+- App Store Connect record created
+- Signing credentials connected through EAS
+- Privacy disclosures completed
+- App Store territories selected
+- Review contact/support information completed
+
+### Google Play
+
+- Google Play Console record created
+- Android signing configured
+- Data Safety completed
+- Content rating completed
+- Production countries/regions selected
+
+## Permission strategy
+
+Request permissions only when the user activates the related feature.
+
+- Notifications: requested only after explicit opt-in from My ONE
+- Location: not required for Stage 1 manual-address reservations
+- Camera/photos: do not request until native document/photo upload is connected
+- Microphone: not requested in Stage 1
 
 ## Release strategy
 
-1. Worldwide-capable binary
-2. Service-enabled markets: South Florida + Buenos Aires
-3. Add operational markets from backend configuration
-4. Expand store languages without forking the application
+1. Finish external production connections.
+2. Run ONE Release Gate.
+3. Execute end-to-end production-like test.
+4. Create internal iOS/Android builds.
+5. Test on physical devices.
+6. Prepare screenshots and final store forms.
+7. TestFlight + Google Play internal testing.
+8. Production submission.
