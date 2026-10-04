@@ -29,6 +29,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       payment_status,
       quote_amount_minor,
       quote_currency,
+      ride_code,
+      ride_code_verified_at,
       u.full_name as driver_name,
       u.phone as driver_phone,
       v.make as vehicle_make,
