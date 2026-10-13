@@ -20,8 +20,176 @@
       "destination": "/api/one/stripe-webhook"
     },
     {
-      "source": "/one/api/:path*",
-      "destination": "/api/one?endpoint=:path*"
+      "source": "/one/api/health",
+      "destination": "/api/one/core?endpoint=health"
+    },
+    {
+      "source": "/one/api/readiness",
+      "destination": "/api/one/core?endpoint=readiness"
+    },
+    {
+      "source": "/one/api/markets",
+      "destination": "/api/one/core?endpoint=markets"
+    },
+    {
+      "source": "/one/api/auth-register",
+      "destination": "/api/one/auth?endpoint=auth-register"
+    },
+    {
+      "source": "/one/api/auth-login",
+      "destination": "/api/one/auth?endpoint=auth-login"
+    },
+    {
+      "source": "/one/api/auth-logout",
+      "destination": "/api/one/auth?endpoint=auth-logout"
+    },
+    {
+      "source": "/one/api/auth-me",
+      "destination": "/api/one/auth?endpoint=auth-me"
+    },
+    {
+      "source": "/one/api/auth-delete-account",
+      "destination": "/api/one/auth?endpoint=auth-delete-account"
+    },
+    {
+      "source": "/one/api/places",
+      "destination": "/api/one/booking?endpoint=places"
+    },
+    {
+      "source": "/one/api/route",
+      "destination": "/api/one/booking?endpoint=route"
+    },
+    {
+      "source": "/one/api/quotes",
+      "destination": "/api/one/booking?endpoint=quotes"
+    },
+    {
+      "source": "/one/api/reservations",
+      "destination": "/api/one/booking?endpoint=reservations"
+    },
+    {
+      "source": "/one/api/reservation-status",
+      "destination": "/api/one/booking?endpoint=reservation-status"
+    },
+    {
+      "source": "/one/api/cancel-reservation",
+      "destination": "/api/one/booking?endpoint=cancel-reservation"
+    },
+    {
+      "source": "/one/api/claim-reservations",
+      "destination": "/api/one/booking?endpoint=claim-reservations"
+    },
+    {
+      "source": "/one/api/my-reservations",
+      "destination": "/api/one/booking?endpoint=my-reservations"
+    },
+    {
+      "source": "/one/api/create-checkout-session",
+      "destination": "/api/one/payments?endpoint=create-checkout-session"
+    },
+    {
+      "source": "/one/api/create-payment-intent",
+      "destination": "/api/one/payments?endpoint=create-payment-intent"
+    },
+    {
+      "source": "/one/api/driver-fee-checkout",
+      "destination": "/api/one/payments?endpoint=driver-fee-checkout"
+    },
+    {
+      "source": "/one/api/driver-applications",
+      "destination": "/api/one/driver?endpoint=driver-applications"
+    },
+    {
+      "source": "/one/api/driver-activate",
+      "destination": "/api/one/driver?endpoint=driver-activate"
+    },
+    {
+      "source": "/one/api/driver-availability",
+      "destination": "/api/one/driver?endpoint=driver-availability"
+    },
+    {
+      "source": "/one/api/driver-documents",
+      "destination": "/api/one/driver?endpoint=driver-documents"
+    },
+    {
+      "source": "/one/api/driver-fees",
+      "destination": "/api/one/driver?endpoint=driver-fees"
+    },
+    {
+      "source": "/one/api/driver-jobs",
+      "destination": "/api/one/driver?endpoint=driver-jobs"
+    },
+    {
+      "source": "/one/api/driver-trip-update",
+      "destination": "/api/one/driver?endpoint=driver-trip-update"
+    },
+    {
+      "source": "/one/api/driver-verify-ride-code",
+      "destination": "/api/one/driver?endpoint=driver-verify-ride-code"
+    },
+    {
+      "source": "/one/api/trip-location",
+      "destination": "/api/one/trip?endpoint=trip-location"
+    },
+    {
+      "source": "/one/api/trip-messages",
+      "destination": "/api/one/trip?endpoint=trip-messages"
+    },
+    {
+      "source": "/one/api/push-register",
+      "destination": "/api/one/trip?endpoint=push-register"
+    },
+    {
+      "source": "/one/api/admin-bootstrap",
+      "destination": "/api/one/admin-users?endpoint=admin-bootstrap"
+    },
+    {
+      "source": "/one/api/admin-review-bootstrap",
+      "destination": "/api/one/admin-users?endpoint=admin-review-bootstrap"
+    },
+    {
+      "source": "/one/api/admin-user-lookup",
+      "destination": "/api/one/admin-users?endpoint=admin-user-lookup"
+    },
+    {
+      "source": "/one/api/admin-user-reset-password",
+      "destination": "/api/one/admin-users?endpoint=admin-user-reset-password"
+    },
+    {
+      "source": "/one/api/admin-driver-applications",
+      "destination": "/api/one/admin-drivers?endpoint=admin-driver-applications"
+    },
+    {
+      "source": "/one/api/admin-driver-application-update",
+      "destination": "/api/one/admin-drivers?endpoint=admin-driver-application-update"
+    },
+    {
+      "source": "/one/api/admin-driver-documents",
+      "destination": "/api/one/admin-drivers?endpoint=admin-driver-documents"
+    },
+    {
+      "source": "/one/api/admin-driver-fees",
+      "destination": "/api/one/admin-drivers?endpoint=admin-driver-fees"
+    },
+    {
+      "source": "/one/api/admin-drivers",
+      "destination": "/api/one/admin-drivers?endpoint=admin-drivers"
+    },
+    {
+      "source": "/one/api/admin-reservations",
+      "destination": "/api/one/admin-ops?endpoint=admin-reservations"
+    },
+    {
+      "source": "/one/api/admin-reservation-update",
+      "destination": "/api/one/admin-ops?endpoint=admin-reservation-update"
+    },
+    {
+      "source": "/one/api/admin-refund",
+      "destination": "/api/one/admin-ops?endpoint=admin-refund"
+    },
+    {
+      "source": "/one/api/admin-rates",
+      "destination": "/api/one/admin-ops?endpoint=admin-rates"
     }
   ],
   "headers": [
