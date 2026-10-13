@@ -1,8 +1,4 @@
-const rawBase = process.env.ONE_PRODUCTION_URL?.trim();
-if (!rawBase) {
-  console.error('BLOCKED: ONE_PRODUCTION_URL is not configured.');
-  process.exit(1);
-}
+const rawBase = process.env.ONE_PRODUCTION_URL?.trim() || 'https://b1reserve.com';
 
 const base = rawBase.replace(/\/$/, '');
 const timeoutMs = Number(process.env.ONE_SMOKE_TIMEOUT_MS ?? 12000);
@@ -54,6 +50,7 @@ await check('Markets', '/one/api/markets', ({ response, body }) =>
 
 console.log('ONE production smoke test');
 console.log('=========================');
+console.log('Base URL: ' + base);
 for (const item of checks) {
   console.log((item.ok ? 'PASS' : 'FAIL') + ' ' + item.name + ' · ' + item.path + ' · ' + item.status);
 }
