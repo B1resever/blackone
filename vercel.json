@@ -16,8 +16,12 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/stripe-webhook",
+      "destination": "/api/one/stripe-webhook"
+    },
+    {
       "source": "/one/api/:path*",
-      "destination": "/api/one/:path*"
+      "destination": "/api/one?endpoint=:path*"
     }
   ],
   "headers": [
