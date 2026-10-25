@@ -29,7 +29,8 @@ const OPPORTUNITIES=[
 {project:'latin',name:'Tour / promoters LATIN LIVE',stage:'Prospecto',value:'Booking / shows',next:'CRM venues'},
 {project:'realestate',name:'Pipeline Real Estate',stage:'Prospecto',value:'Comisiones',next:'Cargar buyer/seller leads'}
 ];
-let state={view:'home',project:null,tab:'Resumen',filters:{project:'all',stage:'all',search:''}};
+const THEMES=[{id:'obsidian',name:'Obsidiana'},{id:'sky',name:'Cielo'},{id:'sunset',name:'Sunset'},{id:'emerald',name:'Esmeralda'}];
+let state={view:'home',project:null,tab:'Resumen',theme:localStorage.getItem('ojo:theme')||'obsidian',filters:{project:'all',stage:'all',search:''}};
 const app=document.getElementById('app');const toast=document.getElementById('toast');
 const key=(kind,id)=>`ojo:${kind}:${id}`;const read=(kind,id)=>JSON.parse(localStorage.getItem(key(kind,id))||'[]');const write=(kind,id,v)=>localStorage.setItem(key(kind,id),JSON.stringify(v));
 function allContacts(){return PROJECTS.flatMap(p=>p.contacts.map((c,i)=>({id:`base:${p.id}:${i}`,project:p.id,name:c[0],role:c[1],stage:c[2]||'Prospecto',next:'—',source:'Base'})).concat(read('crm',p.id).map((c,i)=>({...c,id:`local:${p.id}:${i}`,project:p.id,source:'EL OJO'}))))}
