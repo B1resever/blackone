@@ -93,6 +93,11 @@ export default function HomeScreen() {
           })}
         </View>
 
+        <Pressable onPress={() => router.push('/experiences')} accessibilityRole="button" style={{ backgroundColor: '#F3FAFF', padding: 18, borderRadius: 15, marginHorizontal: 16, marginBottom: 16, borderWidth: 1, borderColor: '#BBDCF1' }}>
+          <Text style={{ color: '#0C3555', fontSize: 18, fontWeight: '800' }}>Explore B1 · Cars / Jets / Boats →</Text>
+          <Text style={{ color: '#416C87', marginTop: 5, fontSize: 12 }}>Choose your premium mobility service</Text>
+        </Pressable>
+
         <ImageBackground source={{ uri: HERO }} style={styles.hero} imageStyle={styles.heroImage}>
           <View style={styles.heroOverlay} />
           <View style={styles.heroCopy}>
