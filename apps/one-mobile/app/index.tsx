@@ -78,6 +78,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        <Pressable onPress={() => router.push("/experiences")} accessibilityRole="button" style={{ backgroundColor: "#008CE0", borderRadius: 16, paddingVertical: 15, paddingHorizontal: 18, marginHorizontal: 18, marginBottom: 16 }}><Text style={{ color: "#FFFFFF", fontWeight: "800", textAlign: "center", fontSize: 15 }}>B1 EXPERIENCES  ·  CARS / JETS / BOATS  →</Text></Pressable>
         <View style={styles.languageRow}>
           {supportedLanguages.map((item) => {
             const active = item.code === language;
