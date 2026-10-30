@@ -7,19 +7,38 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "environment": "development"
+      "environment": "development",
+      "extends": "base"
     },
     "preview": {
       "distribution": "internal",
-      "environment": "preview"
+      "environment": "preview",
+      "extends": "base",
+      "android": {
+        "buildType": "apk"
+      }
     },
     "production": {
       "autoIncrement": true,
       "distribution": "store",
-      "environment": "production"
+      "environment": "production",
+      "extends": "base",
+      "android": {
+        "buildType": "app-bundle"
+      }
+    },
+    "base": {
+      "env": {
+        "EXPO_PUBLIC_ONE_API_URL": "https://b1reserve.com"
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
+    }
   }
 }

@@ -19,6 +19,9 @@ on:
       - 'package.json'
       - '.github/workflows/one-mobile-api-ci.yml'
 
+permissions:
+  contents: read
+
 jobs:
   mobile:
     name: Mobile validation
@@ -30,13 +33,22 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.13'
-      - run: npm install
+          node-version: '24'
+      - run: npm ci
       - run: npm run typecheck
-      - run: npx expo-doctor
+      - run: npx --no-install expo-doctor
+      - name: Export iOS and Android bundles
+        env:
+          EXPO_PUBLIC_ONE_API_URL: https://b1reserve.com
+        run: npx --no-install expo export --platform all --output-dir dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: one-mobile-bundles
+          path: apps/one-mobile/dist
+          retention-days: 7
 
   api:
-    name: API typecheck
+    name: API validation
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -45,6 +57,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.13'
-      - run: npm install
+          node-version: '24'
+      - run: npm ci
+        working-directory: ${{ github.workspace }}
+      - run: npm ci
       - run: npm run typecheck
+      - run: npm test
+      - run: npm run typecheck:routes
+        working-directory: ${{ github.workspace }}

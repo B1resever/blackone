@@ -12,9 +12,23 @@ on:
           - all
           - ios
           - android
+      profile:
+        description: Internal device testing or store binary
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - production
+
+permissions:
+  contents: read
 
 jobs:
   build:
+    concurrency:
+      group: one-store-build-${{ inputs.platform }}-${{ inputs.profile }}
+      cancel-in-progress: false
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,12 +37,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.13'
+          node-version: '24'
       - name: Repository release gate
         working-directory: ${{ github.workspace }}
         run: node scripts/one-release-check.mjs
-      - run: npm install
-      - run: npx expo-doctor
+      - run: npm ci
+      - run: npx --no-install expo-doctor
       - run: npm run typecheck
       - name: Verify production API before spending store build
         working-directory: ${{ github.workspace }}
@@ -36,19 +50,31 @@ jobs:
           ONE_PRODUCTION_URL: ${{ secrets.ONE_PRODUCTION_URL }}
         run: node scripts/one-production-smoke.mjs
       - name: Install EAS CLI
-        run: npm install --global eas-cli
+        run: npm install --global eas-cli@27.2.0
+      - name: Verify EAS authentication
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas whoami
       - name: Build iOS and Android
         if: ${{ inputs.platform == 'all' }}
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform all --profile production --non-interactive
+        run: eas build --platform all --profile "${{ inputs.profile }}" --non-interactive --json > build-result.json
       - name: Build iOS
         if: ${{ inputs.platform == 'ios' }}
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform ios --profile production --non-interactive
+        run: eas build --platform ios --profile "${{ inputs.profile }}" --non-interactive --json > build-result.json
       - name: Build Android
         if: ${{ inputs.platform == 'android' }}
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform android --profile production --non-interactive
+        run: eas build --platform android --profile "${{ inputs.profile }}" --non-interactive --json > build-result.json
+      - name: Save exact build IDs and artifact URLs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-build-${{ inputs.platform }}-${{ inputs.profile }}
+          path: apps/one-mobile/build-result.json
+          if-no-files-found: ignore
+          retention-days: 30

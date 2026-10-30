@@ -1,0 +1,14 @@
+node_modules/
+.expo/
+dist/
+ios/
+android/
+*.ipa
+*.apk
+*.aab
+credentials.json
+*.p8
+*.p12
+*.mobileprovision
+*.jks
+*.keystore
