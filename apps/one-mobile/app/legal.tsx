@@ -3,11 +3,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
 
 const links = [
-  { label: 'Customer Support', url: 'https://blackonetransportation.com/support.html' },
-  { label: 'Privacy Policy', url: 'https://blackonetransportation.com/privacy.html' },
-  { label: 'Terms of Service', url: 'https://blackonetransportation.com/terms.html' },
-  { label: 'Delete Account / Data Request', url: 'https://blackonetransportation.com/delete-account.html' },
-  { label: 'Payment Help', url: 'https://blackonetransportation.com/payment-success.html' },
+  { label: 'Customer Support', url: 'https://b1reserve.com/support.html' },
+  { label: 'Privacy Policy', url: 'https://b1reserve.com/privacy.html' },
+  { label: 'Terms of Service', url: 'https://b1reserve.com/terms.html' },
+  { label: 'Delete Account / Data Request', url: 'https://b1reserve.com/delete-account.html' },
+  { label: 'Payment Help', url: 'https://b1reserve.com/support.html' },
 ];
 
 export default function LegalScreen() {
