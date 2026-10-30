@@ -718,6 +718,16 @@
     </div>
   </header>
 
+  <!-- Mobile-first app entry; existing vehicle booking remains available at #reserve -->
+  <script>
+    (function () {
+      var legacySections = ['#reserve','#fleet','#contact','#services','#home'];
+      if (window.matchMedia('(max-width: 700px)').matches && !legacySections.includes(location.hash.toLowerCase()) && !location.search.includes('desktop=1')) {
+        location.replace('/b1-app.html');
+      }
+    })();
+  </script>
+
   <!-- ===== Hero ===== -->
   <main id="home" class="hero">
     <div class="hero-bg"></div>
