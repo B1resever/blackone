@@ -29,7 +29,17 @@ async function check(name, path, validate) {
     const result = await getJson(path);
     const ok = validate(result);
     checks.push({ name, path, status: result.response.status, ok });
-    if (!ok) failures.push(name + ' failed at ' + path + ' (HTTP ' + result.response.status + ')');
+    if (!ok) {
+      failures.push(name + ' failed at ' + path + ' (HTTP ' + result.response.status + ')');
+      if (name === 'Readiness' && result.body?.service === 'ONE API') {
+        const flags = result.body.integrations ?? {};
+        const missing = Object.entries(flags).filter(([, value]) => value !== true).map(([key]) => key);
+        const schemaReady = result.body.checks?.databaseSchema === true;
+        console.log('Readiness diagnostics (no secrets):');
+        console.log('  Missing integrations: ' + (missing.length ? missing.join(', ') : 'none'));
+        console.log('  Database schema ready: ' + schemaReady);
+      }
+    }
   } catch (error) {
     checks.push({ name, path, status: 'ERROR', ok: false });
     failures.push(name + ' failed: ' + (error instanceof Error ? error.message : String(error)));
