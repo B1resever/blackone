@@ -12,6 +12,17 @@ on:
           - all
           - ios
           - android
+      ios_build_id:
+        description: Exact tested EAS production build ID for iOS
+        required: false
+        type: string
+      android_build_id:
+        description: Exact tested EAS production build ID for Android
+        required: false
+        type: string
+
+permissions:
+  contents: read
 
 jobs:
   submit:
@@ -20,28 +31,43 @@ jobs:
       run:
         working-directory: apps/one-mobile
     steps:
+      - name: Require explicit tested build IDs
+        working-directory: ${{ github.workspace }}
+        env:
+          PLATFORM: ${{ inputs.platform }}
+          IOS_BUILD_ID: ${{ inputs.ios_build_id }}
+          ANDROID_BUILD_ID: ${{ inputs.android_build_id }}
+        run: |
+          if [[ "$PLATFORM" == "all" || "$PLATFORM" == "ios" ]]; then
+            [[ "$IOS_BUILD_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "A tested iOS build ID is required"; exit 1; }
+          fi
+          if [[ "$PLATFORM" == "all" || "$PLATFORM" == "android" ]]; then
+            [[ "$ANDROID_BUILD_ID" =~ ^[0-9a-fA-F-]{36}$ ]] || { echo "A tested Android build ID is required"; exit 1; }
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '22.13'
+          node-version: '24'
       - name: Repository release gate
         working-directory: ${{ github.workspace }}
         run: node scripts/one-release-check.mjs
-      - run: npm install
+      - run: npm ci
       - name: Verify production API before store submission
         working-directory: ${{ github.workspace }}
         env:
           ONE_PRODUCTION_URL: ${{ secrets.ONE_PRODUCTION_URL }}
         run: node scripts/one-production-smoke.mjs
       - name: Install EAS CLI
-        run: npm install --global eas-cli
-      - name: Submit iOS latest build
+        run: npm install --global eas-cli@27.2.0
+      - name: Submit tested iOS build
         if: ${{ inputs.platform == 'all' || inputs.platform == 'ios' }}
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas submit --platform ios --latest --profile production --non-interactive
-      - name: Submit Android latest build
+          EAS_BUILD_ID: ${{ inputs.ios_build_id }}
+        run: eas submit --platform ios --id "$EAS_BUILD_ID" --profile production --non-interactive
+      - name: Submit tested Android build
         if: ${{ inputs.platform == 'all' || inputs.platform == 'android' }}
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas submit --platform android --latest --profile production --non-interactive
+          EAS_BUILD_ID: ${{ inputs.android_build_id }}
+        run: eas submit --platform android --id "$EAS_BUILD_ID" --profile production --non-interactive
