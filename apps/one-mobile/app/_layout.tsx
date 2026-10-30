@@ -42,6 +42,7 @@ export default function RootLayout() {
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="account" options={{ title: 'My ONE' }} />
+          <Stack.Screen name="experiences" options={{ title: 'Explore B1 Services' }} />
           <Stack.Screen name="book" options={{ title: 'Book a Ride' }} />
           <Stack.Screen name="vehicles" options={{ title: 'Choose Vehicle' }} />
           <Stack.Screen name="review" options={{ title: 'Review Reservation' }} />
