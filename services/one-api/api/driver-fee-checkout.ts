@@ -58,8 +58,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const stripe = new Stripe(stripeKey);
-  const successUrl = process.env.ONE_PAYMENT_SUCCESS_URL ?? 'https://blackonetransportation.com/payment-success';
-  const cancelUrl = process.env.ONE_PAYMENT_CANCEL_URL ?? 'https://blackonetransportation.com/payment-cancelled';
+  const successUrl = process.env.ONE_PAYMENT_SUCCESS_URL ?? 'https://b1reserve.com/payment-success.html';
+  const cancelUrl = process.env.ONE_PAYMENT_CANCEL_URL ?? 'https://b1reserve.com/payment-cancelled.html';
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
