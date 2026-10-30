@@ -38,7 +38,7 @@ export async function getReadiness(
 ) {
   const integrations = {
     database: Boolean(env.DATABASE_URL?.trim()),
-    googleMaps: Boolean(env.GOOGLE_MAPS_SERVER_KEY?.trim()),
+    googleMaps: Boolean((env.GOOGLE_MAPS_SERVER_KEY || env.GOOGLE_MAPS_SERVER_API_KEY)?.trim()),
     stripe: Boolean(env.STRIPE_SECRET_KEY?.trim()),
     stripeWebhook: Boolean(env.STRIPE_WEBHOOK_SECRET?.trim()),
     adminAuth: Boolean(env.ONE_ADMIN_API_TOKEN?.trim()),
