@@ -78,6 +78,7 @@ export default function HomeScreen() {
           </View>
         </View>
 
+        <Pressable onPress={() => router.push("/experiences")} accessibilityRole="button" style={{ backgroundColor: "#008CE0", borderRadius: 16, paddingVertical: 15, paddingHorizontal: 18, marginHorizontal: 18, marginBottom: 16 }}><Text style={{ color: "#FFFFFF", fontWeight: "800", textAlign: "center", fontSize: 15 }}>B1 EXPERIENCES  ·  CARS / JETS / BOATS  →</Text></Pressable>
         <View style={styles.languageRow}>
           {supportedLanguages.map((item) => {
             const active = item.code === language;
@@ -92,6 +93,11 @@ export default function HomeScreen() {
             );
           })}
         </View>
+
+        <Pressable onPress={() => router.push('/experiences')} accessibilityRole="button" style={{ backgroundColor: '#F3FAFF', padding: 18, borderRadius: 15, marginHorizontal: 16, marginBottom: 16, borderWidth: 1, borderColor: '#BBDCF1' }}>
+          <Text style={{ color: '#0C3555', fontSize: 18, fontWeight: '800' }}>Explore B1 · Cars / Jets / Boats →</Text>
+          <Text style={{ color: '#416C87', marginTop: 5, fontSize: 12 }}>Choose your premium mobility service</Text>
+        </Pressable>
 
         <ImageBackground source={{ uri: HERO }} style={styles.hero} imageStyle={styles.heroImage}>
           <View style={styles.heroOverlay} />
