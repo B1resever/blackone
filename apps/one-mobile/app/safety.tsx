@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { theme } from '../src/theme';
 
@@ -52,6 +52,19 @@ export default function SafetyScreen() {
             </View>
           </Pressable>
         ))}
+
+        <View style={styles.note}>
+          <Text style={styles.noteTitle}>B1 · Safety rules / Reglas de seguridad</Text>
+          <Text style={styles.noteText}>No alcohol or drugs while driving or available for rides. Report suspected impairment to B1 Support; call 911 for immediate danger.</Text>
+          <Text style={styles.noteText}>Cero alcohol o drogas al conducir o estar disponible. Reportá una sospecha a Soporte B1; llamá al 911 ante peligro inmediato.</Text>
+          <Text style={styles.noteText}>No discrimination. Service animals and disability-related accommodations must follow applicable law; no extra charge because of a disability.</Text>
+          <Text style={styles.noteText}>Sin discriminación. Se deben respetar las normas sobre animales de servicio y accesibilidad; sin recargos por discapacidad.</Text>
+          <Text style={styles.noteText}>Confirm the driver, vehicle and plate before boarding. Follow designated airport/port pickup locations. All rides must be arranged through B1.</Text>
+          <Text style={styles.noteText}>Verificá chofer, vehículo y matrícula antes de subir. Respetá los puntos habilitados en aeropuertos y puertos. Los viajes se coordinan por B1.</Text>
+          <Pressable onPress={() => Linking.openURL('tel:+13058501737')} accessibilityRole="button" style={{ paddingVertical: 14 }}>
+            <Text style={styles.open}>REPORT SAFETY CONCERN / REPORTAR SEGURIDAD →</Text>
+          </Pressable>
+        </View>
 
         <View style={styles.note}>
           <Text style={styles.noteTitle}>Safety sequence</Text>

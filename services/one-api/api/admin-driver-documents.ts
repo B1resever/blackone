@@ -56,10 +56,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         verified_at = case when ${parsed.data.status} = 'approved' then now() else null end,
         updated_at = now()
     where id = ${parsed.data.documentId}
+      and (${parsed.data.status} <> 'approved'
+        or document_type not in ('driver_license','insurance','vehicle_registration','background_check')
+        or (expires_on >= current_date and file_url ~ '^https://[^/@[:space:]]+([/?#]|$)'))
     returning driver_user_id, id, document_type, status
   `;
 
-  if (!rows[0]) return res.status(404).json({ error: 'document_not_found' });
+  if (!rows[0]) return res.status(409).json({ error: 'document_not_found_or_evidence_expired', message: 'Approval requires a current expiry date and HTTPS evidence for each required document.' });
 
   const driverUserId = String(rows[0].driver_user_id);
   const complianceStatus = await recalculateDriverCompliance(driverUserId);

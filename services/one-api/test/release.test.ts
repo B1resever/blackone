@@ -42,7 +42,7 @@ test('release requires every integration and a successful schema probe', async (
 
 const booking = {
   marketId: 'south-florida', rideType: 'one-way', pickup: 'Miami Airport',
-  dropoff: 'Brickell Miami', pickupDate: '2026-12-01', pickupTime: '14:00',
+  dropoff: 'Brickell Miami', pickupDate: '2099-12-01', pickupTime: '14:00',
   passengers: 2, vehicleClass: 'suv-black', fullName: 'ONE Test Passenger',
   email: 'passenger@example.com', phone: '+13055550100',
 };
@@ -52,7 +52,7 @@ test('passenger reservation validation preserves scheduled and hourly booking co
   assert.equal(reservationRequestSchema.safeParse({ ...booking, dropoff: '' }).success, false);
   assert.equal(reservationRequestSchema.safeParse({ ...booking, rideType: 'hourly', dropoff: '', hourlyHours: 3 }).success, true);
   assert.equal(reservationRequestSchema.safeParse({ ...booking, rideType: 'round-trip' }).success, false);
-  assert.equal(reservationRequestSchema.safeParse({ ...booking, rideType: 'round-trip', returnDate: '2026-12-02', returnTime: '10:00' }).success, true);
+  assert.equal(reservationRequestSchema.safeParse({ ...booking, rideType: 'round-trip', returnDate: '2099-12-02', returnTime: '10:00' }).success, true);
   for (const patch of [{ passengers: 0 }, { marketId: 'unknown' }, { vehicleClass: 'unknown' }, { email: 'invalid' }]) {
     assert.equal(reservationRequestSchema.safeParse({ ...booking, ...patch }).success, false);
   }

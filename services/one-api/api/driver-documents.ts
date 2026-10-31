@@ -3,12 +3,13 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
+import { validEvidenceUrl } from '../src/document-validity.js';
 import { recalculateDriverCompliance } from '../src/compliance.js';
 
 const schema = z.object({
   documentType: z.enum(['driver_license','insurance','vehicle_registration','background_check','profile_photo','other']),
   documentNumber: z.string().trim().max(120).default(''),
-  fileUrl: z.string().url().max(2000).optional(),
+  fileUrl: z.string().max(2000).refine(validEvidenceUrl, 'A secure HTTPS evidence URL is required').optional(),
   expiresOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
