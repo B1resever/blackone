@@ -1,3 +1,5 @@
+import { getMapsServerKey } from './maps-config.js';
+
 export type RouteMetrics = {
   distanceMeters: number;
   durationSeconds: number;
@@ -11,7 +13,7 @@ export type PlaceSuggestion = {
 };
 
 function getMapsKey() {
-  const key = (process.env.GOOGLE_MAPS_SERVER_KEY || process.env.GOOGLE_MAPS_SERVER_API_KEY)?.trim();
+  const key = getMapsServerKey();
   if (!key) throw new Error('GOOGLE_MAPS_SERVER_KEY is not configured');
   return key;
 }

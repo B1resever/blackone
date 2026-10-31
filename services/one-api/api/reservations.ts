@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { createRequestCode, createRideCode } from '../src/ids.js';
 import { computeRoute } from '../src/maps.js';
+import { getMapsServerKey } from '../src/maps-config.js';
 import { calculateQuote } from '../src/pricing.js';
 import { reservationRequestSchema } from '../src/validation.js';
 import { getSessionUser } from '../src/auth.js';
@@ -34,7 +35,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const accountUser = await getSessionUser(req);
 
   let route;
-  if (data.rideType !== 'hourly' && process.env.GOOGLE_MAPS_SERVER_KEY) {
+  if (data.rideType !== 'hourly' && getMapsServerKey()) {
     try {
       route = await computeRoute(data.pickup, data.dropoff);
     } catch (error) {
