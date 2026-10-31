@@ -42,12 +42,12 @@ export default function ConfirmationScreen() {
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.icon}>
-          <Text style={styles.iconText}>✓</Text>
+          <Text style={styles.iconText}>{receipt ? '✓' : '·'}</Text>
         </View>
         <Text style={styles.kicker}>ONE RESERVATIONS</Text>
-        <Text style={styles.title}>Request received.</Text>
+        <Text style={styles.title}>{receipt ? 'Request received.' : 'No reservation selected.'}</Text>
         <Text style={styles.body}>
-          BLACK ONE received your reservation in the ONE system. Keep the request code and ride code for this trip.
+          {receipt ? 'BLACK ONE received your reservation in the ONE system. Keep the request code and ride code for this trip.' : 'Open My Reservations to find a saved trip, or start a new reservation.'}
         </Text>
 
         {receipt ? (

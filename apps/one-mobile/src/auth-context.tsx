@@ -34,7 +34,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }
 
   useEffect(() => {
-    void refresh();
+    void refresh().catch(() => { /* Keep the stored session available for a later refresh. */ });
   }, []);
 
   const value = useMemo<AuthContextValue>(() => ({

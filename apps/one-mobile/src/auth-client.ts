@@ -1,3 +1,4 @@
+import { fetchJsonResponse } from './http-client';
 import * as SecureStore from 'expo-secure-store';
 
 const TOKEN_KEY = 'one.session.token';
@@ -38,7 +39,7 @@ async function api(path: string, options: RequestInit = {}) {
   headers.set('Content-Type', 'application/json');
   if (token) headers.set('Authorization', 'Bearer ' + token);
 
-  return fetch(base + '/one/api/' + path, { ...options, headers });
+  return fetchJsonResponse(base + '/one/api/' + path, { ...options, headers });
 }
 
 export async function registerAccount(input: {
@@ -86,6 +87,8 @@ export async function loadAccount() {
 export async function logoutAccount() {
   try {
     await api('auth-logout', { method: 'POST', body: '{}' });
+  } catch {
+    // Local sign-out must finish even when the server cannot be reached.
   } finally {
     await clearSessionToken();
   }
@@ -270,15 +273,16 @@ export type TripLocation = {
   created_at: string;
 };
 
-export async function loadTripMessages(requestCode: string) {
-  const response = await api('trip-messages?requestCode=' + encodeURIComponent(requestCode));
-  if (!response.ok) throw new Error('trip_messages_failed');
+export async function loadTripMessages(requestCode: string, signal?: AbortSignal) {
+  const response = await api('trip-messages?requestCode=' + encodeURIComponent(requestCode), { signal });
+  if (!response.ok) throw new Error(response.status === 401 || response.status === 403 ? 'trip_messages_access_denied' : response.status === 404 ? 'trip_not_found' : 'trip_messages_failed');
   const data = await response.json() as { messages?: TripMessage[] };
   return data.messages ?? [];
 }
 
-export async function sendTripMessage(requestCode: string, body: string) {
+export async function sendTripMessage(requestCode: string, body: string, signal?: AbortSignal) {
   const response = await api('trip-messages', {
+    signal,
     method: 'POST',
     body: JSON.stringify({ requestCode, body }),
   });
