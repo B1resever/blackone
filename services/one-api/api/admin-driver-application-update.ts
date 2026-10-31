@@ -3,6 +3,7 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { isAdminAuthorized } from '../src/admin-auth.js';
+import { driverFeeTerms } from '../src/driver-fee-terms.js';
 
 const schema = z.object({
   applicationCode: z.string().trim().min(8).max(64),
@@ -91,13 +92,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       driverUserId = String(inserted[0].id);
     }
 
-    const feeModel = application.market_id === 'buenos-aires' ? 'percentage' : 'monthly_cap';
-    const monthlyCap = application.market_id === 'south-florida' ? 2500 : null;
-    const tripPercent = application.market_id === 'buenos-aires' ? 0.10 : 0.05;
-    const feeExemptUntil =
-      application.market_id === 'buenos-aires'
-        ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        : null;
+    const terms = driverFeeTerms(String(application.market_id));
 
     await sql`
       insert into one_driver_profiles (
@@ -115,10 +110,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'approved',
         'approved',
         ${application.market_id},
-        ${feeModel},
-        ${monthlyCap},
-        ${tripPercent},
-        ${feeExemptUntil},
+        ${terms.model},
+        ${terms.monthlyCapAmountMinor},
+        ${terms.percentPerTrip},
+        ${terms.tripFeeExemptUntil},
         now()
       )
       on conflict (user_id) do update set

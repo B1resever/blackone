@@ -250,8 +250,8 @@ export default function HomeScreen() {
           </View>
           <View style={styles.feeCard}>
             <Text style={styles.cardKicker}>ARGENTINA LAUNCH</Text>
-            <Text style={styles.feeBig}>First month free.</Text>
-            <Text style={styles.zero}>10% <Text style={styles.feeSmall}>per trip from month two.</Text></Text>
+            <Text style={styles.feeBig}>First-month membership free.</Text>
+            <Text style={styles.zero}>10% <Text style={styles.feeSmall}>per trip from day one.</Text></Text>
           </View>
         </View>
 

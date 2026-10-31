@@ -105,8 +105,8 @@ export default function DriverScreen() {
 
         <View style={styles.card}>
           <Text style={styles.cardLabel}>ARGENTINA LAUNCH</Text>
-          <Text style={styles.big}>First month free.</Text>
-          <Text style={styles.price}>10%<Text style={styles.priceSmall}> per trip</Text></Text>
+          <Text style={styles.big}>First-month membership free.</Text>
+          <Text style={styles.price}>10%<Text style={styles.priceSmall}> per trip from day one</Text></Text>
           <Text style={styles.cardText}>Scheduled reservations first, expanding area by area.</Text>
         </View>
 
