@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "ONE",
-    "slug": "black-one-one",
-    "owner": "blackonegroup",
+    "slug": "blackonegroup",
+    "owner": "b1reserve",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "one",
@@ -42,6 +42,7 @@
         "backgroundColor": "#020609"
       }]
     ],
+    "extra": {"eas": {"projectId": "d25b749a-5ed8-4076-9e9c-bf107219e9cf"}},
     "experiments": {"typedRoutes": true, "reactCompiler": true},
     "icon": "../../logo.png.png"
   }
