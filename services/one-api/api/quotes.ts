@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { computeRoute } from '../src/maps.js';
+import { getMapsServerKey } from '../src/maps-config.js';
 import { calculateQuote } from '../src/pricing.js';
 import { quoteRequestSchema } from '../src/validation.js';
 
@@ -20,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   let route;
 
   if (input.rideType !== 'hourly') {
-    if (!process.env.GOOGLE_MAPS_SERVER_KEY) {
+    if (!getMapsServerKey()) {
       return res.status(200).json({
         status: 'manual_confirmation',
         currency: input.marketId === 'buenos-aires' ? 'ARS' : 'USD',
