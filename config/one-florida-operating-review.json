@@ -1,0 +1,97 @@
+{
+  "reviewedSourcesOn": "2026-10-31",
+  "jurisdiction": "Florida / South Florida",
+  "operatingClassification": "unverified",
+  "legalComplianceCertified": false,
+  "sources": {
+    "floridaTncLaw": "https://wwwo.leg.state.fl.us/statutes/index.cfm/index.cfm?App_mode=Display_Statute&URL=0600-0699/0627/Sections/0627.748.html",
+    "miamiDadeForHire": "https://www.miamidade.gov/global/service.page?Mduid_service=ser1498077559199786",
+    "miaAccess": "https://www.miami-airport.com/business_permits.asp",
+    "fllTransportation": "https://www.broward.org/Airport/Passengers/Transportation",
+    "uberScreening": "https://www.uber.com/us/en/ride/safety/driver-screening/",
+    "uberPin": "https://help.uber.com/en/riders/article/what-is-verify-your-trip?nodeId=9a2a4bc6-002b-4461-8e9e-8ea29974795d",
+    "lyftSafety": "https://www.lyft.com/safety"
+  },
+  "launchRequirements": [
+    {
+      "id": "operator_classification",
+      "status": "unverified",
+      "requiredEvidence": "Confirm TNC, elected luxury ground TNC, or applicable for-hire carrier model and supporting filings; do not assume another platform's permits apply."
+    },
+    {
+      "id": "insurance",
+      "status": "unverified",
+      "requiredEvidence": "Broker/insurer verification of coverage in each operating period, exclusions and required written driver disclosures; a generic insurance upload is insufficient."
+    },
+    {
+      "id": "driver_screening",
+      "status": "unverified",
+      "requiredEvidence": "Actual screening provider results covering required criminal, sex-offender and driving-record searches, eligibility review and renewal dates; approval must not be inferred from a document title."
+    },
+    {
+      "id": "driver_identity",
+      "status": "incomplete",
+      "requiredEvidence": "Verified driver photo and assigned license plate displayed before boarding. PIN verification supplements identity checks."
+    },
+    {
+      "id": "zero_tolerance",
+      "status": "incomplete",
+      "requiredEvidence": "Public reporting procedure, recorded complaints, prompt block on accepting new rides for an impairment complaint, investigation and controlled reinstatement. Phone access alone does not implement this workflow."
+    },
+    {
+      "id": "accessibility",
+      "status": "incomplete",
+      "requiredEvidence": "Driver notice and training, nondiscrimination/service-animal handling, no disability surcharge and complaint review."
+    },
+    {
+      "id": "fare_and_receipt",
+      "status": "incomplete",
+      "requiredEvidence": "Fare or calculation disclosed before ride and electronic receipt including actual trip origin, destination, total time/distance and fare paid; estimate distance is not actual distance."
+    },
+    {
+      "id": "airport_and_port_access",
+      "status": "unverified",
+      "requiredEvidence": "Confirm applicable MIA, FLL, PBI, PortMiami and Port Everglades access agreements, pickup fees and staging rules before activating each location."
+    },
+    {
+      "id": "retention_and_privacy",
+      "status": "unverified",
+      "requiredEvidence": "Verify applicable ride/driver retention, account-deletion exceptions, restricted document storage and audit access."
+    },
+    {
+      "id": "regulatory_reporting",
+      "status": "unverified",
+      "requiredEvidence": "Review applicable Florida independent CPA examination/reporting and other operator obligations for the selected classification."
+    }
+  ],
+  "comparisonLimits": "Uber/Lyft PIN and screening protocols are design references, not legal permissions, screening integrations, emergency monitoring or 24/7 staffing supplied to B1. Jets and boats require separate regulatory review. Florida rules do not establish Argentina requirements.",
+  "serviceModel": "scheduled_reservations_only",
+  "instantRideRequestsEnabled": false,
+  "classificationNote": "Scheduled/prearranged trips do not by themselves exempt an operator from Florida transportation requirements.",
+  "tncInsuranceReference": {
+    "loggedOnWithoutAcceptedRide": {
+      "bodilyInjuryPerPersonUsd": 50000,
+      "bodilyInjuryPerIncidentUsd": 100000,
+      "propertyDamageUsd": 25000
+    },
+    "acceptedRideThroughLastRiderExit": {
+      "combinedLiabilityUsd": 1000000
+    },
+    "additionalReview": "Review applicable PIP, uninsured/underinsured motorist requirements, insurer eligibility, gaps and written disclosures under 627.748(7)-(8). Limits alone do not establish coverage."
+  },
+  "tncScreeningReference": {
+    "beforeFirstAccess": [
+      "local/national criminal screening with primary-source validation",
+      "National Sex Offender Public Website search",
+      "driving-history review",
+      "valid license and vehicle registration"
+    ],
+    "statutoryBackgroundRecheckYears": 3,
+    "note": "Actual screening date, scope and statutory disqualifiers require documented review. Upload/approval date is not the screening date. Annual screening used by competitors is a reference, not a claim that B1 has integrated a screening vendor."
+  },
+  "tncRetentionReference": {
+    "rideRecordsMinimumYearsAfterRide": 1,
+    "driverRecordsMinimumYearsAfterRelationshipEnds": 1,
+    "status": "implementation_and_deletion_exceptions_require_verification"
+  }
+}

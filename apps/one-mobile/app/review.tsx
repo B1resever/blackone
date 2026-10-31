@@ -53,8 +53,10 @@ export default function ReviewScreen() {
       sent.current = true;
       setReceipt(receipt);
       router.replace('/confirmation');
-    } catch {
-      setError('ONE could not confirm the result. Your request may have been received. Check My Reservations or contact BLACK ONE Support before sending it again. This step does not take payment.');
+    } catch (error) {
+      if (error instanceof Error && error.message === 'invalid_request') {
+        setError('Check the trip details: pickup must be scheduled in the future in your service market, and return must follow pickup.');
+      } else setError('ONE could not confirm the result. Your request may have been received. Check My Reservations or contact BLACK ONE Support before sending it again. This step does not take payment.');
     } finally {
       pending.current = false;
       if (!sent.current) setSubmitting(false);

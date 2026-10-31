@@ -35,7 +35,7 @@ export default function BookScreen() {
         <Text style={styles.kicker}>STEP 1 OF 3 · ONE RESERVATIONS</Text>
         <Text style={styles.title}>Plan your ride.</Text>
         <Text style={styles.sub}>
-          Scheduled reservations are the first operating stage. Choose your market and complete the trip details.
+          Scheduled reservations only. Select a future date and time in your service market. Immediate pickup is not available.
         </Text>
 
         <Text style={styles.label}>Service market</Text>

@@ -76,11 +76,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         and p.available_for_assignment = true
         and (
           select count(distinct d.document_type)
-          from one_driver_documents d
-          where d.driver_user_id = u.id
-            and d.document_type in ('driver_license','insurance','vehicle_registration','background_check')
+          from (
+            select distinct on (document_type) document_type, status, expires_on, file_url
+            from one_driver_documents
+            where driver_user_id = u.id
+            order by document_type, created_at desc, id desc
+          ) d
+          where d.document_type in ('driver_license','insurance','vehicle_registration','background_check')
             and d.status = 'approved'
-            and (d.expires_on is null or d.expires_on >= current_date)
+            and d.expires_on >= current_date
+            and d.file_url ~ '^https://[^/@[:space:]]+([/?#]|$)'
         ) = 4
         and v.status = 'approved'
         and v.vehicle_class_id = r.vehicle_class_id

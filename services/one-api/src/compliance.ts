@@ -1,11 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-const REQUIRED_DOCUMENTS = [
-  'driver_license',
-  'insurance',
-  'vehicle_registration',
-  'background_check',
-] as const;
+import { REQUIRED_DRIVER_DOCUMENTS, hasCurrentDocumentEvidence } from './document-validity.js';
 
 export async function recalculateDriverCompliance(driverUserId: string) {
   const databaseUrl = process.env.DATABASE_URL;
@@ -16,20 +11,19 @@ export async function recalculateDriverCompliance(driverUserId: string) {
     select distinct on (document_type)
       document_type,
       status,
-      expires_on
+      expires_on,
+      file_url
     from one_driver_documents
     where driver_user_id = ${driverUserId}
       and document_type in ('driver_license','insurance','vehicle_registration','background_check')
-    order by document_type, created_at desc
+    order by document_type, created_at desc, id desc
   `;
 
   const latest = new Map(rows.map((row) => [String(row.document_type), row]));
   const now = new Date();
-  const valid = REQUIRED_DOCUMENTS.every((type) => {
+  const valid = REQUIRED_DRIVER_DOCUMENTS.every((type) => {
     const row = latest.get(type);
-    if (!row || row.status !== 'approved') return false;
-    if (!row.expires_on) return true;
-    return new Date(String(row.expires_on) + 'T23:59:59Z').getTime() >= now.getTime();
+    return row?.status === 'approved' && hasCurrentDocumentEvidence(row, now);
   });
 
   const complianceStatus = valid ? 'approved' : 'pending';

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { scheduledRideInstant } from './scheduled-rides.js';
 
 export const marketIdSchema = z.enum(['south-florida', 'buenos-aires']);
 export const rideTypeSchema = z.enum(['one-way', 'hourly', 'round-trip']);
@@ -20,6 +21,9 @@ const tripShape = {
 
 function validateTrip(
   value: {
+    marketId: string;
+    pickupDate: string;
+    pickupTime: string;
     rideType: 'one-way' | 'hourly' | 'round-trip';
     dropoff: string;
     returnDate: string;
@@ -28,6 +32,14 @@ function validateTrip(
   },
   ctx: z.RefinementCtx,
 ) {
+  const pickup = scheduledRideInstant(value.pickupDate, value.pickupTime, value.marketId);
+  if (pickup === null || pickup <= Date.now()) {
+    ctx.addIssue({ code: 'custom', path: ['pickupDate'], message: 'B1 accepts scheduled rides only. Choose a valid future date and time in the service market.' });
+  }
+  if (value.rideType === 'round-trip' && value.returnDate && value.returnTime) {
+    const back = scheduledRideInstant(value.returnDate, value.returnTime, value.marketId);
+    if (back === null || pickup === null || back <= pickup) ctx.addIssue({ code: 'custom', path: ['returnDate'], message: 'Return must be scheduled after pickup.' });
+  }
   if (value.rideType !== 'hourly' && value.dropoff.length < 3) {
     ctx.addIssue({
       code: 'custom',
