@@ -1,114 +1,157 @@
 import { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { loadTripLocation, TripLocation } from '../src/auth-client';
-import { theme } from '../src/theme';
+import { loadTripLocation, type TripLocation } from '../src/auth-client';
+import { useAuth } from '../src/auth-context';
+import TripMap from '../src/trip-map';
+import { isTripLocationFresh, normalizeTripLocation } from '../src/trip-location-state';
 
 function readParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value ?? '';
 }
+const activeStatuses = ['assigned', 'driver_en_route', 'arrived', 'passenger_onboard'];
+const terminalStatuses = ['completed', 'cancelled', 'refunded'];
 
 export default function LiveTripScreen() {
   const params = useLocalSearchParams<{ requestCode?: string; marketId?: string }>();
   const requestCode = readParam(params.requestCode);
   const marketId = readParam(params.marketId);
+  const { user } = useAuth();
   const [location, setLocation] = useState<TripLocation | null>(null);
   const [tripStatus, setTripStatus] = useState('');
-  const [message, setMessage] = useState('Connecting to ONE live tracking…');
-
-  async function refresh() {
-    if (!requestCode) return;
-    try {
-      const data = await loadTripLocation(requestCode);
-      setLocation(data.location);
-      setTripStatus(data.status);
-      setMessage(data.location ? '' : 'Waiting for the driver to start live location sharing.');
-    } catch {
-      setMessage('Live tracking requires a signed-in ONE account attached to this reservation.');
-    }
-  }
+  const [message, setMessage] = useState('Connecting to your trip…');
+  const [connected, setConnected] = useState(false);
+  const [now, setNow] = useState(Date.now);
 
   useEffect(() => {
-    void refresh();
-    const timer = setInterval(() => void refresh(), 5000);
-    return () => clearInterval(timer);
-  }, [requestCode]);
+    const clock = setInterval(() => setNow(Date.now()), 5000);
+    return () => clearInterval(clock);
+  }, []);
+
+  useEffect(() => {
+    let controller: AbortController | undefined;
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    setLocation(null);
+    setTripStatus('');
+    setConnected(false);
+    if (!requestCode || !user) {
+      setMessage(!requestCode ? 'Choose a reservation to follow your driver.' : 'Sign in to the ONE account attached to this trip.');
+      return;
+    }
+    setMessage('Connecting to your trip…');
+    async function poll() {
+      let continuePolling = true;
+      const requestController = new AbortController();
+      controller = requestController;
+      const timeout = setTimeout(() => requestController.abort(), 12_000);
+      try {
+        const data = await loadTripLocation(requestCode, requestController.signal);
+        if (stopped) return;
+        const nextLocation = normalizeTripLocation(data.location);
+        setLocation(nextLocation);
+        setTripStatus(data.status);
+        setConnected(true);
+        const ended = terminalStatuses.includes(data.status);
+        continuePolling = !ended;
+        setMessage(ended ? 'This trip has ended. The map shows the last reported position.'
+          : !nextLocation ? 'Waiting for your driver to share their location.'
+          : !isTripLocationFresh(nextLocation) ? 'No recent GPS update. This is the last reported position.' : '');
+      } catch (error) {
+        if (stopped) return;
+        setConnected(false);
+        const code = error instanceof Error ? error.message : '';
+        if (code === 'trip_location_access_denied' || code === 'trip_not_found') {
+          setLocation(null);
+          continuePolling = false;
+          setMessage(code === 'trip_not_found' ? 'This reservation is not available to your account.' : 'Sign in to the ONE account attached to this trip.');
+        } else {
+          setMessage('Connection interrupted. Any position shown is the last received, not a live update. Reconnecting…');
+        }
+      }
+      finally { clearTimeout(timeout); }
+      if (!stopped && continuePolling) timer = setTimeout(() => void poll(), 5000);
+    }
+    void poll();
+    return () => { stopped = true; controller?.abort(); clearTimeout(timer); };
+  }, [requestCode, user?.id]);
+
+  const fresh = Boolean(location && connected && activeStatuses.includes(tripStatus) && isTripLocationFresh(location, now));
 
   async function openMap() {
     if (!location) return;
-    const query = encodeURIComponent(location.latitude + ',' + location.longitude);
-    await Linking.openURL('https://www.google.com/maps/search/?api=1&query=' + query);
+    try {
+      await Linking.openURL('https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(location.latitude + ',' + location.longitude));
+    } catch {
+      setMessage('The map app could not open. Your driver coordinates remain available below.');
+    }
   }
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <View style={styles.content}>
-        <Text style={styles.kicker}>ONE LIVE TRACKING</Text>
-        <Text style={styles.title}>Follow your ride.</Text>
-        <Text style={styles.sub}>{requestCode}</Text>
-
-        <View style={styles.map}>
-          <View style={styles.routeLine} />
-          <View style={styles.pin}><Text style={styles.pinText}>●</Text></View>
-          <View style={styles.car}><Text style={styles.carText}>◆</Text></View>
-          <Text style={styles.mapLabel}>{location ? 'LIVE DRIVER POSITION' : 'WAITING FOR DRIVER LOCATION'}</Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.kicker}>B1 ONE · TRIP TRACKING</Text>
+        <Text style={styles.title}>Your driver. Your journey.</Text>
+        <Text style={styles.sub}>{requestCode || 'Select a reservation to begin.'}</Text>
+        <View style={styles.statusRow}>
+          <View style={[styles.dot, !fresh && styles.dotInactive]} />
+          <Text style={styles.statusText}>{fresh ? 'RECENT DRIVER LOCATION' : location ? 'LAST REPORTED POSITION' : 'WAITING FOR LOCATION'}</Text>
         </View>
-
+        {location ? <TripMap key={requestCode} location={location} fresh={fresh} /> : (
+          <View style={styles.waiting}>
+            <Text style={styles.waitingTitle}>Your driver will appear here.</Text>
+            <Text style={styles.message}>We show a position only after receiving GPS coordinates from the driver. No simulated route or vehicle is displayed.</Text>
+          </View>
+        )}
+        {message ? <Text accessibilityLiveRegion="polite" style={styles.message}>{message}</Text> : null}
         <View style={styles.card}>
           <Text style={styles.label}>TRIP STATUS</Text>
-          <Text style={styles.value}>{tripStatus ? tripStatus.replaceAll('_', ' ').toUpperCase() : 'CONNECTING'}</Text>
-
+          <Text style={styles.value}>{tripStatus ? tripStatus.replaceAll('_', ' ').toUpperCase() : 'NOT CONNECTED'}</Text>
           {location ? (
             <>
-              <Text style={styles.label}>LAST LOCATION</Text>
+              <Text style={styles.label}>DRIVER COORDINATES</Text>
               <Text style={styles.coords}>{location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}</Text>
               <Text style={styles.meta}>
-                Updated {new Date(location.created_at).toLocaleTimeString()}
-                {location.accuracy_meters ? ' · ±' + Math.round(location.accuracy_meters) + ' m' : ''}
+                Received {new Date(location.created_at).toLocaleTimeString()}
+                {typeof location.accuracy_meters === 'number' && location.accuracy_meters > 0 ? ' · ±' + Math.round(location.accuracy_meters) + ' m accuracy' : ''}
               </Text>
-              <Pressable style={styles.primary} onPress={openMap}>
-                <Text style={styles.primaryText}>OPEN LIVE POSITION ON MAP →</Text>
+              <Pressable style={styles.primary} onPress={openMap} accessibilityRole="button">
+                <Text style={styles.primaryText}>OPEN {fresh ? 'DRIVER' : 'LAST KNOWN'} POSITION ON MAP →</Text>
               </Pressable>
             </>
-          ) : <Text style={styles.message}>{message}</Text>}
+          ) : <Pressable style={styles.primary} onPress={() => router.push('/trips')} accessibilityRole="button"><Text style={styles.primaryText}>MY RESERVATIONS →</Text></Pressable>}
         </View>
-
-        <View style={styles.actions}>
-          <Pressable style={styles.secondary} onPress={() => router.push({ pathname: '/chat', params: { requestCode } })}>
-            <Text style={styles.secondaryText}>SECURE CHAT</Text>
-          </Pressable>
-          <Pressable style={styles.secondary} onPress={() => router.push({ pathname: '/trip-support', params: { requestCode, marketId } })}>
-            <Text style={styles.secondaryText}>SUPPORT / SOS</Text>
-          </Pressable>
-        </View>
-      </View>
+        {requestCode ? <View style={styles.actions}>
+          <Pressable style={styles.secondary} onPress={() => router.push({ pathname: '/chat', params: { requestCode } })} accessibilityRole="button"><Text style={styles.secondaryText}>SECURE CHAT</Text></Pressable>
+          <Pressable style={styles.secondary} onPress={() => router.push({ pathname: '/trip-support', params: { requestCode, marketId } })} accessibilityRole="button"><Text style={styles.secondaryText}>SUPPORT / SOS</Text></Pressable>
+        </View> : null}
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: theme.colors.background },
-  content: { padding: 18, flex: 1 },
-  kicker: { color: theme.colors.gold, fontSize: 11, fontWeight: '900', letterSpacing: 2 },
-  title: { color: theme.colors.white, fontSize: 34, fontWeight: '900', marginTop: 8 },
-  sub: { color: theme.colors.goldSoft, fontWeight: '800', marginTop: 4 },
-  map: { height: 270, backgroundColor: '#081117', borderWidth: 1, borderColor: '#2B3439', borderRadius: 22, marginTop: 18, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
-  routeLine: { width: 180, height: 3, backgroundColor: '#24C76A', transform: [{ rotate: '-24deg' }], opacity: 0.9 },
-  pin: { position: 'absolute', left: 80, bottom: 82 },
-  pinText: { color: '#24C76A', fontSize: 28 },
-  car: { position: 'absolute', right: 78, top: 72, transform: [{ rotate: '24deg' }] },
-  carText: { color: theme.colors.white, fontSize: 30 },
-  mapLabel: { position: 'absolute', bottom: 16, color: theme.colors.muted, fontSize: 9, fontWeight: '900', letterSpacing: 1.2 },
-  card: { backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.lg, padding: 16, marginTop: 14 },
-  label: { color: theme.colors.gold, fontSize: 9, fontWeight: '900', letterSpacing: 1.4, marginTop: 5 },
-  value: { color: theme.colors.white, fontWeight: '900', fontSize: 18, marginTop: 5, marginBottom: 10 },
-  coords: { color: theme.colors.white, fontWeight: '800', marginTop: 5 },
-  meta: { color: theme.colors.muted, fontSize: 11, marginTop: 4 },
-  message: { color: theme.colors.muted, lineHeight: 19, marginTop: 8 },
-  primary: { backgroundColor: theme.colors.gold, borderRadius: 12, padding: 14, alignItems: 'center', marginTop: 14 },
-  primaryText: { color: '#16100A', fontWeight: '900', fontSize: 11 },
-  actions: { flexDirection: 'row', gap: 9, marginTop: 10 },
-  secondary: { flex: 1, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 12, padding: 13, alignItems: 'center' },
-  secondaryText: { color: theme.colors.white, fontWeight: '900', fontSize: 10 },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
+  content: { padding: 18, paddingBottom: 32, gap: 12 },
+  kicker: { color: '#005BEA', fontSize: 11, fontWeight: '900', letterSpacing: 1.5 },
+  title: { color: '#122536', fontSize: 30, fontWeight: '900' },
+  sub: { color: '#526473', fontWeight: '700' },
+  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  dot: { width: 8, height: 8, borderRadius: 4, backgroundColor: '#005BEA' },
+  dotInactive: { backgroundColor: '#788591' },
+  statusText: { color: '#526473', fontSize: 10, fontWeight: '800' },
+  waiting: { padding: 22, backgroundColor: '#F3F8FC', borderRadius: 18, gap: 10 },
+  waitingTitle: { fontSize: 19, color: '#122536', fontWeight: '800' },
+  card: { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#DCE3E8', borderRadius: 18, padding: 16, gap: 8 },
+  label: { color: '#526473', fontSize: 10, fontWeight: '800', letterSpacing: 1 },
+  value: { color: '#122536', fontWeight: '900', fontSize: 18, marginBottom: 6 },
+  coords: { color: '#122536', fontWeight: '800' },
+  meta: { color: '#526473', fontSize: 12 },
+  message: { color: '#526473', lineHeight: 21 },
+  primary: { backgroundColor: '#005BEA', borderRadius: 12, padding: 14, alignItems: 'center', marginTop: 6 },
+  primaryText: { color: '#FFFFFF', fontWeight: '900', fontSize: 11 },
+  actions: { flexDirection: 'row', gap: 10 },
+  secondary: { flex: 1, borderWidth: 1, borderColor: '#DCE3E8', borderRadius: 12, padding: 14, alignItems: 'center' },
+  secondaryText: { color: '#005BEA', fontWeight: '900', fontSize: 11 },
 });
