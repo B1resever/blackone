@@ -36,6 +36,7 @@ jobs:
           node-version: '24'
       - run: npm ci
       - run: npm run typecheck
+      - run: npm test
       - run: npx --no-install expo-doctor
       - name: Export iOS and Android bundles
         env:

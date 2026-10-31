@@ -287,9 +287,9 @@ export async function sendTripMessage(requestCode: string, body: string) {
   return data.message;
 }
 
-export async function loadTripLocation(requestCode: string) {
-  const response = await api('trip-location?requestCode=' + encodeURIComponent(requestCode));
-  if (!response.ok) throw new Error('trip_location_failed');
+export async function loadTripLocation(requestCode: string, signal?: AbortSignal) {
+  const response = await api('trip-location?requestCode=' + encodeURIComponent(requestCode), { signal });
+  if (!response.ok) throw new Error(response.status === 401 || response.status === 403 ? 'trip_location_access_denied' : response.status === 404 ? 'trip_not_found' : 'trip_location_failed');
   return (await response.json()) as { status: string; location: TripLocation | null };
 }
 
@@ -300,12 +300,23 @@ export async function postDriverLocation(input: {
   accuracyMeters?: number | null;
   headingDegrees?: number | null;
   speedMps?: number | null;
-}) {
-  const response = await api('trip-location', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
-  if (!response.ok) throw new Error('trip_location_update_failed');
+}, signal?: AbortSignal) {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  if (signal?.aborted) abort();
+  signal?.addEventListener('abort', abort, { once: true });
+  const timeout = setTimeout(abort, 12_000);
+  try {
+    const response = await api('trip-location', {
+      method: 'POST',
+      body: JSON.stringify(input),
+      signal: controller.signal,
+    });
+    if (!response.ok) throw new Error('trip_location_update_failed');
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener('abort', abort);
+  }
 }
 
 export async function verifyRideCode(requestCode: string, rideCode: string) {

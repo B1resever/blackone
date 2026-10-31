@@ -61,6 +61,7 @@ export default function DriverAccessScreen() {
   const [rideCodes, setRideCodes] = useState<Record<string, string>>({});
   const [sharingCode, setSharingCode] = useState('');
   const locationSubscription = useRef<LocationSubscription | null>(null);
+  const locationRequest = useRef<AbortController | null>(null);
 
   async function refreshDriverData() {
     if (user?.role !== 'driver') return;
@@ -89,11 +90,14 @@ export default function DriverAccessScreen() {
   }, [user?.id, user?.role]);
 
   useEffect(() => {
+    setSharingCode('');
+    setWorking(false);
     return () => {
+      locationRequest.current?.abort();
       locationSubscription.current?.remove();
       locationSubscription.current = null;
     };
-  }, []);
+  }, [user?.id]);
 
   async function activate() {
     if (working) return;
@@ -122,6 +126,7 @@ export default function DriverAccessScreen() {
     try {
       await updateDriverTrip(trip.request_code, status);
       if (status === 'completed' && sharingCode === trip.request_code) {
+        locationRequest.current?.abort();
         locationSubscription.current?.remove();
         locationSubscription.current = null;
         setSharingCode('');
@@ -157,7 +162,9 @@ export default function DriverAccessScreen() {
   }
 
   async function toggleLiveLocation(trip: DriverTrip) {
+    if (working) return;
     if (sharingCode === trip.request_code) {
+      locationRequest.current?.abort();
       locationSubscription.current?.remove();
       locationSubscription.current = null;
       setSharingCode('');
@@ -167,16 +174,20 @@ export default function DriverAccessScreen() {
 
     setWorking(true);
     setMessage('');
+    locationRequest.current?.abort();
+    const controller = new AbortController();
+    locationRequest.current = controller;
     try {
       locationSubscription.current?.remove();
-      locationSubscription.current = await startOneDriverLocationSharing(trip.request_code, setMessage);
+      locationSubscription.current = await startOneDriverLocationSharing(trip.request_code, setMessage, controller.signal);
       setSharingCode(trip.request_code);
       setMessage('Live location is active while ONE Driver remains open.');
     } catch (error) {
+      if (controller.signal.aborted) return;
       const codeName = error instanceof Error ? error.message : '';
       setMessage(codeName === 'location_permission_denied' ? 'Location permission is required for live trip tracking.' : 'ONE could not start live location sharing.');
     } finally {
-      setWorking(false);
+      if (!controller.signal.aborted) setWorking(false);
     }
   }
 
