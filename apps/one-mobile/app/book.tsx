@@ -222,6 +222,21 @@ export default function BookScreen() {
           autoComplete="tel"
         />
 
+        <Pressable style={styles.marketButton} accessibilityRole="checkbox" accessibilityState={{ checked: draft.airportPickup }} onPress={() => updateDraft({ airportPickup: !draft.airportPickup })}>
+          <Text style={styles.label}>{draft.airportPickup ? '✓ ' : '□ '}Airport pickup / Recogida en aeropuerto</Text>
+        </Pressable>
+        {draft.airportPickup ? <>
+          <Text style={styles.label}>Flight number / Número de vuelo · if known</Text>
+          <TextInput style={styles.input} value={draft.flightNumber} onChangeText={(flightNumber) => updateDraft({ flightNumber: flightNumber.toUpperCase() })} maxLength={20} autoCapitalize="characters" placeholder="AA1234" placeholderTextColor={theme.colors.muted} />
+          <Text style={styles.label}>Meeting / Encuentro</Text>
+          <View style={styles.rideRow}>
+            {(['curbside', 'meet-and-greet'] as const).map((mode) => <Pressable key={mode} accessibilityRole="button" accessibilityState={{ selected: draft.pickupMeeting === mode }} style={[styles.marketButton, draft.pickupMeeting === mode && styles.marketButtonActive]} onPress={() => updateDraft({ pickupMeeting: mode })}><Text style={styles.marketButtonTextActive}>{mode === 'curbside' ? 'Curbside / Exterior' : 'Meet & greet / Recepción'}</Text></Pressable>)}
+          </View>
+          <Text style={styles.helper}>Meeting arrangements and any additional fee require B1 confirmation before payment. Flight monitoring is not automatic.</Text>
+          <Text style={styles.label}>Terminal / Meeting instructions · Instrucciones</Text>
+          <TextInput style={[styles.input, styles.notes]} value={draft.pickupInstructions} onChangeText={(pickupInstructions) => updateDraft({ pickupInstructions })} maxLength={500} multiline placeholder="Terminal, meeting point…" placeholderTextColor={theme.colors.muted} />
+        </> : null}
+
         <Text style={styles.label}>Notes · optional</Text>
         <TextInput
           value={draft.notes}

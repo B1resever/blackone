@@ -1,3 +1,4 @@
+import { PickupDetails, type AirportPickupDetails } from '../src/pickup-details';
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -9,6 +10,7 @@ import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
 
 type Trip = {
+  pickup_details?: AirportPickupDetails | null;
   request_code: string;
   market_id: string;
   ride_type: string;
@@ -129,6 +131,7 @@ function TripsContent() {
               <Text style={styles.status}>{trip.status.replaceAll('_', ' ').toUpperCase()}</Text>
             </View>
             <Text style={styles.route}>{trip.pickup_text}</Text>
+                <PickupDetails details={trip.pickup_details} />
             {trip.dropoff_text ? <Text style={styles.route}>→ {trip.dropoff_text}</Text> : null}
             <Text style={styles.meta}>{trip.pickup_date_text} · {trip.pickup_time_text}</Text>
             <Text style={styles.meta}>{trip.vehicle_class_id.toUpperCase()} · {trip.passenger_count} passenger(s)</Text>

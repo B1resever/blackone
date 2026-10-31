@@ -1,3 +1,4 @@
+import { reservationWithPickupDetails } from '../src/pickup-details.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { allowCors, methodNotAllowed } from '../src/http.js';
@@ -32,6 +33,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       quote_amount_minor,
       quote_currency,
       (ride_code_verified_at is not null) as ride_code_verified,
+      notes,
       created_at,
       updated_at
     from one_reservations
@@ -44,5 +46,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     limit 100
   `;
 
-  return res.status(200).json({ trips: rows });
+  return res.status(200).json({ trips: rows.map(reservationWithPickupDetails) });
 }

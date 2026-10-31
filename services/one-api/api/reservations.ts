@@ -1,3 +1,4 @@
+import { pickupDetails, requiresPickupConfirmation } from '../src/pickup-details.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { allowCors, methodNotAllowed } from '../src/http.js';
@@ -45,7 +46,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   let quote;
   try {
-    quote = await calculateQuote({
+    quote = requiresPickupConfirmation(data) ? { status: 'manual_confirmation' as const, amountMinor: null, currency: data.marketId === 'buenos-aires' ? 'ARS' : 'USD', distanceMeters: route?.distanceMeters ?? null, durationSeconds: route?.durationSeconds ?? null } : await calculateQuote({
       marketId: data.marketId,
       vehicleClass: data.vehicleClass,
       rideType: data.rideType,
@@ -102,6 +103,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ${data.phone},
         ${JSON.stringify({
           customerNotes: data.notes || null,
+          pickupDetails: pickupDetails(data),
           returnDate: data.rideType === 'round-trip' ? data.returnDate : null,
           returnTime: data.rideType === 'round-trip' ? data.returnTime : null,
           hourlyHours: data.rideType === 'hourly' ? data.hourlyHours : null,

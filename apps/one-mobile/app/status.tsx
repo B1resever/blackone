@@ -1,3 +1,4 @@
+import { PickupDetails, type AirportPickupDetails } from '../src/pickup-details';
 import { fetchJsonResponse } from '../src/http-client';
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -7,6 +8,7 @@ import { theme } from '../src/theme';
 import { createCheckoutUrl } from '../src/reservation-api';
 
 type ReservationStatus = {
+  pickup_details?: AirportPickupDetails | null;
   request_code: string;
   market_id: string;
   ride_type: string;
@@ -173,6 +175,7 @@ export default function ReservationStatusScreen() {
             <Text style={styles.code}>{reservation.request_code}</Text>
             <Text style={styles.status}>{reservation.status.toUpperCase()}</Text>
             <Text style={styles.route}>{reservation.pickup_text}</Text>
+                <PickupDetails details={reservation.pickup_details} />
             {reservation.dropoff_text ? <Text style={styles.route}>→ {reservation.dropoff_text}</Text> : null}
             <Text style={styles.meta}>{reservation.pickup_date_text} · {reservation.pickup_time_text}</Text>
             <Text style={styles.meta}>{reservation.vehicle_class_id.toUpperCase()} · {reservation.passenger_count} passenger(s)</Text>
