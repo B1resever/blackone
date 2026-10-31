@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.border,
     borderWidth: 1,
     borderRadius: theme.radius.md,
-    color: theme.colors.white,
+    color: theme.colors.text,
     paddingHorizontal: 16,
     paddingVertical: 15,
     fontSize: 15,
@@ -127,6 +127,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     borderBottomColor: theme.colors.border,
   },
-  main: { color: theme.colors.white, fontWeight: '800' },
+  main: { color: theme.colors.text, fontWeight: '800' },
   secondary: { color: theme.colors.muted, fontSize: 12, marginTop: 3 },
 });

@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ReservationProvider } from '../src/reservation-context';
+import { theme } from '../src/theme';
 import { AuthProvider } from '../src/auth-context';
 
 export default function RootLayout() {
@@ -31,13 +32,13 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <AuthProvider>
         <ReservationProvider>
-        <StatusBar style="light" />
+        <StatusBar style="dark" />
         <Stack
           screenOptions={{
-            headerStyle: { backgroundColor: '#02080E' },
-            headerTintColor: '#F7FBFF',
+            headerStyle: { backgroundColor: theme.colors.background },
+            headerTintColor: theme.colors.text,
             headerShadowVisible: false,
-            contentStyle: { backgroundColor: '#02080E' },
+            contentStyle: { backgroundColor: theme.colors.background },
           }}
         >
           <Stack.Screen name="index" options={{ headerShown: false }} />
