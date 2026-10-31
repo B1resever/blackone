@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pickupDetailsShape } from './pickup-details.js';
 import { scheduledRideInstant } from './scheduled-rides.js';
 
 export const marketIdSchema = z.enum(['south-florida', 'buenos-aires']);
@@ -67,10 +68,11 @@ function validateTrip(
 
 export const reservationRequestSchema = z.object({
   ...tripShape,
+  ...pickupDetailsShape,
   fullName: z.string().trim().min(2).max(160),
   email: z.string().email().max(254),
   phone: z.string().trim().min(7).max(40),
   notes: z.string().trim().max(2000).default(''),
 }).superRefine(validateTrip);
 
-export const quoteRequestSchema = z.object(tripShape).superRefine(validateTrip);
+export const quoteRequestSchema = z.object({ ...tripShape, ...pickupDetailsShape }).superRefine(validateTrip);

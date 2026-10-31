@@ -1,3 +1,4 @@
+import type { AirportPickupDetails } from './pickup-details';
 import { fetchJsonResponse } from './http-client';
 import * as SecureStore from 'expo-secure-store';
 
@@ -115,6 +116,7 @@ export async function activateDriverAccount(applicationCode: string, email: stri
 }
 
 export type DriverTrip = {
+  pickup_details?: AirportPickupDetails | null;
   request_code: string;
   market_id: string;
   ride_type: string;

@@ -59,7 +59,7 @@ function render(list){
   rows.innerHTML=list.map(r=>`<tr>
     <td><b>${esc(r.request_code)}</b><div class="muted small">${esc(r.market_id)}</div></td>
     <td><b>${esc(r.guest_full_name)}</b><div class="muted small">${esc(r.guest_email)}<br>${esc(r.guest_phone)}</div></td>
-    <td>${esc(r.pickup_text)}<div class="muted">→ ${esc(r.dropoff_text||'Hourly service')}</div></td>
+    <td>${esc(r.pickup_text)}${r.pickup_details?'<div class="muted">AIRPORT · '+esc(r.pickup_details.flightNumber||'Flight pending')+' · '+esc(r.pickup_details.pickupMeeting)+'<br>'+esc(r.pickup_details.pickupInstructions)+'</div>':''}<div class="muted">→ ${esc(r.dropoff_text||'Hourly service')}</div></td>
     <td>${esc(r.pickup_date_text)}<div class="muted">${esc(r.pickup_time_text)}</div></td>
     <td>${esc(r.vehicle_class_id)}<div class="muted">${esc(r.passenger_count)} pax</div></td>
     <td class="status">${esc(r.status)}</td>

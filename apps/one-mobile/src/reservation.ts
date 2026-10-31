@@ -18,6 +18,10 @@ export type ReservationDraft = {
   email: string;
   phone: string;
   vehicleClass: VehicleClass | null;
+  airportPickup: boolean;
+  flightNumber: string;
+  pickupMeeting: 'curbside' | 'meet-and-greet';
+  pickupInstructions: string;
   notes: string;
 };
 
@@ -36,6 +40,10 @@ export const initialReservation: ReservationDraft = {
   email: '',
   phone: '',
   vehicleClass: null,
+  airportPickup: false,
+  flightNumber: '',
+  pickupMeeting: 'curbside',
+  pickupInstructions: '',
   notes: '',
 };
 

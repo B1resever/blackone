@@ -55,7 +55,7 @@ export default function ReviewScreen() {
       router.replace('/confirmation');
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid_request') {
-        setError('Check the trip details: pickup must be scheduled in the future in your service market, and return must follow pickup.');
+        setError('Check trip and airport details: use a valid flight number, a future pickup in your service market, and a return after pickup.');
       } else setError('ONE could not confirm the result. Your request may have been received. Check My Reservations or contact BLACK ONE Support before sending it again. This step does not take payment.');
     } finally {
       pending.current = false;
@@ -78,6 +78,11 @@ export default function ReviewScreen() {
           <Row label="When" value={draft.pickupDate + ' · ' + draft.pickupTime} />
           {draft.rideType === 'round-trip' ? <Row label="Return" value={draft.returnDate + ' · ' + draft.returnTime} /> : null}
           {draft.rideType === 'hourly' ? <Row label="Hours" value={String(draft.hourlyHours)} /> : null}
+          {draft.airportPickup ? <>
+            <Row label="Flight / Vuelo" value={draft.flightNumber || 'To be coordinated / A coordinar'} />
+            <Row label="Meeting / Encuentro" value={draft.pickupMeeting === 'curbside' ? 'Curbside / Exterior' : 'Meet & greet · requires confirmation'} />
+            {draft.pickupInstructions ? <Row label="Instructions" value={draft.pickupInstructions} /> : null}
+          </> : null}
           <Row label="Passengers" value={String(draft.passengers)} />
           <Row label="Vehicle" value={getVehicleLabel(draft.vehicleClass)} />
         </View>

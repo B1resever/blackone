@@ -1,3 +1,4 @@
+import { reservationWithPickupDetails } from '../src/pickup-details.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { neon } from '@neondatabase/serverless';
 import { allowCors, methodNotAllowed } from '../src/http.js';
@@ -38,6 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       v.vehicle_year,
       v.color as vehicle_color,
       v.plate_number,
+      r.notes,
       r.created_at,
       r.updated_at
     from one_reservations r
@@ -48,5 +50,5 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     limit 100
   `;
 
-  return res.status(200).json({ trips: rows });
+  return res.status(200).json({ trips: rows.map(reservationWithPickupDetails) });
 }

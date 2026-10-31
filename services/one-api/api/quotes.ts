@@ -1,3 +1,4 @@
+import { requiresPickupConfirmation } from '../src/pickup-details.js';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { computeRoute } from '../src/maps.js';
@@ -18,6 +19,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const input = parsed.data;
+  if (requiresPickupConfirmation(input)) return res.status(200).json({
+    status: 'manual_confirmation', amountMinor: null,
+    currency: input.marketId === 'buenos-aires' ? 'ARS' : 'USD',
+    message: 'B1 must confirm meet-and-greet arrangements and the final fare before payment.',
+  });
   let route;
 
   if (input.rideType !== 'hourly') {
