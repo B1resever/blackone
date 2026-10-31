@@ -1,3 +1,4 @@
+import { fetchJsonResponse } from '../src/http-client';
 import { useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -61,7 +62,7 @@ export default function DriverScreen() {
     setMessage('');
 
     try {
-      const response = await fetch(base + '/one/api/driver-applications', {
+      const response = await fetchJsonResponse(base + '/one/api/driver-applications', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify(application),

@@ -1,3 +1,4 @@
+import { fetchJsonResponse } from './http-client';
 import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
@@ -45,7 +46,7 @@ export async function enableOneNotifications() {
 
   const token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
 
-  const response = await fetch(base + '/one/api/push-register', {
+  const response = await fetchJsonResponse(base + '/one/api/push-register', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

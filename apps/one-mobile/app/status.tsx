@@ -1,3 +1,4 @@
+import { fetchJsonResponse } from '../src/http-client';
 import { useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -76,7 +77,7 @@ export default function ReservationStatusScreen() {
     setCancelling(true);
     setMessage('');
     try {
-      const response = await fetch(apiBaseUrl + '/one/api/cancel-reservation', {
+      const response = await fetchJsonResponse(apiBaseUrl + '/one/api/cancel-reservation', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ requestCode: reservation.request_code, email, reason: '' }),
@@ -109,14 +110,16 @@ export default function ReservationStatusScreen() {
     setReservation(null);
 
     try {
-      const response = await fetch(apiBaseUrl + '/one/api/reservation-status', {
+      const response = await fetchJsonResponse(apiBaseUrl + '/one/api/reservation-status', {
         method: 'POST',
         headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ requestCode, email }),
+        body: JSON.stringify({ requestCode: requestCode.trim(), email: email.trim() }),
       });
 
       if (!response.ok) {
-        setMessage('Reservation not found. Check the request code and email.');
+        setMessage(response.status === 403 || response.status === 404
+          ? 'Reservation not found. Check the request code and email.'
+          : 'ONE could not check your reservation right now. Please try again.');
         return;
       }
 
@@ -139,7 +142,8 @@ export default function ReservationStatusScreen() {
         <Text style={styles.label}>Request code</Text>
         <TextInput
           value={requestCode}
-          onChangeText={setRequestCode}
+          onChangeText={(value) => { setRequestCode(value); setReservation(null); }}
+          editable={!loading && !paying && !cancelling}
           placeholder="ONE-..."
           placeholderTextColor={theme.colors.muted}
           autoCapitalize="characters"
@@ -149,7 +153,8 @@ export default function ReservationStatusScreen() {
         <Text style={styles.label}>Email</Text>
         <TextInput
           value={email}
-          onChangeText={setEmail}
+          onChangeText={(value) => { setEmail(value); setReservation(null); }}
+          editable={!loading && !paying && !cancelling}
           placeholder="name@email.com"
           placeholderTextColor={theme.colors.muted}
           keyboardType="email-address"

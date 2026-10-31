@@ -1,3 +1,4 @@
+import { fetchJsonResponse } from './http-client';
 import { ReservationDraft } from './reservation';
 import type { ReservationReceipt } from './reservation-context';
 import { getSessionToken } from './auth-client';
@@ -15,12 +16,13 @@ function getApiBaseUrl() {
   return process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '') ?? '';
 }
 
-export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuotePreview | null> {
+export async function fetchQuotePreview(draft: ReservationDraft, signal?: AbortSignal): Promise<QuotePreview | null> {
   const apiBaseUrl = getApiBaseUrl();
   if (!apiBaseUrl || !draft.vehicleClass) return null;
 
   try {
-    const response = await fetch(apiBaseUrl + '/one/api/quotes', {
+    const response = await fetchJsonResponse(apiBaseUrl + '/one/api/quotes', {
+      signal,
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -29,7 +31,8 @@ export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuoteP
       body: JSON.stringify(draft),
     });
     if (!response.ok) return null;
-    return (await response.json()) as QuotePreview;
+    const quote = (await response.json()) as QuotePreview;
+    return ['quoted', 'manual_confirmation', 'rate_card_required'].includes(quote.status) ? quote : null;
   } catch {
     return null;
   }
@@ -37,7 +40,7 @@ export async function fetchQuotePreview(draft: ReservationDraft): Promise<QuoteP
 
 async function submitToOneApi(draft: ReservationDraft, baseUrl: string): Promise<ReservationReceipt> {
   const token = await getSessionToken();
-  const response = await fetch(baseUrl + '/one/api/reservations', {
+  const response = await fetchJsonResponse(baseUrl + '/one/api/reservations', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -86,7 +89,7 @@ export async function createCheckoutUrl(requestCode: string, email: string): Pro
   if (!apiBaseUrl) throw new Error('one_api_not_configured');
 
   const token = await getSessionToken();
-  const response = await fetch(apiBaseUrl + '/one/api/create-checkout-session', {
+  const response = await fetchJsonResponse(apiBaseUrl + '/one/api/create-checkout-session', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { fetchJsonResponse } from '../src/http-client';
 import { getSessionToken } from '../src/auth-client';
 import { createCheckoutUrl } from '../src/reservation-api';
 import { useAuth } from '../src/auth-context';
@@ -34,36 +35,48 @@ type Trip = {
 
 export default function TripsScreen() {
   const { user } = useAuth();
+  return <TripsContent key={user?.id ?? 'guest'} />;
+}
+
+function TripsContent() {
+  const { user } = useAuth();
+  const mounted = useRef(false);
+  const pendingLoad = useRef(false);
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [payingCode, setPayingCode] = useState('');
 
   async function load() {
-    const base = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
-    const token = await getSessionToken();
-    if (!base || !token) {
-      setMessage('Sign in to My ONE to see synchronized reservations.');
-      setLoading(false);
-      return;
-    }
-
+    if (pendingLoad.current || !mounted.current) return;
+    pendingLoad.current = true;
     setLoading(true);
     setMessage('');
     try {
-      const response = await fetch(base + '/one/api/my-reservations', {
+      const base = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
+      const token = await getSessionToken();
+      if (!mounted.current) return;
+      if (!base || !token) {
+        setMessage('Sign in to My ONE to see synchronized reservations.');
+        return;
+      }
+      const response = await fetchJsonResponse(base + '/one/api/my-reservations', {
         headers: { Authorization: 'Bearer ' + token, Accept: 'application/json' },
       });
+      if (!mounted.current) return;
       if (!response.ok) {
-        setMessage('ONE could not load your reservations.');
+        if (response.status === 401 || response.status === 403) setTrips([]);
+        setMessage(response.status === 401 || response.status === 403
+          ? 'Sign in again to view your reservations.' : 'ONE could not load your reservations. Please refresh.');
         return;
       }
       const data = (await response.json()) as { trips?: Trip[] };
-      setTrips(data.trips ?? []);
+      if (mounted.current) setTrips(data.trips ?? []);
     } catch {
-      setMessage('ONE could not reach the reservation service.');
+      if (mounted.current) setMessage('ONE could not reach the reservation service. Please refresh.');
     } finally {
-      setLoading(false);
+      pendingLoad.current = false;
+      if (mounted.current) setLoading(false);
     }
   }
 
@@ -89,7 +102,9 @@ export default function TripsScreen() {
   }
 
   useEffect(() => {
+    mounted.current = true;
     void load();
+    return () => { mounted.current = false; };
   }, []);
 
   return (

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { fetchJsonResponse } from './http-client';
 import { theme } from './theme';
 
 type Suggestion = {
@@ -23,6 +24,9 @@ export function LocationInput({ value, onChange, marketId, placeholder }: Props)
   const requestId = useRef(0);
 
   useEffect(() => {
+    const current = ++requestId.current;
+    const controller = new AbortController();
+    setLoading(false);
     const trimmed = value.trim();
     const base = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
 
@@ -31,11 +35,11 @@ export function LocationInput({ value, onChange, marketId, placeholder }: Props)
       return;
     }
 
-    const current = ++requestId.current;
     const timer = setTimeout(async () => {
       setLoading(true);
       try {
-        const response = await fetch(base + '/one/api/places', {
+        const response = await fetchJsonResponse(base + '/one/api/places', {
+          signal: controller.signal,
           method: 'POST',
           headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
           body: JSON.stringify({ input: trimmed, marketId }),
@@ -55,7 +59,7 @@ export function LocationInput({ value, onChange, marketId, placeholder }: Props)
       }
     }, 300);
 
-    return () => clearTimeout(timer);
+    return () => { ++requestId.current; clearTimeout(timer); controller.abort(); };
   }, [value, marketId, focused]);
 
   function choose(suggestion: Suggestion) {

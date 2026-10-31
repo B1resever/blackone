@@ -1,10 +1,10 @@
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { fetchQuotePreview, QuotePreview, submitReservationRequest } from '../src/reservation-api';
 import { useReservation } from '../src/reservation-context';
-import { getMarketLabel, getVehicleLabel } from '../src/reservation';
+import { getMarketLabel, getVehicleLabel, isTripDetailsComplete } from '../src/reservation';
 import { theme } from '../src/theme';
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -18,6 +18,9 @@ function Row({ label, value }: { label: string; value: string }) {
 
 export default function ReviewScreen() {
   const { draft, setReceipt } = useReservation();
+  const pending = useRef(false);
+  const sent = useRef(false);
+  const canSubmit = isTripDetailsComplete(draft) && Boolean(draft.vehicleClass);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [quote, setQuote] = useState<QuotePreview | null>(null);
@@ -25,29 +28,36 @@ export default function ReviewScreen() {
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+    setQuote(null);
+    if (!canSubmit) { setQuoteLoading(false); return; }
     setQuoteLoading(true);
-    fetchQuotePreview(draft).then((next) => {
+    fetchQuotePreview(draft, controller.signal).then((next) => {
       if (!active) return;
       setQuote(next);
       setQuoteLoading(false);
     });
     return () => {
       active = false;
+      controller.abort();
     };
-  }, [draft]);
+  }, [draft, canSubmit]);
 
   async function submit() {
-    if (submitting) return;
+    if (pending.current || sent.current || !canSubmit) return;
+    pending.current = true;
     setSubmitting(true);
     setError('');
     try {
       const receipt = await submitReservationRequest(draft);
+      sent.current = true;
       setReceipt(receipt);
       router.replace('/confirmation');
     } catch {
-      setError('ONE could not create the reservation. No reservation was created and no payment was taken. Please try again or contact BLACK ONE Support.');
+      setError('ONE could not confirm the result. Your request may have been received. Check My Reservations or contact BLACK ONE Support before sending it again. This step does not take payment.');
     } finally {
-      setSubmitting(false);
+      pending.current = false;
+      if (!sent.current) setSubmitting(false);
     }
   }
 
@@ -101,11 +111,12 @@ export default function ReviewScreen() {
           )}
         </View>
 
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {!canSubmit ? <Pressable style={styles.editButton} onPress={() => router.replace('/book')} accessibilityRole="button"><Text style={styles.error}>Complete the required trip and passenger details →</Text></Pressable> : null}
+        {error ? <><Text style={styles.error}>{error}</Text><Pressable style={styles.editButton} onPress={() => router.push('/trips')} accessibilityRole="button"><Text style={styles.editText}>CHECK MY RESERVATIONS →</Text></Pressable></> : null}
 
         <Pressable
-          style={[styles.button, submitting ? styles.buttonDisabled : null]}
-          disabled={submitting}
+          style={[styles.button, submitting || !canSubmit ? styles.buttonDisabled : null]}
+          disabled={submitting || !canSubmit}
           onPress={submit}
           accessibilityRole="button"
         >
