@@ -10,32 +10,39 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { getDeviceLanguage, Language, supportedLanguages } from '../src/i18n';
+import { getDeviceLanguage, Language, supportedLanguages, t } from '../src/i18n';
 import { theme } from '../src/theme';
+import { useReservation } from '../src/reservation-context';
+import { BrandMark } from '../src/brand-mark';
+import { RideType, ReservationDraft } from '../src/reservation';
 import { useAuth } from '../src/auth-context';
 
 const HERO = 'https://raw.githubusercontent.com/B1resever/blackone/main/images/hero/b1-daytime-luxury.png';
 
 const vehicles = [
   {
+    id: 'confort',
     name: 'CONFORT',
     detail: 'Premium everyday rides',
     meta: '1–4 · 2 suitcases',
     image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/electric.png',
   },
   {
+    id: 'xl',
     name: 'XL',
     detail: 'Up to 7 passengers',
     meta: '1–7 · 6 suitcases',
     image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Sprinter.png',
   },
   {
+    id: 'suv-black',
     name: 'SUV BLACK',
     detail: 'Luxury 2022–2026',
     meta: '1–6 · 6 suitcases',
     image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Escalade.png',
   },
   {
+    id: 'ultra-exclusive',
     name: 'ULTRA EXCLUSIVE',
     detail: 'Chauffeur · Hourly · Executive',
     meta: 'Custom · Long Distance',
@@ -56,20 +63,23 @@ const features = [
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>(getDeviceLanguage);
   const { user } = useAuth();
+  const { draft, updateDraft } = useReservation();
+  const copy = (key: Parameters<typeof t>[1]) => t(language, key);
+  const chooseMarket = (marketId: ReservationDraft['marketId']) => {
+    updateDraft(draft.marketId === marketId ? { marketId } : { marketId, pickup: '', dropoff: '' });
+    router.push('/book');
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <View>
-            <Text style={styles.b1}>B1</Text>
-            <Text style={styles.blackOne}>BLACK ONE</Text>
-          </View>
+          <BrandMark />
 
           <View style={styles.headerRight}>
             <View style={styles.countryPills}>
-              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇺🇸 USA</Text></Pressable>
-              <Pressable style={styles.countryPill} onPress={() => router.push('/book')}><Text style={styles.countryText}>🇦🇷 ARG</Text></Pressable>
+              <Pressable style={styles.countryPill} onPress={() => chooseMarket('south-florida')} accessibilityRole="button"><Text style={styles.countryText}>🇺🇸 USA</Text></Pressable>
+              <Pressable style={styles.countryPill} onPress={() => chooseMarket('buenos-aires')} accessibilityRole="button"><Text style={styles.countryText}>🇦🇷 ARG</Text></Pressable>
             </View>
 
             <Pressable style={styles.accountPill} onPress={() => router.push('/account')}>
@@ -78,7 +88,6 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        <Pressable onPress={() => router.push("/experiences")} accessibilityRole="button" style={{ backgroundColor: "#008CE0", borderRadius: 16, paddingVertical: 15, paddingHorizontal: 18, marginHorizontal: 18, marginBottom: 16 }}><Text style={{ color: "#FFFFFF", fontWeight: "800", textAlign: "center", fontSize: 15 }}>B1 EXPERIENCES  ·  CARS / JETS / BOATS  →</Text></Pressable>
         <View style={styles.languageRow}>
           {supportedLanguages.map((item) => {
             const active = item.code === language;
@@ -87,6 +96,9 @@ export default function HomeScreen() {
                 key={item.code}
                 style={[styles.lang, active ? styles.langActive : null]}
                 onPress={() => setLanguage(item.code)}
+                accessibilityRole="button"
+                accessibilityLabel={item.label}
+                accessibilityState={{ selected: active }}
               >
                 <Text style={[styles.langText, active ? styles.langTextActive : null]}>{item.label}</Text>
               </Pressable>
@@ -102,23 +114,22 @@ export default function HomeScreen() {
         <ImageBackground source={{ uri: HERO }} style={styles.hero} imageStyle={styles.heroImage}>
           <View style={styles.heroOverlay} />
           <View style={styles.heroCopy}>
-            <Text style={styles.kicker}>TRANSPORTE MODERNO</Text>
+            <Text style={[styles.kicker, styles.imageAccent]}>{copy('modernTransport')}</Text>
             <Text style={styles.headline}>
-              YOUR RIDE.{'\n'}
-              YOUR TIME.{'\n'}
-              YOUR <Text style={styles.gold}>ONE.</Text>
+              {copy('hero1')}{'\n'}
+              {copy('hero2')}{'\n'}
+              <Text style={styles.gold}>{copy('hero3')}</Text>
             </Text>
             <Text style={styles.heroBody}>
-              Professional rides. Transparent pricing.{'\n'}
-              Verified drivers. Move different.
+              {copy('heroBody')}
             </Text>
 
             <View style={styles.heroButtons}>
               <Pressable style={styles.goldButton} onPress={() => router.push('/book')}>
-                <Text style={styles.goldButtonText}>▣  BOOK A RIDE</Text>
+                <Text style={styles.goldButtonText}>▣  {copy('bookRide')}</Text>
               </Pressable>
               <Pressable style={styles.outlineButton} onPress={() => router.push('/driver')}>
-                <Text style={styles.outlineButtonText}>●  DRIVE WITH ONE</Text>
+                <Text style={styles.outlineButtonText}>●  {copy('driveWithOne')}</Text>
               </Pressable>
             </View>
 
@@ -128,45 +139,56 @@ export default function HomeScreen() {
 
         <View style={styles.bookingPanel}>
           <View style={styles.tripTabs}>
-            <View style={styles.tripTabActive}><Text style={styles.tripTabActiveText}>▰  One Way</Text></View>
-            <Text style={styles.tripTabText}>◴  Hourly</Text>
-            <Text style={styles.tripTabText}>⇄  Round Trip</Text>
+            {(['one-way', 'hourly', 'round-trip'] as RideType[]).map((id) => (
+              <Pressable key={id} accessibilityRole="button" accessibilityState={{ selected: draft.rideType === id }}
+                style={[styles.tripTab, draft.rideType === id && styles.tripTabActive]}
+                onPress={() => updateDraft({ rideType: id })}>
+                <Text style={[styles.tripTabText, draft.rideType === id && styles.tripTabActiveText]}>
+                  {copy(id === 'one-way' ? 'oneWay' : id === 'hourly' ? 'hourly' : 'roundTrip')}
+                </Text>
+              </Pressable>
+            ))}
           </View>
 
           <View style={styles.fieldRow}>
-            <Pressable style={styles.fakeField} onPress={() => router.push('/book')}>
-              <Text style={styles.fieldLabel}>Pickup Location</Text>
-              <Text style={styles.fieldValue}>⌖  Enter pickup location</Text>
+            <Pressable style={styles.locationField} onPress={() => router.push('/book')}>
+              <Text style={styles.fieldLabel}>{copy('pickup')}</Text>
+              <Text style={styles.fieldValue}>⌖  {draft.pickup || copy('pickupPlaceholder')}</Text>
             </Pressable>
-            <Pressable style={styles.swap}><Text style={styles.swapText}>⇄</Text></Pressable>
-            <Pressable style={styles.fakeField} onPress={() => router.push('/book')}>
-              <Text style={styles.fieldLabel}>Drop-off Location</Text>
-              <Text style={styles.fieldValue}>⌖  Enter drop-off location</Text>
+            {draft.rideType !== 'hourly' ? <>
+            <Pressable style={[styles.swap, !(draft.pickup || draft.dropoff) && styles.disabled]}
+              accessibilityRole="button" accessibilityLabel={`${copy('pickup')} ⇄ ${copy('dropoff')}`}
+              disabled={!(draft.pickup || draft.dropoff)}
+              onPress={() => updateDraft({ pickup: draft.dropoff, dropoff: draft.pickup })}><Text style={styles.swapText}>⇄</Text></Pressable>
+            <Pressable style={styles.locationField} onPress={() => router.push('/book')}>
+              <Text style={styles.fieldLabel}>{copy('dropoff')}</Text>
+              <Text style={styles.fieldValue}>⌖  {draft.dropoff || copy('dropoffPlaceholder')}</Text>
             </Pressable>
+            </> : null}
           </View>
 
           <View style={styles.fieldRow}>
             <Pressable style={styles.smallField} onPress={() => router.push('/book')}>
               <Text style={styles.fieldLabel}>Date</Text>
-              <Text style={styles.fieldValue}>▣  Select date</Text>
+              <Text style={styles.fieldValue}>▣  {draft.pickupDate || 'Select date'}</Text>
             </Pressable>
             <Pressable style={styles.smallField} onPress={() => router.push('/book')}>
               <Text style={styles.fieldLabel}>Time</Text>
-              <Text style={styles.fieldValue}>◷  Select time</Text>
+              <Text style={styles.fieldValue}>◷  {draft.pickupTime || 'Select time'}</Text>
             </Pressable>
             <Pressable style={styles.smallField} onPress={() => router.push('/book')}>
               <Text style={styles.fieldLabel}>Passengers</Text>
-              <Text style={styles.fieldValue}>●  1</Text>
+              <Text style={styles.fieldValue}>●  {draft.passengers}</Text>
             </Pressable>
           </View>
 
           <Pressable style={styles.estimate} onPress={() => router.push('/book')}>
-            <Text style={styles.estimateText}>GET ESTIMATE  →</Text>
+            <Text style={styles.estimateText}>{copy('estimate')}  →</Text>
           </Pressable>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.destinationRow}>
-            {['MIA Airport', 'FLL Airport', 'PortMiami', 'Port Everglades', 'Miami Beach', 'Brickell', 'Key Largo', 'Aventura'].map((item) => (
-              <Pressable key={item} style={styles.destinationChip} onPress={() => router.push('/book')}>
+            {(draft.marketId === 'south-florida' ? ['MIA Airport', 'FLL Airport', 'PortMiami', 'Port Everglades', 'Miami Beach', 'Brickell', 'Key Largo', 'Aventura'] : ['Ezeiza Airport', 'Aeroparque', 'Recoleta', 'Palermo', 'Tigre', 'Pilar']).map((item) => (
+              <Pressable key={item} style={styles.destinationChip} accessibilityRole="button" onPress={() => { updateDraft({ dropoff: item, rideType: draft.rideType === 'hourly' ? 'one-way' : draft.rideType }); router.push('/book'); }}>
                 <Text style={styles.destinationText}>{item}</Text>
               </Pressable>
             ))}
@@ -179,7 +201,7 @@ export default function HomeScreen() {
           contentContainerStyle={styles.vehicleRail}
         >
           {vehicles.map((vehicle) => (
-            <Pressable key={vehicle.name} style={styles.vehicleCard} onPress={() => router.push('/book')}>
+            <Pressable key={vehicle.name} style={styles.vehicleCard} accessibilityRole="button" onPress={() => { updateDraft({ vehicleClass: vehicle.id }); router.push('/book'); }}>
               <Image source={{ uri: vehicle.image }} style={styles.vehicleImage} />
               <View style={styles.vehicleShade} />
               <View style={styles.vehicleCopy}>
@@ -208,9 +230,9 @@ export default function HomeScreen() {
         >
           <View style={styles.sectionOverlay} />
           <View style={styles.driverCopy}>
-            <Text style={styles.kicker}>DRIVE WITH ONE</Text>
+            <Text style={[styles.kicker, styles.imageAccent]}>{copy('driveWithOne')}</Text>
             <Text style={styles.driverTitle}>Drive more.{'\n'}Keep more.</Text>
-            <Text style={styles.sectionBody}>
+            <Text style={[styles.sectionBody, styles.onImage]}>
               A simple and fair model. Greater freedom.{'\n'}Be part of a premium network.
             </Text>
             <Pressable style={styles.goldButtonCompact} onPress={() => router.push('/driver')}>
@@ -234,23 +256,10 @@ export default function HomeScreen() {
         </View>
 
         <Pressable style={styles.safetyBlock} onPress={() => router.push('/safety')}>
-          <View style={styles.safetyPhone}>
-            <Text style={styles.phoneTop}>9:41</Text>
-            <View style={styles.mapMock}>
-              <Text style={styles.mapCar}>◆</Text>
-              <Text style={styles.mapPin}>●</Text>
-            </View>
-            <View style={styles.driverMini}>
-              <View style={styles.driverMiniAvatar}><Text style={styles.driverMiniAvatarText}>JD</Text></View>
-              <View><Text style={styles.driverMiniName}>John Doe</Text><Text style={styles.driverMiniMeta}>Cadillac Escalade 2024</Text></View>
-            </View>
-            <Text style={styles.rideCode}>Ride Code: 3S245</Text>
-          </View>
-
           <View style={styles.safetyCopy}>
-            <Text style={styles.kicker}>ONE SAFETY</Text>
-            <Text style={styles.safetyTitle}>Know your driver.{'\n'}Know your ride.</Text>
-            <Text style={styles.sectionBody}>Verified drivers, live tracking, unique ride code and in-app support.</Text>
+            <Text style={styles.kicker}>{copy('safety')}</Text>
+            <Text style={styles.safetyTitle}>{copy('safetyTitle')}</Text>
+            <Text style={styles.sectionBody}>{copy('safetyBody')}</Text>
             {[
               ['⌖', 'Real-Time Tracking'],
               ['▣', 'Ride Code'],
@@ -270,7 +279,7 @@ export default function HomeScreen() {
             <Text style={styles.marketFlag}>🇺🇸</Text>
             <Text style={styles.marketTitle}>USA{'\n'}SOUTH FLORIDA</Text>
             <Text style={styles.marketBody}>Miami-Dade and surrounding areas with premium transportation services.</Text>
-            <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
+            <Pressable style={styles.marketButton} onPress={() => chooseMarket('south-florida')}>
               <Text style={styles.marketButtonText}>VIEW CITIES  →</Text>
             </Pressable>
           </View>
@@ -279,7 +288,7 @@ export default function HomeScreen() {
             <Text style={styles.marketFlag}>🇦🇷</Text>
             <Text style={styles.marketTitle}>ARGENTINA{'\n'}BUENOS AIRES</Text>
             <Text style={styles.marketBody}>CABA · Aeroparque · Ezeiza · Zona Norte · Tigre · Pilar</Text>
-            <Pressable style={styles.marketButton} onPress={() => router.push('/book')}>
+            <Pressable style={styles.marketButton} onPress={() => chooseMarket('buenos-aires')}>
               <Text style={styles.marketButtonText}>VER CIUDADES  →</Text>
             </Pressable>
           </View>
@@ -301,104 +310,95 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.background },
   content: { paddingBottom: 32 },
   header: { paddingHorizontal: 18, paddingTop: 8, paddingBottom: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  b1: { color: theme.colors.goldSoft, fontSize: 42, lineHeight: 38, fontWeight: '900', fontStyle: 'italic', letterSpacing: -3 },
-  blackOne: { color: theme.colors.white, fontSize: 10, fontWeight: '900', letterSpacing: 4, marginTop: 4 },
+  imageAccent: { color: theme.colors.accent },
+  onImage: { color: theme.colors.onImage },
   headerRight: { alignItems: 'flex-end', gap: 8 },
   countryPills: { flexDirection: 'row', gap: 6 },
-  countryPill: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.pill, paddingHorizontal: 9, paddingVertical: 6, backgroundColor: '#060C10' },
-  countryText: { color: theme.colors.white, fontSize: 9, fontWeight: '800' },
+  countryPill: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.pill, paddingHorizontal: 9, paddingVertical: 6, backgroundColor: theme.colors.surface },
+  countryText: { color: theme.colors.text, fontSize: 9, fontWeight: '800' },
   accountPill: { borderWidth: 1, borderColor: theme.colors.gold, borderRadius: theme.radius.pill, paddingHorizontal: 11, paddingVertical: 7 },
   accountText: { color: theme.colors.goldSoft, fontSize: 9, fontWeight: '900', letterSpacing: .5 },
   languageRow: { flexDirection: 'row', gap: 6, paddingHorizontal: 18, paddingBottom: 10 },
   lang: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.pill, paddingHorizontal: 10, paddingVertical: 6 },
   langActive: { backgroundColor: theme.colors.gold, borderColor: theme.colors.gold },
   langText: { color: theme.colors.muted, fontSize: 9, fontWeight: '900' },
-  langTextActive: { color: '#16100A' },
+  langTextActive: { color: theme.colors.onAccent },
   hero: { height: 410, marginHorizontal: 12, borderRadius: 22, overflow: 'hidden', justifyContent: 'flex-end' },
   heroImage: { borderRadius: 22 },
   heroOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,4,7,.48)' },
   heroCopy: { padding: 20 },
   kicker: { color: theme.colors.gold, fontSize: 11, fontWeight: '900', letterSpacing: 2.5, marginBottom: 8 },
-  headline: { color: theme.colors.white, fontSize: 42, lineHeight: 39, fontWeight: '900', letterSpacing: -1.8 },
-  gold: { color: theme.colors.goldSoft },
-  heroBody: { color: '#F2F0EB', fontSize: 14, lineHeight: 20, marginTop: 12, fontWeight: '600' },
+  headline: { color: theme.colors.onImage, fontSize: 42, lineHeight: 39, fontWeight: '900', letterSpacing: -1.8 },
+  gold: { color: theme.colors.accent },
+  heroBody: { color: theme.colors.onImage, fontSize: 14, lineHeight: 20, marginTop: 12, fontWeight: '600' },
   heroButtons: { flexDirection: 'row', gap: 9, marginTop: 18 },
   goldButton: { flex: 1, backgroundColor: theme.colors.gold, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
   goldButtonCompact: { alignSelf: 'flex-start', backgroundColor: theme.colors.gold, borderRadius: 12, paddingHorizontal: 17, paddingVertical: 13, marginTop: 17 },
-  goldButtonText: { color: '#16100A', fontWeight: '900', fontSize: 11 },
+  goldButtonText: { color: theme.colors.onAccent, fontWeight: '900', fontSize: 11 },
   outlineButton: { flex: 1, borderWidth: 1, borderColor: '#D8D3CA', borderRadius: 12, paddingVertical: 14, alignItems: 'center', backgroundColor: 'rgba(2,6,9,.35)' },
-  outlineButtonText: { color: theme.colors.white, fontWeight: '900', fontSize: 10 },
-  heroMarkets: { color: theme.colors.white, fontSize: 11, fontWeight: '900', marginTop: 16, letterSpacing: .5 },
-  bookingPanel: { margin: 12, marginTop: 14, padding: 14, backgroundColor: '#050B0F', borderWidth: 1, borderColor: '#394147', borderRadius: 18 },
+  outlineButtonText: { color: theme.colors.onImage, fontWeight: '900', fontSize: 10 },
+  heroMarkets: { color: theme.colors.onImage, fontSize: 11, fontWeight: '900', marginTop: 16, letterSpacing: .5 },
+  bookingPanel: { margin: 12, marginTop: 14, padding: 14, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 18 },
   tripTabs: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
+  tripTab: { flex: 1, minHeight: 44, alignItems: 'center', justifyContent: 'center' },
+  disabled: { opacity: 0.4 },
   tripTabActive: { backgroundColor: theme.colors.gold, borderRadius: 10, paddingHorizontal: 15, paddingVertical: 10 },
-  tripTabActiveText: { color: '#16100A', fontWeight: '900', fontSize: 11 },
-  tripTabText: { color: theme.colors.white, fontSize: 10, fontWeight: '800', paddingHorizontal: 5 },
+  tripTabActiveText: { color: theme.colors.onAccent, fontWeight: '900', fontSize: 11 },
+  tripTabText: { color: theme.colors.text, fontSize: 10, fontWeight: '800', paddingHorizontal: 5 },
   fieldRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
-  fakeField: { flex: 1, backgroundColor: '#0B1318', borderWidth: 1, borderColor: '#2B3439', borderRadius: 11, padding: 11 },
-  smallField: { flex: 1, backgroundColor: '#0B1318', borderWidth: 1, borderColor: '#2B3439', borderRadius: 11, padding: 10 },
+  locationField: { flex: 1, backgroundColor: theme.colors.surfaceRaised, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 11, padding: 11 },
+  smallField: { flex: 1, backgroundColor: theme.colors.surfaceRaised, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 11, padding: 10 },
   fieldLabel: { color: theme.colors.muted, fontSize: 9, fontWeight: '700', marginBottom: 5 },
-  fieldValue: { color: theme.colors.white, fontSize: 10, fontWeight: '700' },
-  swap: { width: 31, height: 31, borderRadius: 9, backgroundColor: '#111A1F', alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: '#313A40' },
-  swapText: { color: theme.colors.white, fontSize: 16 },
+  fieldValue: { color: theme.colors.text, fontSize: 14, fontWeight: '700' },
+  swap: { width: 44, height: 44, borderRadius: 9, backgroundColor: theme.colors.surfaceRaised, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: theme.colors.border },
+  swapText: { color: theme.colors.text, fontSize: 16 },
   estimate: { marginTop: 10, backgroundColor: theme.colors.gold, borderRadius: 11, paddingVertical: 14, alignItems: 'center' },
-  estimateText: { color: '#16100A', fontWeight: '900', fontSize: 12 },
+  estimateText: { color: theme.colors.onAccent, fontWeight: '900', fontSize: 12 },
   destinationRow: { gap: 7, paddingTop: 12 },
-  destinationChip: { borderWidth: 1, borderColor: '#293239', borderRadius: theme.radius.pill, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: '#081015' },
-  destinationText: { color: theme.colors.white, fontSize: 9, fontWeight: '700' },
+  destinationChip: { borderWidth: 1, borderColor: theme.colors.border, borderRadius: theme.radius.pill, paddingHorizontal: 12, paddingVertical: 8, backgroundColor: theme.colors.surfaceRaised },
+  destinationText: { color: theme.colors.text, fontSize: 9, fontWeight: '700' },
   vehicleRail: { paddingHorizontal: 12, gap: 10, paddingBottom: 14 },
-  vehicleCard: { width: 242, height: 205, borderRadius: 18, overflow: 'hidden', borderWidth: 1, borderColor: '#30383D', backgroundColor: '#05090C' },
+  vehicleCard: { width: 242, height: 205, borderRadius: 18, overflow: 'hidden', borderWidth: 1, borderColor: theme.colors.border, backgroundColor: theme.colors.surface },
   vehicleImage: { width: '100%', height: '100%', resizeMode: 'cover' },
   vehicleShade: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,0,0,.30)' },
   vehicleCopy: { position: 'absolute', left: 14, right: 46, bottom: 14 },
-  vehicleName: { color: theme.colors.white, fontSize: 17, fontWeight: '900' },
-  vehicleDetail: { color: '#E1E1DE', fontSize: 11, marginTop: 3 },
-  vehicleMeta: { color: theme.colors.goldSoft, fontSize: 10, fontWeight: '800', marginTop: 8 },
+  vehicleName: { color: theme.colors.onImage, fontSize: 17, fontWeight: '900' },
+  vehicleDetail: { color: theme.colors.onImage, fontSize: 11, marginTop: 3 },
+  vehicleMeta: { color: theme.colors.accent, fontSize: 10, fontWeight: '800', marginTop: 8 },
   vehicleArrow: { position: 'absolute', right: 13, bottom: 13, width: 34, height: 34, borderRadius: 18, borderWidth: 1, borderColor: '#D2D2CE', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(2,6,9,.55)' },
-  vehicleArrowText: { color: theme.colors.white, fontSize: 24, marginTop: -2 },
-  featureRail: { paddingHorizontal: 12, paddingVertical: 15, gap: 22, borderTopWidth: 1, borderBottomWidth: 1, borderColor: '#252D32' },
+  vehicleArrowText: { color: theme.colors.onImage, fontSize: 24, marginTop: -2 },
+  featureRail: { paddingHorizontal: 12, paddingVertical: 15, gap: 22, borderTopWidth: 1, borderBottomWidth: 1, borderColor: theme.colors.border },
   featureItem: { width: 74, alignItems: 'center' },
   featureIcon: { width: 38, height: 38, borderRadius: 20, borderWidth: 1, borderColor: theme.colors.gold, alignItems: 'center', justifyContent: 'center' },
   featureIconText: { color: theme.colors.goldSoft, fontSize: 12, fontWeight: '900' },
-  featureLabel: { color: theme.colors.white, fontSize: 9, lineHeight: 12, textAlign: 'center', marginTop: 7, fontWeight: '700' },
+  featureLabel: { color: theme.colors.text, fontSize: 9, lineHeight: 12, textAlign: 'center', marginTop: 7, fontWeight: '700' },
   driverHero: { height: 270, marginHorizontal: 12, marginTop: 14, borderRadius: 20, overflow: 'hidden', justifyContent: 'center' },
   sectionImage: { borderRadius: 20 },
   sectionOverlay: { position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, backgroundColor: 'rgba(0,4,7,.55)' },
   driverCopy: { padding: 20 },
-  driverTitle: { color: theme.colors.white, fontSize: 34, lineHeight: 33, fontWeight: '900' },
-  sectionBody: { color: '#E4E3DE', fontSize: 12, lineHeight: 18, marginTop: 10 },
+  driverTitle: { color: theme.colors.onImage, fontSize: 34, lineHeight: 33, fontWeight: '900' },
+  sectionBody: { color: theme.colors.muted, fontSize: 12, lineHeight: 18, marginTop: 10 },
   feeGrid: { flexDirection: 'row', gap: 10, padding: 12 },
-  feeCard: { flex: 1, minHeight: 150, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: '#2D3438', borderRadius: 17, padding: 14 },
+  feeCard: { flex: 1, minHeight: 150, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 17, padding: 14 },
   cardKicker: { color: theme.colors.gold, fontSize: 9, fontWeight: '900', letterSpacing: 1 },
   feeBig: { color: theme.colors.goldSoft, fontSize: 24, fontWeight: '900', marginTop: 10 },
-  feeSmall: { color: theme.colors.white, fontSize: 10, fontWeight: '700' },
+  feeSmall: { color: theme.colors.text, fontSize: 10, fontWeight: '700' },
   cardBody: { color: theme.colors.muted, fontSize: 10, lineHeight: 15, marginTop: 7 },
-  zero: { color: theme.colors.white, fontWeight: '900', fontSize: 18, marginTop: 13 },
-  safetyBlock: { margin: 12, marginTop: 3, padding: 16, borderRadius: 22, backgroundColor: '#050B0F', borderWidth: 1, borderColor: '#293136', flexDirection: 'row', gap: 14 },
-  safetyPhone: { width: 122, borderWidth: 2, borderColor: '#3A4247', borderRadius: 24, backgroundColor: '#071015', padding: 8 },
-  phoneTop: { color: theme.colors.white, fontSize: 8, textAlign: 'center', marginBottom: 6 },
-  mapMock: { height: 105, borderRadius: 15, backgroundColor: '#0B171E', borderWidth: 1, borderColor: '#1E2D35', alignItems: 'center', justifyContent: 'center' },
-  mapCar: { color: theme.colors.white, fontSize: 18, transform: [{ rotate: '25deg' }] },
-  mapPin: { color: '#24C76A', fontSize: 20, marginTop: 4 },
-  driverMini: { flexDirection: 'row', gap: 7, marginTop: 8, alignItems: 'center' },
-  driverMiniAvatar: { width: 25, height: 25, borderRadius: 13, backgroundColor: '#B98F50', alignItems: 'center', justifyContent: 'center' },
-  driverMiniAvatarText: { color: '#140F09', fontSize: 8, fontWeight: '900' },
-  driverMiniName: { color: theme.colors.white, fontSize: 9, fontWeight: '900' },
-  driverMiniMeta: { color: theme.colors.muted, fontSize: 7, marginTop: 2 },
-  rideCode: { backgroundColor: '#124B28', color: '#DDFBE7', fontSize: 7, padding: 4, marginTop: 7, borderRadius: 5 },
+  zero: { color: theme.colors.text, fontWeight: '900', fontSize: 18, marginTop: 13 },
+  safetyBlock: { margin: 12, marginTop: 3, padding: 16, borderRadius: 22, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, flexDirection: 'row', gap: 14 },
   safetyCopy: { flex: 1 },
-  safetyTitle: { color: theme.colors.white, fontSize: 26, lineHeight: 27, fontWeight: '900' },
+  safetyTitle: { color: theme.colors.text, fontSize: 26, lineHeight: 27, fontWeight: '900' },
   safetyRow: { flexDirection: 'row', alignItems: 'center', gap: 9, marginTop: 10 },
   safetyIcon: { width: 31, height: 31, borderRadius: 16, borderWidth: 1, borderColor: theme.colors.gold, alignItems: 'center', justifyContent: 'center' },
   safetyIconText: { color: theme.colors.goldSoft, fontSize: 9, fontWeight: '900' },
-  safetyRowText: { color: theme.colors.white, fontSize: 10, fontWeight: '800', flex: 1 },
+  safetyRowText: { color: theme.colors.text, fontSize: 10, fontWeight: '800', flex: 1 },
   marketGrid: { flexDirection: 'row', gap: 10, paddingHorizontal: 12, paddingTop: 4 },
-  marketCard: { flex: 1, minHeight: 210, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: '#2B3439', borderRadius: 18, padding: 15 },
+  marketCard: { flex: 1, minHeight: 210, backgroundColor: theme.colors.surface, borderWidth: 1, borderColor: theme.colors.border, borderRadius: 18, padding: 15 },
   marketFlag: { fontSize: 25 },
-  marketTitle: { color: theme.colors.white, fontSize: 18, lineHeight: 19, fontWeight: '900', marginTop: 9 },
+  marketTitle: { color: theme.colors.text, fontSize: 18, lineHeight: 19, fontWeight: '900', marginTop: 9 },
   marketBody: { color: theme.colors.muted, fontSize: 10, lineHeight: 15, marginTop: 9 },
   marketButton: { borderWidth: 1, borderColor: theme.colors.gold, borderRadius: 10, paddingVertical: 10, alignItems: 'center', marginTop: 'auto' },
-  marketButtonText: { color: theme.colors.white, fontSize: 9, fontWeight: '900' },
+  marketButtonText: { color: theme.colors.text, fontSize: 9, fontWeight: '900' },
   trackReservation: { marginHorizontal: 12, marginTop: 14, borderWidth: 1, borderColor: theme.colors.gold, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
   trackReservationText: { color: theme.colors.goldSoft, fontSize: 10, fontWeight: '900', letterSpacing: .5 },
   legalButton: { alignItems: 'center', paddingVertical: 18 },

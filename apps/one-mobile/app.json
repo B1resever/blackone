@@ -6,7 +6,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "one",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "platforms": ["ios", "android", "web"],
     "web": {"bundler": "metro"},
     "ios": {
@@ -26,7 +26,7 @@
       "predictiveBackGestureEnabled": false,
       "adaptiveIcon": {
         "foregroundImage": "../../logo.png.png",
-        "backgroundColor": "#020609"
+        "backgroundColor": "#FFFFFF"
       }
     },
     "plugins": [
@@ -39,7 +39,7 @@
       ["expo-splash-screen", {
         "image": "../../logo.png.png",
         "resizeMode": "contain",
-        "backgroundColor": "#020609"
+        "backgroundColor": "#FFFFFF"
       }]
     ],
     "extra": {"eas": {"projectId": "d25b749a-5ed8-4076-9e9c-bf107219e9cf"}},
