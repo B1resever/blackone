@@ -24,3 +24,10 @@ test('late reservation responses from a signed-out account cannot enter the curr
   assert.equal(updateSessionDraft(current, 'passenger-a', { email: 'a@example.invalid' }), current);
   assert.equal(updateSessionReceipt(current, 'passenger-b', receipt).receipt, receipt);
 });
+
+test('a response from an earlier guest session stays rejected after signing in and out again', () => {
+  const newGuest = reservationSession(null, initial, 2);
+  assert.equal(updateSessionReceipt(newGuest, null, receipt, 0), newGuest);
+  assert.equal(updateSessionDraft(newGuest, null, { email: 'previous@example.invalid' }, 0), newGuest);
+  assert.equal(updateSessionReceipt(newGuest, null, receipt, 2).receipt, receipt);
+});

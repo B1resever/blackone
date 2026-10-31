@@ -27,17 +27,17 @@ export function ReservationProvider({ children }: PropsWithChildren) {
   const ownerId = user?.id ?? null;
   const [state, setState] = useState(() => reservationSession(ownerId, initialReservation));
   // Reset before rendering children, so a changed account never sees the previous draft or receipt.
-  const current = state.ownerId === ownerId ? state : reservationSession(ownerId, initialReservation);
+  const current = state.ownerId === ownerId ? state : reservationSession(ownerId, initialReservation, state.generation + 1);
   if (current !== state) setState(current);
 
   const value = useMemo<ReservationContextValue>(
     () => ({
       draft: current.draft,
       receipt: current.receipt,
-      updateDraft: (patch) => setState((previous) => updateSessionDraft(previous, ownerId, patch)),
-      setReceipt: (receipt) => setState((previous) => updateSessionReceipt(previous, ownerId, receipt)),
-      resetDraft: () => setState((previous) => previous.ownerId === ownerId
-        ? reservationSession(ownerId, initialReservation) : previous),
+      updateDraft: (patch) => setState((previous) => updateSessionDraft(previous, ownerId, patch, current.generation)),
+      setReceipt: (receipt) => setState((previous) => updateSessionReceipt(previous, ownerId, receipt, current.generation)),
+      resetDraft: () => setState((previous) => previous.ownerId === ownerId && previous.generation === current.generation
+        ? reservationSession(ownerId, initialReservation, previous.generation + 1) : previous),
     }),
     [current, ownerId],
   );
