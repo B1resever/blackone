@@ -4,12 +4,11 @@ import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
+import { paymentReturnUrl } from '../src/payment-redirect.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
   email: z.string().email().max(254).optional(),
-  successUrl: z.string().url().optional(),
-  cancelUrl: z.string().url().optional(),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -25,6 +24,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const stripeKey = process.env.STRIPE_SECRET_KEY;
   if (!databaseUrl || !stripeKey) {
     return res.status(503).json({ error: 'payments_not_configured' });
+  }
+
+  let successUrl: string;
+  let cancelUrl: string;
+  try {
+    successUrl = paymentReturnUrl(
+      process.env.ONE_PAYMENT_SUCCESS_URL ?? 'https://b1reserve.com/payment-success.html',
+      parsed.data.requestCode,
+    );
+    cancelUrl = paymentReturnUrl(
+      process.env.ONE_PAYMENT_CANCEL_URL ?? 'https://b1reserve.com/payment-cancelled.html',
+      parsed.data.requestCode,
+    );
+  } catch {
+    return res.status(503).json({ error: 'payment_redirects_not_configured' });
   }
 
   const sql = neon(databaseUrl);
@@ -75,20 +89,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const stripe = new Stripe(stripeKey);
-  const successUrl =
-    parsed.data.successUrl ??
-    process.env.ONE_PAYMENT_SUCCESS_URL ??
-    'https://b1reserve.com/payment-success.html';
-  const cancelUrl =
-    parsed.data.cancelUrl ??
-    process.env.ONE_PAYMENT_CANCEL_URL ??
-    'https://b1reserve.com/payment-cancelled.html';
-
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     customer_email: reservation.guest_email ? String(reservation.guest_email) : undefined,
-    success_url: successUrl + (successUrl.includes('?') ? '&' : '?') + 'request_code=' + encodeURIComponent(String(reservation.request_code)),
-    cancel_url: cancelUrl + (cancelUrl.includes('?') ? '&' : '?') + 'request_code=' + encodeURIComponent(String(reservation.request_code)),
+    success_url: successUrl,
+    cancel_url: cancelUrl,
     line_items: [
       {
         quantity: 1,
