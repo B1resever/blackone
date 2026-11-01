@@ -16,6 +16,10 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/customer-terms",
+      "destination": "/api/one/auth?endpoint=customer-terms"
+    },
+    {
       "source": "/one/api/admin-dispatch-offer",
       "destination": "/api/one/admin-ops?endpoint=admin-dispatch-offer"
     },

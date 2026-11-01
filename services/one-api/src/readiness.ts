@@ -15,6 +15,7 @@ export async function probeDatabase(databaseUrl: string): Promise<boolean> {
       and to_regclass('public.one_markets') is not null
       and to_regclass('public.one_reservations') is not null
       and to_regclass('public.one_auth_sessions') is not null
+      and to_regclass('public.one_customer_terms_acceptances') is not null
       and to_regclass('public.one_driver_documents') is not null
       and to_regclass('public.one_driver_fee_ledger') is not null
       and to_regclass('public.one_trip_messages') is not null
