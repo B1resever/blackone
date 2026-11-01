@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import type Stripe from 'stripe';
+import Stripe from 'stripe';
+import { Readable } from 'node:stream';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import type { NeonQueryFunction } from '@neondatabase/serverless';
-import { processStripeEvent } from '../api/stripe-webhook.js';
+import handler, { config, processStripeEvent } from '../api/stripe-webhook.js';
 
 function checkoutEvent(type: Stripe.Event.Type, paymentStatus: string, metadata: Record<string, string> = { one_request_code: 'ONE-TEST-ONLY' }) {
   return {
@@ -45,11 +47,11 @@ test('settled card and delayed payments record the Stripe payment against the re
   for (const type of ['checkout.session.completed', 'checkout.session.async_payment_succeeded'] as const) {
     const db = databaseRecorder();
     await processStripeEvent(checkoutEvent(type, 'paid'), db.sql);
-    assert.equal(db.queries.length, 3);
+    assert.equal(db.queries.length, 1);
     assert.match(db.queries[0].text, /payment_status = 'paid'/);
-    assert.match(db.queries[1].text, /insert into one_payments/);
-    assert.ok(db.queries[1].values.includes('pi_test_fixture'));
-    assert.ok(db.queries[1].values.includes('ONE-TEST-ONLY'));
+    assert.match(db.queries[0].text, /insert into one_payments/);
+    assert.ok(db.queries[0].values.includes('pi_test_fixture'));
+    assert.ok(db.queries[0].values.includes('ONE-TEST-ONLY'));
   }
 });
 
@@ -57,4 +59,34 @@ test('unrelated account Checkout does not write ONE reservations', async () => {
   const db = databaseRecorder();
   await processStripeEvent(checkoutEvent('checkout.session.completed', 'paid', {}), db.sql);
   assert.equal(db.queries.length, 0);
+});
+
+
+test('webhook verifies the exact raw bytes and rejects missing or tampered signatures', async () => {
+  const oldEnv = { ...process.env };
+  process.env.STRIPE_SECRET_KEY = 'sk_test_local_fixture';
+  process.env.STRIPE_WEBHOOK_SECRET = 'whsec_local_fixture';
+  process.env.DATABASE_URL = 'postgresql://fixture:fixture@example.invalid/fixture';
+  const payload = JSON.stringify({ id: 'evt_local_fixture', type: 'unhandled.fixture', data: { object: {} } });
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+  const signature = stripe.webhooks.generateTestHeaderString({ payload, secret: process.env.STRIPE_WEBHOOK_SECRET });
+  async function deliver(raw: string, header?: string) {
+    const request = Readable.from([Buffer.from(raw.slice(0, 11)), Buffer.from(raw.slice(11))]);
+    Object.assign(request, { method: 'POST', headers: header ? { 'stripe-signature': header } : {} });
+    let status = 0;
+    let body: unknown;
+    const response = { status(value: number) { status = value; return this; }, json(value: unknown) { body = value; return this; } };
+    await handler(request as VercelRequest, response as unknown as VercelResponse);
+    return { status, body };
+  }
+  try {
+    assert.equal(config.api.bodyParser, false);
+    assert.deepEqual(await deliver(payload, signature), { status: 200, body: { received: true } });
+    assert.deepEqual(await deliver(payload + ' ', signature), { status: 400, body: { error: 'invalid_signature' } });
+    assert.deepEqual(await deliver(payload), { status: 400, body: { error: 'invalid_signature' } });
+    delete process.env.STRIPE_SECRET_KEY;
+    assert.equal((await deliver(payload, signature)).status, 503);
+  } finally {
+    process.env = oldEnv;
+  }
 });

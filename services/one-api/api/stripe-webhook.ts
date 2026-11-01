@@ -28,8 +28,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const databaseUrl = process.env.DATABASE_URL;
   const signature = req.headers['stripe-signature'];
 
-  if (!stripeKey || !webhookSecret || !databaseUrl || typeof signature !== 'string') {
+  if (!stripeKey || !webhookSecret || !databaseUrl) {
     return res.status(503).json({ error: 'webhook_not_configured' });
+  }
+
+  if (typeof signature !== 'string') {
+    return res.status(400).json({ error: 'invalid_signature' });
   }
 
   const stripe = new Stripe(stripeKey);
@@ -38,8 +42,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const rawBody = await readRawBody(req);
     event = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
-  } catch (error) {
-    console.error('ONE Stripe webhook verification failed', error);
+  } catch {
+    // Signature errors can include the raw payload; keep passenger data out of logs.
+    console.error('ONE Stripe webhook verification failed');
     return res.status(400).json({ error: 'invalid_signature' });
   }
 
@@ -49,8 +54,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     await processStripeEvent(event, sql);
 
     return res.status(200).json({ received: true });
-  } catch (error) {
-    console.error('ONE Stripe webhook processing failed', error);
+  } catch {
+    console.error('ONE Stripe webhook processing failed');
     return res.status(500).json({ error: 'webhook_processing_failed' });
   }
 }
@@ -101,47 +106,34 @@ export async function processStripeEvent(event: Stripe.Event, sql: NeonQueryFunc
         `;
       }
     } else if (requestCode) {
-      await sql`
-        update one_reservations
-        set payment_status = 'paid',
-            status = case when status in ('requested', 'quoted') then 'confirmed' else status end,
-            updated_at = now()
-        where request_code = ${requestCode}
-      `;
-
-      await sql`
-        insert into one_payments (
-          reservation_id,
-          provider,
-          provider_payment_id,
-          amount_minor,
-          currency,
-          status
-        )
-        select
-          id,
-          'stripe',
-          ${typeof session.payment_intent === 'string' ? session.payment_intent : session.id},
-          ${session.amount_total ?? 0},
-          ${String(session.currency ?? 'usd').toUpperCase()},
-          'paid'
-        from one_reservations
-        where request_code = ${requestCode}
-        on conflict (provider, provider_payment_id)
-        where provider_payment_id is not null
-        do update set
-          reservation_id = excluded.reservation_id,
-          amount_minor = excluded.amount_minor,
-          currency = excluded.currency,
-          status = excluded.status,
-          updated_at = now()
-      `;
-
+      // Keep the payment ledger and booking in one statement. A replay after a
+      // recorded refund must not restore either row to paid.
       const paidRows = await sql`
-        select id, status
-        from one_reservations
-        where request_code = ${requestCode}
-        limit 1
+        with recorded_payment as (
+          insert into one_payments (
+            reservation_id, provider, provider_payment_id, amount_minor, currency, status
+          )
+          select
+            id, 'stripe',
+            ${typeof session.payment_intent === 'string' ? session.payment_intent : session.id},
+            ${session.amount_total ?? 0},
+            ${String(session.currency ?? 'usd').toUpperCase()}, 'paid'
+          from one_reservations
+          where request_code = ${requestCode}
+          on conflict (provider, provider_payment_id)
+          where provider_payment_id is not null
+          do update set
+            status = case when one_payments.status = 'refunded' then 'refunded' else excluded.status end,
+            updated_at = now()
+          returning reservation_id, status
+        )
+        update one_reservations r
+        set payment_status = 'paid',
+            status = case when r.status in ('requested', 'quoted') then 'confirmed' else r.status end,
+            updated_at = now()
+        where r.id in (select reservation_id from recorded_payment where status = 'paid')
+          and r.payment_status <> 'refunded'
+        returning r.id, r.status
       `;
       if (paidRows[0]?.id && paidRows[0]?.status === 'completed') {
         await postDriverTripFee(String(paidRows[0].id));
@@ -155,29 +147,21 @@ export async function processStripeEvent(event: Stripe.Event, sql: NeonQueryFunc
       typeof charge.payment_intent === 'string' ? charge.payment_intent : null;
 
     if (paymentIntentId) {
-      const paymentRows = await sql`
-        select id, reservation_id, amount_minor
-        from one_payments
-        where provider = 'stripe'
-          and provider_payment_id = ${paymentIntentId}
-        order by created_at desc
-        limit 1
-      `;
-      const payment = paymentRows[0];
-      if (payment && Number(charge.amount_refunded ?? 0) >= Number(payment.amount_minor ?? 0)) {
-        await sql`
+      // Use the same ledger-first order as settlement so concurrent deliveries
+      // cannot leave the booking paid while its ledger says refunded.
+      await sql`
+        with refunded_payment as (
           update one_payments
-          set status = 'refunded',
-              updated_at = now()
-          where id = ${payment.id}
-        `;
-        await sql`
-          update one_reservations
-          set payment_status = 'refunded',
-              updated_at = now()
-          where id = ${payment.reservation_id}
-        `;
-      }
+          set status = 'refunded', updated_at = now()
+          where provider = 'stripe'
+            and provider_payment_id = ${paymentIntentId}
+            and amount_minor <= ${Number(charge.amount_refunded ?? 0)}
+          returning reservation_id
+        )
+        update one_reservations
+        set payment_status = 'refunded', updated_at = now()
+        where id in (select reservation_id from refunded_payment)
+      `;
     }
   }
 
@@ -190,6 +174,7 @@ export async function processStripeEvent(event: Stripe.Event, sql: NeonQueryFunc
         set payment_status = 'failed',
             updated_at = now()
         where request_code = ${requestCode}
+          and payment_status not in ('paid', 'refunded')
       `;
     }
   }
