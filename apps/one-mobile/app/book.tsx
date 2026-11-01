@@ -149,8 +149,9 @@ export default function BookScreen() {
         {draft.rideType === 'hourly' ? (
           <>
             <Text style={styles.label}>Hours</Text>
+            {draft.marketId === 'south-florida' ? <Text style={styles.label}>US$200/hour · 3-hour minimum (US$600). Tips and extras additional. 15-minute overtime grace; then US$200/60 per started minute, total rounded to cents. / US$200 por hora · mínimo 3 horas. Propina y extras aparte. 15 minutos de tolerancia al finalizar; luego minutos adicionales.</Text> : null}
             <View style={styles.passengerRow}>
-              {[1, 2, 3, 4, 5, 6, 8, 10, 12].map((hours) => {
+              {(draft.marketId === 'south-florida' ? [3, 4, 5, 6, 8, 10, 12] : [1, 2, 3, 4, 5, 6, 8, 10, 12]).map((hours) => {
                 const active = draft.hourlyHours === hours;
                 return (
                   <Pressable

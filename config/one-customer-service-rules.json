@@ -24,6 +24,19 @@
     "rounding": "started_minutes_after_grace",
     "status": "pending_customer_tariff"
   },
+  "hourlyService": {
+    "marketId": "south-florida",
+    "currency": "USD",
+    "hourlyMinor": 20000,
+    "minimumHours": 3,
+    "minimumMinor": 60000,
+    "overtimeGraceMinutes": 15,
+    "overtimeCalculation": "round(started_minutes_after_grace * 20000 / 60)",
+    "tipsIncluded": false,
+    "extrasIncluded": false,
+    "customerConsentStatus": "pending_versioned_acceptance_flow",
+    "paymentStatus": "b1_confirmation_required"
+  },
   "changes": {
     "passengerRequestedStopsAndDetours": "price_and_accept_before_change",
     "trafficAndSafetyDetours": "no_passenger_penalty",
