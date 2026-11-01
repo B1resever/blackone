@@ -5,6 +5,7 @@ import { computeRoute } from '../src/maps.js';
 import { getMapsServerKey } from '../src/maps-config.js';
 import { calculateQuote } from '../src/pricing.js';
 import { quoteRequestSchema } from '../src/validation.js';
+import { scheduledRideInstant } from '../src/scheduled-rides.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (allowCors(req, res)) return;
@@ -41,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       route = await computeRoute(input.pickup, input.dropoff);
     } catch (error) {
-      console.error('ONE quote route failed', error);
+      console.error('ONE quote route failed');
       return res.status(200).json({
         status: 'manual_confirmation',
         currency: input.marketId === 'buenos-aires' ? 'ARS' : 'USD',
@@ -58,6 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     vehicleClass: input.vehicleClass,
     rideType: input.rideType,
     hourlyHours: input.hourlyHours,
+    pickupAt: scheduledRideInstant(input.pickupDate, input.pickupTime, input.marketId),
     route,
   });
 
@@ -65,7 +67,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     ...quote,
     message:
       quote.status === 'quoted'
-        ? 'Estimated fare calculated from the active ONE market rate card.'
+        ? 'Estimated fare calculated from the active B1 customer pricing configuration.'
         : 'Final price will be confirmed by BLACK ONE before dispatch.',
   });
 }

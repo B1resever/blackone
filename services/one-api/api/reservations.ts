@@ -8,6 +8,7 @@ import { getMapsServerKey } from '../src/maps-config.js';
 import { calculateQuote } from '../src/pricing.js';
 import { reservationRequestSchema } from '../src/validation.js';
 import { getSessionUser } from '../src/auth.js';
+import { scheduledRideInstant } from '../src/scheduled-rides.js';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (allowCors(req, res)) return;
@@ -40,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     try {
       route = await computeRoute(data.pickup, data.dropoff);
     } catch (error) {
-      console.error('ONE reservation route calculation failed', error);
+      console.error('ONE reservation route calculation failed');
     }
   }
 
@@ -51,6 +52,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       vehicleClass: data.vehicleClass,
       rideType: data.rideType,
       hourlyHours: data.hourlyHours,
+      pickupAt: scheduledRideInstant(data.pickupDate, data.pickupTime, data.marketId),
       route,
     });
   } catch (error) {
@@ -108,7 +110,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           returnTime: data.rideType === 'round-trip' ? data.returnTime : null,
           hourlyHours: data.rideType === 'hourly' ? data.hourlyHours : null,
           routeDistanceMeters: route?.distanceMeters ?? null,
-          routeDurationSeconds: route?.durationSeconds ?? null
+          routeDurationSeconds: route?.durationSeconds ?? null,
+          customerPricing: quote.status === 'quoted' ? quote.pricing ?? null : null
         })},
         ${quote.status === 'quoted' ? 'quoted' : 'requested'},
         'not_started',

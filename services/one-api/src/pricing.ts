@@ -1,5 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 import type { RouteMetrics } from './maps.js';
+import { calculateClientQuote } from './client-pricing.js';
 
 type FareInput = {
   marketId: string;
@@ -7,6 +8,7 @@ type FareInput = {
   rideType: 'one-way' | 'hourly' | 'round-trip';
   hourlyHours: number;
   route?: RouteMetrics;
+  pickupAt?: number | null;
 };
 
 type RateRow = {
@@ -26,6 +28,7 @@ export type QuoteResult =
       currency: string;
       distanceMeters: number | null;
       durationSeconds: number | null;
+      pricing?: { version: string; pickupAreaId: string; dropoffAreaId: string; multiplierBps: number; adjustmentIds: string[] };
       breakdown: {
         baseMinor: number;
         distanceMinor: number;
@@ -53,6 +56,12 @@ function distanceUnits(distanceMeters: number, unit: 'mile' | 'km' | null) {
 }
 
 export async function calculateQuote(input: FareInput): Promise<QuoteResult> {
+  const clientQuote = calculateClientQuote(process.env.ONE_CLIENT_PRICING_JSON, {
+    ...input, pickupAt: input.pickupAt ?? null,
+    distanceMeters: input.route?.distanceMeters, durationSeconds: input.route?.durationSeconds,
+    pickupLocation: input.route?.pickupLocation, dropoffLocation: input.route?.dropoffLocation,
+  });
+  if (clientQuote) return clientQuote;
   const databaseUrl = process.env.DATABASE_URL;
   const fallbackCurrency = input.marketId === 'buenos-aires' ? 'ARS' : 'USD';
 

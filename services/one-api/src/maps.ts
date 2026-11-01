@@ -3,6 +3,8 @@ import { getMapsServerKey } from './maps-config.js';
 export type RouteMetrics = {
   distanceMeters: number;
   durationSeconds: number;
+  pickupLocation?: { latitude: number; longitude: number };
+  dropoffLocation?: { latitude: number; longitude: number };
 };
 
 export type PlaceSuggestion = {
@@ -26,7 +28,7 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
     headers: {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': key,
-      'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration',
+      'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.legs.startLocation,routes.legs.endLocation',
     },
     body: JSON.stringify({
       origin: { address: pickup },
@@ -45,7 +47,10 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
   }
 
   const data = (await response.json()) as {
-    routes?: Array<{ distanceMeters?: number; duration?: string }>;
+    routes?: Array<{ distanceMeters?: number; duration?: string; legs?: Array<{
+      startLocation?: { latLng?: { latitude: number; longitude: number } };
+      endLocation?: { latLng?: { latitude: number; longitude: number } };
+    }> }>;
   };
   const route = data.routes?.[0];
   if (!route?.distanceMeters || !route.duration) {
@@ -60,6 +65,8 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
   return {
     distanceMeters: route.distanceMeters,
     durationSeconds,
+    ...(route.legs?.[0]?.startLocation?.latLng ? { pickupLocation: route.legs[0].startLocation.latLng } : {}),
+    ...(route.legs?.at(-1)?.endLocation?.latLng ? { dropoffLocation: route.legs.at(-1)!.endLocation!.latLng! } : {}),
   };
 }
 
