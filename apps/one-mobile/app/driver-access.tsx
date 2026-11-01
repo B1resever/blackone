@@ -1,4 +1,5 @@
 import { PickupDetails, type AirportPickupDetails } from '../src/pickup-details';
+import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useRef, useState } from 'react';
 import { router } from 'expo-router';
 import type { LocationSubscription } from 'expo-location';
@@ -6,6 +7,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, TextInput, View } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   activateDriverAccount,
+  getSessionToken,
   DriverDocument,
   DriverFeeSummary,
   DriverTrip,
@@ -24,7 +26,7 @@ import { theme } from '../src/theme';
 import { startOneDriverLocationSharing } from '../src/driver-location';
 
 type DriverStatus = 'driver_en_route' | 'arrived' | 'passenger_onboard' | 'completed';
-type DocumentType = 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check';
+type DocumentType = 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check' | 'other';
 
 const nextStatus: Record<string, { status: DriverStatus; label: string } | null> = {
   assigned: { status: 'driver_en_route', label: 'START TRIP · EN ROUTE' },
@@ -39,11 +41,15 @@ const requiredDocuments: Array<{ id: DocumentType; label: string }> = [
   { id: 'driver_license', label: 'Driver License' },
   { id: 'insurance', label: 'Insurance' },
   { id: 'vehicle_registration', label: 'Vehicle Registration' },
-  { id: 'background_check', label: 'Background Check' },
+  { id: 'other', label: 'Vehicle photo / Foto del vehículo' },
 ];
 
 export default function DriverAccessScreen() {
   const { user, refresh, logout } = useAuth();
+  const documentOwner = useRef(user?.id);
+  documentOwner.current = user?.id;
+  const uploadToken = useRef<string | null>(null);
+  const documentSubmitting = useRef(false);
   const [applicationCode, setApplicationCode] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,7 +61,7 @@ export default function DriverAccessScreen() {
   const [selectedDocument, setSelectedDocument] = useState<DocumentType>('driver_license');
   const [documentNumber, setDocumentNumber] = useState('');
   const [expiresOn, setExpiresOn] = useState('');
-  const [fileUrl, setFileUrl] = useState('');
+  const [upload, setUpload] = useState<{ mimeType: 'image/jpeg' | 'image/png'; base64: string } | null>(null);
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [working, setWorking] = useState(false);
   const [message, setMessage] = useState('');
@@ -87,6 +93,10 @@ export default function DriverAccessScreen() {
   }
 
   useEffect(() => {
+    setUpload(null);
+    uploadToken.current = null;
+    setDocumentNumber('');
+    setExpiresOn('');
     void refreshDriverData();
   }, [user?.id, user?.role]);
 
@@ -229,30 +239,53 @@ export default function DriverAccessScreen() {
     }
   }
 
+  async function chooseDocumentImage() {
+    const owner = documentOwner.current;
+    try {
+      const token = await getSessionToken();
+      if (!token || owner !== documentOwner.current) return;
+      const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], base64: true, quality: 0.65, allowsMultipleSelection: false });
+      if (result.canceled || owner !== documentOwner.current) return;
+      const asset = result.assets[0];
+      const base64 = asset.base64;
+      if (!base64 || Math.floor(base64.length * 3 / 4) > 2 * 1024 * 1024) { setMessage('Choose a JPEG or PNG image under 2 MB. / Elegí una imagen de menos de 2 MB.'); return; }
+      const mimeType = base64.startsWith('iVBORw0KGgo') ? 'image/png' : base64.startsWith('/9j/') ? 'image/jpeg' : null;
+      if (!mimeType) { setMessage('Select a JPEG or PNG image. / Seleccioná una imagen JPEG o PNG.'); return; }
+      uploadToken.current = token;
+      setUpload({ mimeType, base64 });
+      setMessage('Image selected. Submit it for B1 review. / Imagen seleccionada. Enviala para revisión.');
+    } catch { setMessage('Could not open photos. Check photo permissions. / No se pudieron abrir las fotos.'); }
+  }
+
   async function submitComplianceDocument() {
+    if (working || documentSubmitting.current || !upload || !uploadToken.current) return;
+    documentSubmitting.current = true;
+    const owner = documentOwner.current;
     setWorking(true);
     setMessage('');
     try {
       await submitDriverDocument({
         documentType: selectedDocument,
-        documentNumber: documentNumber.trim() || undefined,
-        expiresOn: expiresOn.trim() || undefined,
-        fileUrl: fileUrl.trim() || undefined,
-      });
+        documentNumber: selectedDocument === 'other' ? 'vehicle_photo' : documentNumber.trim() || undefined,
+        expiresOn: selectedDocument === 'other' ? undefined : expiresOn.trim() || undefined,
+        fileUpload: upload,
+      }, uploadToken.current);
+      if (owner !== documentOwner.current) return;
       setDocumentNumber('');
       setExpiresOn('');
-      setFileUrl('');
+      setUpload(null);
       setMessage('Document submitted for BLACK ONE review.');
       await refreshDriverData();
     } catch {
-      setMessage('Document could not be submitted. Check the expiration date and optional document link.');
+      setMessage('Submission not confirmed. Refresh documents before retrying. Use a current expiry date and an image under 2 MB.');
     } finally {
+      documentSubmitting.current = false;
       setWorking(false);
     }
   }
 
   function latestDocument(type: DocumentType) {
-    return documents.find((document) => document.document_type === type);
+    return documents.find((document) => document.document_type === type && (type !== 'other' || document.document_number === 'vehicle_photo'));
   }
 
   if (user?.role === 'driver') {
@@ -326,7 +359,7 @@ export default function DriverAccessScreen() {
           ) : null}
 
           <Text style={styles.sectionTitle}>Required documents</Text>
-          <Text style={styles.sectionHelp}>BLACK ONE must approve all four required items before ONE allows new trip assignments.</Text>
+          <Text style={styles.sectionHelp}>Upload these essentials for B1 review. Additional screening is coordinated by B1 before activation. / Subí estos datos esenciales; B1 coordina las verificaciones adicionales.</Text>
 
           {requiredDocuments.map((item) => {
             const document = latestDocument(item.id);
@@ -351,23 +384,25 @@ export default function DriverAccessScreen() {
                 <Pressable
                   key={item.id}
                   style={[styles.typeButton, selectedDocument === item.id ? styles.typeActive : null]}
-                  onPress={() => setSelectedDocument(item.id)}
+                  onPress={() => { setSelectedDocument(item.id); setUpload(null); setDocumentNumber(''); setExpiresOn(''); }}
                 >
                   <Text style={[styles.typeText, selectedDocument === item.id ? styles.typeTextActive : null]}>{item.label}</Text>
                 </Pressable>
               ))}
             </View>
 
-            <Text style={styles.label}>Document number · optional</Text>
-            <TextInput style={styles.input} value={documentNumber} onChangeText={setDocumentNumber} placeholder="License / policy / registration number" placeholderTextColor={theme.colors.muted} />
+            {selectedDocument !== 'other' ? <>
+              <Text style={styles.label}>Document number · optional / Número opcional</Text>
+              <TextInput style={styles.input} value={documentNumber} onChangeText={setDocumentNumber} placeholder="License / policy / registration" placeholderTextColor={theme.colors.muted} />
+              <Text style={styles.label}>Expiration / Vencimiento · YYYY-MM-DD</Text>
+              <TextInput style={styles.input} value={expiresOn} onChangeText={setExpiresOn} placeholder="2027-10-03" placeholderTextColor={theme.colors.muted} />
+            </> : null}
+            <Pressable style={styles.secondary} onPress={chooseDocumentImage} disabled={working} accessibilityRole="button">
+              <Text style={styles.secondaryText}>{upload ? 'REPLACE SELECTED PHOTO / CAMBIAR FOTO' : 'CHOOSE PHOTO / ELEGIR FOTO'}</Text>
+            </Pressable>
+            <Text style={styles.sectionHelp}>JPEG/PNG · max 2 MB. Private: only you and authorized B1 Operations can open the uploaded file.</Text>
 
-            <Text style={styles.label}>Expiration date · YYYY-MM-DD</Text>
-            <TextInput style={styles.input} value={expiresOn} onChangeText={setExpiresOn} placeholder="2027-10-03" placeholderTextColor={theme.colors.muted} />
-
-            <Text style={styles.label}>Secure document link · optional until storage is connected</Text>
-            <TextInput style={styles.input} value={fileUrl} onChangeText={setFileUrl} placeholder="https://..." placeholderTextColor={theme.colors.muted} autoCapitalize="none" />
-
-            <Pressable style={styles.secondary} onPress={submitComplianceDocument} disabled={working}>
+            <Pressable style={styles.secondary} onPress={submitComplianceDocument} disabled={working || !upload}>
               <Text style={styles.secondaryText}>SUBMIT FOR REVIEW</Text>
             </Pressable>
           </View>

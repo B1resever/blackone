@@ -16,6 +16,10 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/driver-document-file",
+      "destination": "/api/one/driver?endpoint=driver-document-file"
+    },
+    {
       "source": "/one/api/stripe-webhook",
       "destination": "/api/one/stripe-webhook"
     },

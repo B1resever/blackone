@@ -19,7 +19,7 @@ th{color:var(--cyan);font-size:11px}.muted{color:var(--muted)}.grid{overflow:aut
 <main>
 <div class="controls"><a href="/one-admin.html" style="display:flex;align-items:center;justify-content:center;border:1px solid var(--line);border-radius:12px;padding:11px;color:var(--text);text-decoration:none;font-weight:800">COMMAND CENTER</a><button id="load" class="primary">LOAD DRIVERS</button></div>
 <p class="muted"><a href="/one-driver-documents.html" style="color:#00eaf0">Open Driver Compliance Review →</a> · <a href="/one-driver-finance.html" style="color:#00eaf0">Open Driver Finance →</a></p>
-<div class="grid"><table><thead><tr><th>APPLICATION</th><th>DRIVER</th><th>MARKET</th><th>VEHICLE</th><th>LICENSE</th><th>STATUS</th><th>COMPLIANCE</th><th>ACTIONS</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load driver applications.</td></tr></tbody></table></div>
+<div class="grid"><table><thead><tr><th>APPLICATION</th><th>DRIVER</th><th>MARKET</th><th>VEHICLE</th><th>INTAKE / COBRO</th><th>STATUS</th><th>COMPLIANCE</th><th>ACTIONS</th></tr></thead><tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load driver applications.</td></tr></tbody></table></div>
 </main>
 <script>
 if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
@@ -31,7 +31,7 @@ function render(list){rows.innerHTML=list.map(a=>`<tr>
 <td><b>${esc(a.full_name)}</b><div class="muted">${esc(a.email)}<br>${esc(a.phone)}</div></td>
 <td>${esc(a.market_id)}</td>
 <td>${esc(a.vehicle_year)} ${esc(a.vehicle_make)} ${esc(a.vehicle_model)}<div class="muted">${esc(a.vehicle_class_id||'Class pending')} · ${esc(a.plate_number||'Plate pending')}</div></td>
-<td>${esc(a.license_region)}</td><td class="status">${esc(a.status)}</td>
+<td>${esc(a.license_region)}<div class="muted">${esc(a.intake_details?.vehicleColor||'Color pending')} · ${esc(a.intake_details?.passengerCapacity||'Seats pending')} seats<br>Payment preference: ${esc(a.intake_details?.payoutMethod||'coordinate_with_b1')} · setup pending<br>WhatsApp: ${a.intake_details?.whatsappConsent?'opted in':'not recorded'}</div></td><td class="status">${esc(a.status)}</td>
 <td><div class="muted">Review document compliance after approval.</div></td>
 <td><div class="actions"><button onclick="setStatus('${esc(a.application_code)}','reviewing')">Review</button><button onclick="setStatus('${esc(a.application_code)}','documents_required')">Docs</button><button onclick="setStatus('${esc(a.application_code)}','approved')">Approve</button><button onclick="setStatus('${esc(a.application_code)}','rejected')">Reject</button></div></td></tr>`).join('')}
 async function load(){try{const d=await request('/one/api/admin-driver-applications');render(d.applications||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Your ONE Operations session expired or the production API is unavailable.</td></tr>'}}

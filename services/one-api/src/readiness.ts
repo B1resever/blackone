@@ -7,7 +7,11 @@ export async function probeDatabase(databaseUrl: string): Promise<boolean> {
   // having DATABASE_URL set does not mean the release is ready to accept trips.
   const rows = await sql`
     select
-      to_regclass('public.one_markets') is not null
+      to_regclass('public.one_driver_document_files') is not null
+      and exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'one_driver_applications' and column_name = 'intake_details')
+      and exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'one_driver_profiles' and column_name = 'intake_details')
+      and exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'one_driver_vehicles' and column_name = 'passenger_capacity')
+      and to_regclass('public.one_markets') is not null
       and to_regclass('public.one_reservations') is not null
       and to_regclass('public.one_auth_sessions') is not null
       and to_regclass('public.one_driver_documents') is not null
