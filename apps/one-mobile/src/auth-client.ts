@@ -85,6 +85,20 @@ export async function loadAccount() {
   return data.user ?? null;
 }
 
+export type CustomerTerms = { version: string; sha256: string; customerAccount: boolean; documents: { termsHtml: string; privacyHtml: string };
+  acceptance: { accepted: boolean; acceptedAt: string | null } | null };
+export async function loadCustomerTerms(): Promise<CustomerTerms> {
+  const response = await api('customer-terms');
+  if (!response.ok) throw new Error('terms_unavailable');
+  return response.json() as Promise<CustomerTerms>;
+}
+export async function acceptCustomerTerms(terms: CustomerTerms) {
+  const response = await api('customer-terms', { method: 'POST', body: JSON.stringify({
+    accepted: true, version: terms.version, sha256: terms.sha256,
+  }) });
+  if (!response.ok) throw new Error(response.status === 409 ? 'terms_changed' : 'terms_acceptance_failed');
+}
+
 export async function logoutAccount() {
   try {
     await api('auth-logout', { method: 'POST', body: '{}' });

@@ -91,6 +91,8 @@ function TripsContent() {
       await Linking.openURL(url);
     } catch (error) {
       const code = error instanceof Error ? error.message : '';
+      if (code === 'customer_sign_in_required') { router.push('/account'); return; }
+      if (code === 'customer_terms_required') { router.push('/customer-terms'); return; }
       setMessage(
         code === 'already_paid'
           ? 'This reservation is already paid.'

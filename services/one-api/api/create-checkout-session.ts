@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
 import { getSessionUser } from '../src/auth.js';
 import { paymentReturnUrl } from '../src/payment-redirect.js';
+import { getCustomerAcceptance } from '../src/customer-terms.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -62,6 +63,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!reservation) return res.status(404).json({ error: 'reservation_not_found' });
 
   const sessionUser = await getSessionUser(req);
+  if (!sessionUser) return res.status(401).json({ error: 'customer_sign_in_required', accountUrl: '/one-customer-account.html' });
+  if (!(await getCustomerAcceptance(sessionUser.id)).accepted) return res.status(409).json({ error: 'customer_terms_required', accountUrl: '/one-customer-account.html' });
   const sessionOwnsReservation =
     sessionUser &&
     reservation.passenger_user_id &&

@@ -3,6 +3,8 @@ import Stripe from 'stripe';
 import { neon } from '@neondatabase/serverless';
 import { z } from 'zod';
 import { allowCors, methodNotAllowed } from '../src/http.js';
+import { getSessionUser } from '../src/auth.js';
+import { getCustomerAcceptance } from '../src/customer-terms.js';
 
 const schema = z.object({
   requestCode: z.string().trim().min(8).max(64),
@@ -24,8 +26,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const sql = neon(databaseUrl);
+  const user = await getSessionUser(req);
+  if (!user) return res.status(401).json({ error: 'customer_sign_in_required' });
+  if (!(await getCustomerAcceptance(user.id)).accepted) return res.status(409).json({ error: 'customer_terms_required' });
   const rows = await sql`
-    select id, request_code, quote_amount_minor, quote_currency, status
+    select id, request_code, quote_amount_minor, quote_currency, status, passenger_user_id, guest_email
     from one_reservations
     where request_code = ${parsed.data.requestCode}
     limit 1
@@ -33,6 +38,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const reservation = rows[0];
 
   if (!reservation) return res.status(404).json({ error: 'reservation_not_found' });
+  if (String(reservation.passenger_user_id) !== user.id && String(reservation.guest_email).toLowerCase() !== user.email?.toLowerCase()) return res.status(403).json({ error: 'reservation_payment_not_authorized' });
   if (!reservation.quote_amount_minor || !reservation.quote_currency) {
     return res.status(409).json({
       error: 'quote_not_confirmed',

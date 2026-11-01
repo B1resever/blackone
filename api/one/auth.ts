@@ -4,9 +4,11 @@ import authLogin from '../../services/one-api/api/auth-login.js';
 import authLogout from '../../services/one-api/api/auth-logout.js';
 import authMe from '../../services/one-api/api/auth-me.js';
 import authDeleteAccount from '../../services/one-api/api/auth-delete-account.js';
+import customerTerms from '../../services/one-api/api/customer-terms.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 const handlers: Record<string, Handler> = {
+  'customer-terms': customerTerms,
   'auth-register': authRegister,
   'auth-login': authLogin,
   'auth-logout': authLogout,

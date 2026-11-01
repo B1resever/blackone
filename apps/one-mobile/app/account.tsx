@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../src/auth-context';
 import { theme } from '../src/theme';
 import { enableOneNotifications } from '../src/push';
+import { loadCustomerTerms } from '../src/auth-client';
 
 type Mode = 'login' | 'register';
 
@@ -35,6 +36,9 @@ export default function AccountScreen() {
         });
       }
       setPassword('');
+      await loadCustomerTerms().then(terms => {
+        if (terms.customerAccount && !terms.acceptance?.accepted) router.push('/customer-terms');
+      }).catch(() => setMessage('Signed in. Open Customer Terms before payment. / Sesión iniciada. Abrí Condiciones antes de pagar.'));
     } catch (error) {
       const code = error instanceof Error ? error.message : '';
       setMessage(
@@ -110,6 +114,11 @@ export default function AccountScreen() {
             <Text style={styles.role}>{user.role.toUpperCase()}</Text>
           </View>
 
+          {user.role === 'passenger' ? (
+            <Pressable style={styles.secondary} onPress={() => router.push('/customer-terms')}>
+              <Text style={styles.secondaryText}>CUSTOMER TERMS / CONDICIONES</Text>
+            </Pressable>
+          ) : null}
           {user.role === 'passenger' ? (
             <Pressable style={styles.primary} onPress={() => router.push('/trips')}>
               <Text style={styles.primaryText}>MY RESERVATIONS →</Text>
