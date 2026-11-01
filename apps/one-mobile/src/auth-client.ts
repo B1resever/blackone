@@ -31,10 +31,10 @@ function apiBaseUrl() {
   return process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '') ?? '';
 }
 
-async function api(path: string, options: RequestInit = {}) {
+async function api(path: string, options: RequestInit = {}, sessionToken?: string) {
   const base = apiBaseUrl();
   if (!base) throw new Error('ONE API is not configured');
-  const token = await getSessionToken();
+  const token = sessionToken ?? await getSessionToken();
   const headers = new Headers(options.headers);
   headers.set('Accept', 'application/json');
   headers.set('Content-Type', 'application/json');
@@ -195,15 +195,16 @@ export async function loadDriverDocuments() {
 }
 
 export async function submitDriverDocument(input: {
+  fileUpload?: { mimeType: 'image/jpeg' | 'image/png'; base64: string };
   documentType: 'driver_license' | 'insurance' | 'vehicle_registration' | 'background_check' | 'profile_photo' | 'other';
   documentNumber?: string;
   fileUrl?: string;
   expiresOn?: string;
-}) {
+}, sessionToken?: string) {
   const response = await api('driver-documents', {
     method: 'POST',
     body: JSON.stringify(input),
-  });
+  }, sessionToken);
   const data = await response.json() as { document?: DriverDocument; error?: string };
   if (!response.ok) throw new Error(data.error ?? 'driver_document_submit_failed');
   return data.document ?? null;

@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import driverApplications from '../../services/one-api/api/driver-applications.js';
 import driverActivate from '../../services/one-api/api/driver-activate.js';
 import driverAvailability from '../../services/one-api/api/driver-availability.js';
+import driverDocumentFile from '../../services/one-api/api/driver-document-file.js';
 import driverDocuments from '../../services/one-api/api/driver-documents.js';
 import driverFees from '../../services/one-api/api/driver-fees.js';
 import driverJobs from '../../services/one-api/api/driver-jobs.js';
@@ -14,6 +15,7 @@ const handlers: Record<string, Handler> = {
   'driver-activate': driverActivate,
   'driver-availability': driverAvailability,
   'driver-documents': driverDocuments,
+  'driver-document-file': driverDocumentFile,
   'driver-fees': driverFees,
   'driver-jobs': driverJobs,
   'driver-trip-update': driverTripUpdate,

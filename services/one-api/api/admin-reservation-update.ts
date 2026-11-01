@@ -88,9 +88,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             and d.expires_on >= current_date
             and d.file_url ~ '^https://[^/@[:space:]]+([/?#]|$)'
         ) = 4
+        and (select d.status = 'approved' and d.file_url ~ '^https://[^/@[:space:]]+([/?#]|$)'
+             from one_driver_documents d where d.driver_user_id = u.id
+               and d.document_type = 'other' and d.document_number = 'vehicle_photo'
+             order by d.created_at desc, d.id desc limit 1) = true
         and v.status = 'approved'
         and v.vehicle_class_id = r.vehicle_class_id
         and (c.max_passengers is null or r.passenger_count <= c.max_passengers)
+        and (v.passenger_capacity is null or r.passenger_count <= v.passenger_capacity)
       order by v.updated_at desc
       limit 1
     `;

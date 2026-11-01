@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless';
 
-import { REQUIRED_DRIVER_DOCUMENTS, hasCurrentDocumentEvidence } from './document-validity.js';
+import { REQUIRED_DRIVER_DOCUMENTS, hasCurrentDocumentEvidence, validEvidenceUrl } from './document-validity.js';
 
 export async function recalculateDriverCompliance(driverUserId: string) {
   const databaseUrl = process.env.DATABASE_URL;
@@ -11,11 +11,12 @@ export async function recalculateDriverCompliance(driverUserId: string) {
     select distinct on (document_type)
       document_type,
       status,
-      expires_on,
+      document_number,
+      expires_on::text as expires_on,
       file_url
     from one_driver_documents
     where driver_user_id = ${driverUserId}
-      and document_type in ('driver_license','insurance','vehicle_registration','background_check')
+      and (document_type in ('driver_license','insurance','vehicle_registration','background_check') or (document_type = 'other' and document_number = 'vehicle_photo'))
     order by document_type, created_at desc, id desc
   `;
 
@@ -26,7 +27,9 @@ export async function recalculateDriverCompliance(driverUserId: string) {
     return row?.status === 'approved' && hasCurrentDocumentEvidence(row, now);
   });
 
-  const complianceStatus = valid ? 'approved' : 'pending';
+  const photo = latest.get('other');
+  const photoValid = photo?.status === 'approved' && validEvidenceUrl(photo.file_url);
+  const complianceStatus = valid && photoValid ? 'approved' : 'pending';
 
   await sql`
     update one_driver_profiles

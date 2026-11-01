@@ -30,6 +30,7 @@ a{color:var(--cyan)}
 <tbody id="rows"><tr><td colspan="7" class="muted">Connect ONE API to review driver compliance.</td></tr></tbody>
 </table>
 </div>
+<dialog id="filePreview"><button id="closePreview">Close / Cerrar</button><br><img id="previewImage" alt="Driver document for B1 review" style="max-width:80vw;max-height:75vh"></dialog>
 </main>
 <script>
 if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
@@ -39,15 +40,18 @@ async function request(path,options={}){const base=location.origin;const headers
 function safeEvidenceUrl(value){try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password?u.href:null}catch{return null}}
 function render(list){rows.innerHTML=list.map(d=>`<tr>
 <td><b>${esc(d.full_name)}</b><div class="muted">${esc(d.email)}</div></td>
-<td>${esc(d.document_type)}</td>
+<td>${esc(d.document_number==='vehicle_photo'?'Vehicle photo / Foto del vehículo':d.document_type)}</td>
 <td>${esc(d.document_number||'—')}</td>
 <td>${esc(d.expires_on||'—')}</td>
-<td>${safeEvidenceUrl(d.file_url)?'<a href="'+esc(safeEvidenceUrl(d.file_url))+'" target="_blank" rel="noopener">Open</a>':'No file link'}</td>
+<td>${safeEvidenceUrl(d.file_url)&&new URL(d.file_url).pathname==='/one/api/driver-document-file'?'<button onclick="viewFile(\''+esc(d.id)+'\')">Open private photo</button>':safeEvidenceUrl(d.file_url)?'<a href="'+esc(safeEvidenceUrl(d.file_url))+'" target="_blank" rel="noopener">Open</a>':'No file link'}</td>
 <td class="status">${esc(d.status)}</td>
 <td><div class="actions"><button onclick="review('${esc(d.id)}','approved')">Approve</button><button class="reject" onclick="review('${esc(d.id)}','rejected')">Reject</button></div></td>
 </tr>`).join('')}
 async function load(){try{const d=await request('/one/api/admin-driver-documents');render(d.documents||[])}catch{rows.innerHTML='<tr><td colspan="7" class="muted">Unable to load. Your ONE Operations session expired or the production API is unavailable.</td></tr>'}}
 async function review(documentId,status){try{await request('/one/api/admin-driver-documents',{method:'POST',body:JSON.stringify({documentId,status,reviewNotes:''})});await load()}catch{alert('Review failed. Required documents need current expiry dates and secure evidence links. Verify the document and resubmit if needed.')}}
+let previewUrl;
+async function viewFile(id){try{const r=await fetch('/one/api/driver-document-file?id='+encodeURIComponent(id),{headers:{Authorization:'Bearer '+(sessionStorage.getItem('one_session')||'')}});if(!r.ok)throw new Error('unavailable');if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=URL.createObjectURL(await r.blob());$('#previewImage').src=previewUrl;$('#filePreview').showModal()}catch{alert('Photo unavailable. Refresh your B1 Operations session.')}}
+$('#closePreview').addEventListener('click',()=>{$('#filePreview').close();$('#previewImage').removeAttribute('src');if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl=null});
 $('#load').addEventListener('click',load);
 </script>
 </body></html>

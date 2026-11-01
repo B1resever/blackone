@@ -41,6 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       vehicle_model,
       plate_number,
       vehicle_class_id,
+      intake_details,
       status,
       review_notes,
       updated_at
@@ -104,6 +105,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         monthly_cap_amount_minor,
         percent_per_trip,
         fee_exempt_until,
+        intake_details,
         updated_at
       ) values (
         ${driverUserId},
@@ -114,9 +116,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ${terms.monthlyCapAmountMinor},
         ${terms.percentPerTrip},
         ${terms.tripFeeExemptUntil},
+        ${JSON.stringify(application.intake_details ?? {})}::jsonb,
         now()
       )
       on conflict (user_id) do update set
+        intake_details = excluded.intake_details,
         onboarding_status = excluded.onboarding_status,
         verification_status = excluded.verification_status,
         home_market_id = excluded.home_market_id,
@@ -146,6 +150,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         await sql`
           update one_driver_vehicles
           set status = 'approved',
+              color = ${application.intake_details?.vehicleColor || null},
+              passenger_capacity = ${application.intake_details?.passengerCapacity ?? null},
               updated_at = now()
           where id = ${driverVehicleId}
         `;
@@ -158,6 +164,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             model,
             vehicle_year,
             plate_number,
+            color,
+            passenger_capacity,
             status
           ) values (
             ${driverUserId},
@@ -166,6 +174,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             ${application.vehicle_model},
             ${application.vehicle_year},
             ${application.plate_number},
+            ${application.intake_details?.vehicleColor || null},
+            ${application.intake_details?.passengerCapacity ?? null},
             'approved'
           )
           returning id

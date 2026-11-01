@@ -59,6 +59,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       and (${parsed.data.status} <> 'approved'
         or document_type not in ('driver_license','insurance','vehicle_registration','background_check')
         or (expires_on >= current_date and file_url ~ '^https://[^/@[:space:]]+([/?#]|$)'))
+      and (${parsed.data.status} <> 'approved' or document_number is distinct from 'vehicle_photo'
+           or file_url ~ '^https://[^/@[:space:]]+([/?#]|$)')
     returning driver_user_id, id, document_type, status
   `;
 

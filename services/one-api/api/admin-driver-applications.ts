@@ -25,6 +25,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       vehicle_model,
       plate_number,
       vehicle_class_id,
+      intake_details,
       status,
       review_notes,
       created_at,

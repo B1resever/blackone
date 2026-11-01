@@ -1,5 +1,5 @@
 import { fetchJsonResponse } from '../src/http-client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -15,6 +15,10 @@ type DriverApplication = {
   vehicleMake: string;
   vehicleModel: string;
   plateNumber: string;
+  vehicleColor: string;
+  passengerCapacity: number;
+  payoutMethod: 'bank_transfer' | 'zelle' | 'coordinate_with_b1';
+  whatsappConsent: boolean;
   vehicleClassId: 'xl' | 'suv-black';
 };
 
@@ -28,10 +32,15 @@ const initialApplication: DriverApplication = {
   vehicleMake: '',
   vehicleModel: '',
   plateNumber: '',
+  vehicleColor: '',
+  passengerCapacity: 6,
+  payoutMethod: 'coordinate_with_b1',
+  whatsappConsent: false,
   vehicleClassId: 'suv-black',
 };
 
 export default function DriverScreen() {
+  const pending = useRef(false);
   const [application, setApplication] = useState<DriverApplication>(initialApplication);
   const [message, setMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -43,14 +52,19 @@ export default function DriverScreen() {
     application.licenseRegion.trim().length > 1 &&
     application.vehicleYear.trim().length === 4 &&
     application.vehicleMake.trim().length > 1 &&
-    application.vehicleModel.trim().length > 1;
+    application.vehicleModel.trim().length > 1 &&
+    application.vehicleColor.trim().length > 0 &&
+    application.plateNumber.trim().length > 0 &&
+    application.whatsappConsent &&
+    Number.isInteger(application.passengerCapacity) && application.passengerCapacity >= 1 &&
+    application.passengerCapacity <= (application.vehicleClassId === 'suv-black' ? 6 : 7);
 
   function patch(next: Partial<DriverApplication>) {
-    setApplication((current) => ({ ...current, ...next }));
+    setApplication((current) => ({ ...current, ...next, ...(next.marketId === 'buenos-aires' && current.payoutMethod === 'zelle' ? { payoutMethod: 'coordinate_with_b1' as const } : {}) }));
   }
 
   async function submit() {
-    if (!valid || submitting) return;
+    if (!valid || submitting || pending.current) return;
 
     const base = process.env.EXPO_PUBLIC_ONE_API_URL?.trim().replace(/\/$/, '');
     if (!base) {
@@ -58,6 +72,7 @@ export default function DriverScreen() {
       return;
     }
 
+    pending.current = true;
     setSubmitting(true);
     setMessage('');
 
@@ -69,7 +84,7 @@ export default function DriverScreen() {
       });
 
       if (!response.ok) {
-        setMessage('We could not submit the application. Please try again.');
+        setMessage('Application not confirmed. Contact B1 before submitting again.');
         return;
       }
 
@@ -81,8 +96,9 @@ export default function DriverScreen() {
       );
       setApplication(initialApplication);
     } catch {
-      setMessage('ONE could not reach the driver onboarding service.');
+      setMessage('Submission result could not be confirmed. Contact B1 before submitting again.');
     } finally {
+      pending.current = false;
       setSubmitting(false);
     }
   }
@@ -97,19 +113,6 @@ export default function DriverScreen() {
         <Pressable style={styles.accessButton} onPress={() => router.push('/driver-access')}>
           <Text style={styles.accessText}>ALREADY APPROVED? DRIVER ACCESS →</Text>
         </Pressable>
-
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>USA DRIVER MODEL</Text>
-          <Text style={styles.price}>$25<Text style={styles.priceSmall}> / month</Text></Text>
-          <Text style={styles.cardText}>Or 5% per trip until the monthly $25 is reached. After that, $0 platform fee for the rest of the month.</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.cardLabel}>ARGENTINA LAUNCH</Text>
-          <Text style={styles.big}>First-month membership free.</Text>
-          <Text style={styles.price}>10%<Text style={styles.priceSmall}> per trip from day one</Text></Text>
-          <Text style={styles.cardText}>Scheduled reservations first, expanding area by area.</Text>
-        </View>
 
         <Text style={styles.sectionTitle}>Driver application</Text>
 
@@ -135,7 +138,7 @@ export default function DriverScreen() {
         <Text style={styles.label}>Email</Text>
         <TextInput style={styles.input} value={application.email} onChangeText={(email) => patch({ email })} placeholder="name@email.com" placeholderTextColor={theme.colors.muted} keyboardType="email-address" autoCapitalize="none" autoComplete="email" />
 
-        <Text style={styles.label}>Phone</Text>
+        <Text style={styles.label}>WhatsApp phone / Teléfono</Text>
         <TextInput style={styles.input} value={application.phone} onChangeText={(phone) => patch({ phone })} placeholder="+1 ..." placeholderTextColor={theme.colors.muted} keyboardType="phone-pad" autoComplete="tel" />
 
         <Text style={styles.label}>Driver license state / province</Text>
@@ -174,13 +177,35 @@ export default function DriverScreen() {
           })}
         </View>
 
-        <Text style={styles.label}>Plate number · optional at first step</Text>
+        <Text style={styles.label}>Plate number / Matrícula</Text>
         <TextInput style={styles.input} value={application.plateNumber} onChangeText={(plateNumber) => patch({ plateNumber })} placeholder="Vehicle plate" placeholderTextColor={theme.colors.muted} autoCapitalize="characters" />
+
+        <Text style={styles.label}>Vehicle color / Color del vehículo</Text>
+        <TextInput style={styles.input} value={application.vehicleColor} onChangeText={(vehicleColor) => patch({ vehicleColor })} placeholder="Black / Negro" placeholderTextColor={theme.colors.muted} maxLength={40} />
+        <Text style={styles.label}>Passenger seats, excluding driver / Pasajeros sin conductor</Text>
+        <TextInput style={styles.input} value={String(application.passengerCapacity || '')} onChangeText={(value) => patch({ passengerCapacity: Number(value) })} keyboardType="number-pad" maxLength={1} />
+
+        <Text style={styles.sectionTitle}>How to receive payment / Cómo cobrar</Text>
+        <Text style={styles.sub}>Choose a preference. B1 still needs to verify your payout destination before payment. Do not enter banking details here.</Text>
+        {([
+          ['bank_transfer', 'Bank transfer / Transferencia bancaria'],
+          ...(application.marketId === 'south-florida' ? [['zelle', 'Zelle · USA']] : []),
+          ['coordinate_with_b1', 'Coordinate with B1 / Coordinar con B1'],
+        ] as Array<[DriverApplication['payoutMethod'], string]>).map(([id, label]) => (
+          <Pressable key={id} style={[styles.marketButton, application.payoutMethod === id && styles.marketActive]} onPress={() => patch({ payoutMethod: id })} accessibilityRole="radio" accessibilityState={{ checked: application.payoutMethod === id }}>
+            <Text style={styles.marketText}>{label}</Text>
+          </Pressable>
+        ))}
+        <Pressable style={styles.notice} onPress={() => patch({ whatsappConsent: !application.whatsappConsent })} accessibilityRole="checkbox" accessibilityState={{ checked: application.whatsappConsent }}>
+          <Text style={styles.noticeText}>{application.whatsappConsent ? '☑' : '☐'} I agree to receive B1 trip offers and operational messages on WhatsApp. / Acepto recibir ofertas de viajes y mensajes operativos de B1 por WhatsApp.</Text>
+        </Pressable>
 
         <View style={styles.notice}>
           <Text style={styles.noticeTitle}>Verification before activation</Text>
-          <Text style={styles.noticeText}>License, identity, vehicle registration, insurance, background verification and payout setup are required before a driver can receive trips.</Text>
+          <Text style={styles.noticeText}>Next: current license, insurance, vehicle registration and a vehicle photo. B1 coordinates any additional checks before activation. / Luego: licencia, seguro y registración vigentes, y foto del vehículo. B1 coordina las verificaciones adicionales.</Text>
         </View>
+
+        <Text style={styles.sub}>{application.marketId === 'south-florida' ? 'USA platform fee: $25/month or 5% per trip until the monthly $25 cap is reached.' : 'Argentina: first-month membership free; 10% per trip from day one.'}</Text>
 
         <Pressable style={[styles.submit, !valid || submitting ? styles.disabled : null]} disabled={!valid || submitting} onPress={submit}>
           <Text style={styles.submitText}>{submitting ? 'SUBMITTING…' : 'SUBMIT DRIVER APPLICATION →'}</Text>
