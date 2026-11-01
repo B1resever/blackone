@@ -22,7 +22,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (requiresPickupConfirmation(input)) return res.status(200).json({
     status: 'manual_confirmation', amountMinor: null,
     currency: input.marketId === 'buenos-aires' ? 'ARS' : 'USD',
-    message: 'B1 must confirm meet-and-greet arrangements and the final fare before payment.',
+    message: 'B1 must confirm the requested vehicle, pickup arrangements and final fare before payment.',
   });
   let route;
 

@@ -6,7 +6,7 @@ import { isAdminAuthorized } from '../src/admin-auth.js';
 
 const upsertSchema = z.object({
   marketId: z.enum(['south-florida', 'buenos-aires']),
-  vehicleClassId: z.enum(['confort', 'xl', 'suv-black', 'ultra-exclusive']),
+  vehicleClassId: z.enum(['xl', 'suv-black']),
   rideType: z.enum(['one-way', 'hourly', 'round-trip']),
   currency: z.enum(['USD', 'ARS']),
   baseAmountMinor: z.number().int().min(0),

@@ -1,0 +1,87 @@
+{
+  "purpose": "Internal sourcing only; not confirmed partners or bookable inventory.",
+  "scheduledReservationsOnly": true,
+  "marineCriteria": {
+    "size": [
+      "medium",
+      "large"
+    ],
+    "guestSleepingCabinsRequired": true,
+    "exclude": [
+      "small open boats",
+      "vessels without guest sleeping cabins"
+    ]
+  },
+  "activationRequirements": [
+    "Written commercial agreement",
+    "Verified operating credentials and insurance",
+    "Confirmed specifications, capacity and availability",
+    "Image publication permission",
+    "Confirmed quotation, cancellation and coordination process"
+  ],
+  "prospects": [
+    {
+      "name": "Executive Air Services",
+      "service": "aviation",
+      "contact": "charter@eascharter.com",
+      "sources": [
+        "https://eascharter.com/our-fleet/"
+      ],
+      "publishedModels": [
+        "Beechjet 400A",
+        "Nextant 400XTI",
+        "Hawker 400XP",
+        "Gulfstream G200",
+        "Gulfstream G-IVSP",
+        "Gulfstream G-V"
+      ],
+      "qualificationNote": "Site includes past, current and forthcoming aircraft. Current inventory requires confirmation.",
+      "outreach": "introductory_email_sent",
+      "partnership": "unconfirmed",
+      "bookable": false
+    },
+    {
+      "name": "Catalina Aerospace",
+      "service": "aviation",
+      "contact": "sara@flycatalina.com",
+      "sources": [
+        "https://flycatalina.com/our-fleet/"
+      ],
+      "publishedModels": [
+        "Hawker 4000",
+        "Cessna Citation 501"
+      ],
+      "qualificationNote": "Published listings only. Availability and operating credentials require confirmation.",
+      "outreach": "introductory_email_sent",
+      "partnership": "unconfirmed",
+      "bookable": false
+    },
+    {
+      "name": "Boat Miami",
+      "service": "marine",
+      "contact": "charters@boatmiami.com",
+      "sources": [
+        "https://www.boatmiami.com/contact/",
+        "https://www.boatmiami.com/mega-yachts/"
+      ],
+      "publishedListings": [
+        {
+          "name": "YCM90",
+          "publishedLengthFeet": 90,
+          "publishedCabins": 4,
+          "publishedSleepingGuests": 8
+        },
+        {
+          "name": "YCM105",
+          "publishedLengthFeet": 105,
+          "publishedCabins": 5,
+          "publishedSleepingGuests": 10
+        }
+      ],
+      "qualificationNote": "Website specifications not independently verified. Ownership, availability and permitted day/overnight capacity require confirmation.",
+      "outreach": "introductory_email_sent",
+      "partnership": "unconfirmed",
+      "bookable": false
+    }
+  ]
+}

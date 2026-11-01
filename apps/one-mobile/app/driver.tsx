@@ -15,7 +15,7 @@ type DriverApplication = {
   vehicleMake: string;
   vehicleModel: string;
   plateNumber: string;
-  vehicleClassId: 'confort' | 'xl' | 'suv-black' | 'ultra-exclusive';
+  vehicleClassId: 'xl' | 'suv-black';
 };
 
 const initialApplication: DriverApplication = {
@@ -28,7 +28,7 @@ const initialApplication: DriverApplication = {
   vehicleMake: '',
   vehicleModel: '',
   plateNumber: '',
-  vehicleClassId: 'confort',
+  vehicleClassId: 'suv-black',
 };
 
 export default function DriverScreen() {
@@ -158,10 +158,8 @@ export default function DriverScreen() {
         <Text style={styles.label}>ONE vehicle category</Text>
         <View style={styles.categoryGrid}>
           {[
-            ['confort', 'CONFORT'],
-            ['xl', 'XL'],
             ['suv-black', 'SUV BLACK'],
-            ['ultra-exclusive', 'ULTRA EXCLUSIVE'],
+            ['xl', 'XL'],
           ].map(([id, label]) => {
             const active = application.vehicleClassId === id;
             return (

@@ -14,7 +14,7 @@ const schema = z.object({
   vehicleMake: z.string().trim().min(2).max(80),
   vehicleModel: z.string().trim().min(2).max(100),
   plateNumber: z.string().trim().max(40).default(''),
-  vehicleClassId: z.enum(['confort','xl','suv-black','ultra-exclusive']),
+  vehicleClassId: z.enum(['xl','suv-black']),
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
