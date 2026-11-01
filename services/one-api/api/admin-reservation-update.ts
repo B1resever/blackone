@@ -66,6 +66,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       join one_driver_profiles p on p.user_id = u.id
       join one_driver_vehicles v on v.driver_user_id = u.id
       join one_reservations r on r.request_code = ${input.requestCode}
+      join one_vehicle_classes c on c.id = v.vehicle_class_id
       where u.id = ${input.assignedDriverUserId}
         and r.status = 'confirmed'
         and r.payment_status = 'paid'
@@ -89,6 +90,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ) = 4
         and v.status = 'approved'
         and v.vehicle_class_id = r.vehicle_class_id
+        and (c.max_passengers is null or r.passenger_count <= c.max_passengers)
       order by v.updated_at desc
       limit 1
     `;

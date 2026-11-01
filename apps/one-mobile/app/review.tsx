@@ -1,3 +1,4 @@
+import { canCarryPassengers } from '../src/vehicle-capacity';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -20,7 +21,7 @@ export default function ReviewScreen() {
   const { draft, setReceipt } = useReservation();
   const pending = useRef(false);
   const sent = useRef(false);
-  const canSubmit = isTripDetailsComplete(draft) && Boolean(draft.vehicleClass);
+  const canSubmit = isTripDetailsComplete(draft) && canCarryPassengers(draft.vehicleClass, draft.passengers);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [quote, setQuote] = useState<QuotePreview | null>(null);
@@ -55,7 +56,7 @@ export default function ReviewScreen() {
       router.replace('/confirmation');
     } catch (error) {
       if (error instanceof Error && error.message === 'invalid_request') {
-        setError('Check trip and airport details: use a valid flight number, a future pickup in your service market, and a return after pickup.');
+        setError('Check trip details, flight number, vehicle capacity and future pickup/return times.');
       } else setError('ONE could not confirm the result. Your request may have been received. Check My Reservations or contact BLACK ONE Support before sending it again. This step does not take payment.');
     } finally {
       pending.current = false;

@@ -1,3 +1,4 @@
+import { canCarryPassengers } from '../src/vehicle-capacity';
 import { router } from 'expo-router';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,14 +7,13 @@ import { vehicleCatalog } from '../src/reservation';
 import { theme } from '../src/theme';
 
 const images: Record<string, string> = {
-  confort: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/electric.png',
   xl: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Sprinter.png',
   'suv-black': 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Escalade.png',
-  'ultra-exclusive': 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/cullinan.png',
 };
 
 export default function VehiclesScreen() {
   const { draft, updateDraft } = useReservation();
+  const validSelection = canCarryPassengers(draft.vehicleClass, draft.passengers);
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
@@ -25,21 +25,23 @@ export default function VehiclesScreen() {
         </Text>
 
         {vehicleCatalog.map((vehicle) => {
+          const compatible = canCarryPassengers(vehicle.id, draft.passengers);
           const selected = draft.vehicleClass === vehicle.id;
           return (
             <Pressable
               key={vehicle.id}
-              style={[styles.card, selected ? styles.cardSelected : null]}
+              disabled={!compatible}
+              style={[styles.card, !compatible && styles.buttonDisabled, selected ? styles.cardSelected : null]}
               onPress={() => updateDraft({ vehicleClass: vehicle.id })}
               accessibilityRole="button"
-              accessibilityState={{ selected }}
+              accessibilityState={{ selected, disabled: !compatible }}
             >
               <Image source={{ uri: images[vehicle.id] }} style={styles.image} />
               <View style={styles.overlay} />
 
               <View style={styles.top}>
                 <Text style={styles.category}>ONE VEHICLE</Text>
-                {selected ? <Text style={styles.selected}>SELECTED</Text> : null}
+                {!compatible ? <Text style={styles.selected}>INSUFFICIENT SEATS / SIN CUPO</Text> : selected ? <Text style={styles.selected}>SELECTED</Text> : null}
               </View>
 
               <View style={styles.copy}>
@@ -56,9 +58,10 @@ export default function VehiclesScreen() {
           );
         })}
 
+        {!validSelection ? <Text style={styles.sub}>Choose a category with room for {draft.passengers} passenger(s). / Elegí una categoría con capacidad suficiente.</Text> : null}
         <Pressable
-          style={[styles.button, !draft.vehicleClass ? styles.buttonDisabled : null]}
-          disabled={!draft.vehicleClass}
+          style={[styles.button, !validSelection ? styles.buttonDisabled : null]}
+          disabled={!validSelection}
           onPress={() => router.push('/review')}
           accessibilityRole="button"
         >

@@ -20,34 +20,8 @@ import { useAuth } from '../src/auth-context';
 const HERO = 'https://raw.githubusercontent.com/B1resever/blackone/main/images/hero/b1-daytime-luxury.png';
 
 const vehicles = [
-  {
-    id: 'confort',
-    name: 'CONFORT',
-    detail: 'Premium everyday rides',
-    meta: '1–4 · 2 suitcases',
-    image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/electric.png',
-  },
-  {
-    id: 'xl',
-    name: 'XL',
-    detail: 'Up to 7 passengers',
-    meta: '1–7 · 6 suitcases',
-    image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Sprinter.png',
-  },
-  {
-    id: 'suv-black',
-    name: 'SUV BLACK',
-    detail: 'Luxury 2022–2026',
-    meta: '1–6 · 6 suitcases',
-    image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Escalade.png',
-  },
-  {
-    id: 'ultra-exclusive',
-    name: 'ULTRA EXCLUSIVE',
-    detail: 'Chauffeur · Hourly · Executive',
-    meta: 'Custom · Long Distance',
-    image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/cullinan.png',
-  },
+  { id: 'suv-black', name: 'SUV BLACK', detail: 'Black luxury SUVs · Escalade, Suburban, Tahoe, Yukon/Denali', meta: '1–6 · Luggage confirmed by B1', image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Escalade.png' },
+  { id: 'xl', name: 'XL', detail: 'Economical alternative · Spacious approved vehicle', meta: '1–7 · Luggage confirmed by B1', image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Sprinter.png' },
 ] as const;
 
 const features = [

@@ -54,34 +54,8 @@ export const vehicleCatalog: Array<{
   passengers: string;
   luggage: string;
 }> = [
-  {
-    id: 'confort',
-    name: 'CONFORT',
-    subtitle: 'Premium everyday rides',
-    passengers: '1–4',
-    luggage: 'Up to 2 suitcases',
-  },
-  {
-    id: 'xl',
-    name: 'XL',
-    subtitle: 'More room for passengers and luggage',
-    passengers: '1–7',
-    luggage: 'Up to 6 suitcases',
-  },
-  {
-    id: 'suv-black',
-    name: 'SUV BLACK',
-    subtitle: 'Luxury SUV · 2022–2026',
-    passengers: '1–6',
-    luggage: 'Up to 6 suitcases',
-  },
-  {
-    id: 'ultra-exclusive',
-    name: 'ULTRA EXCLUSIVE',
-    subtitle: 'Chauffeur · Hourly · Executive',
-    passengers: 'Custom',
-    luggage: 'Custom service',
-  },
+  { id: 'suv-black', name: 'SUV BLACK', subtitle: 'Black luxury SUV · Escalade, Suburban, Tahoe, Yukon/Denali or equivalent', passengers: '1–6', luggage: 'Confirm luggage with B1' },
+  { id: 'xl', name: 'XL', subtitle: 'Economical alternative · approved spacious vehicle', passengers: '1–7', luggage: 'Confirm luggage with B1' },
 ];
 
 export function getMarketLabel(marketId: ReservationDraft['marketId']): string {
@@ -89,7 +63,7 @@ export function getMarketLabel(marketId: ReservationDraft['marketId']): string {
 }
 
 export function getVehicleLabel(vehicleClass: ReservationDraft['vehicleClass']): string {
-  return vehicleCatalog.find((vehicle) => vehicle.id === vehicleClass)?.name ?? 'Not selected';
+  return vehicleCatalog.find((vehicle) => vehicle.id === vehicleClass)?.name ?? (vehicleClass === 'confort' ? 'CONFORT · previous reservation' : vehicleClass === 'ultra-exclusive' ? 'ULTRA EXCLUSIVE · previous reservation' : 'Not selected');
 }
 
 export function isTripDetailsComplete(draft: ReservationDraft): boolean {

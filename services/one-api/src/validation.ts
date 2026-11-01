@@ -1,10 +1,11 @@
+import { canRequestVehicle } from './vehicle-capacity.js';
 import { z } from 'zod';
 import { pickupDetailsShape } from './pickup-details.js';
 import { scheduledRideInstant } from './scheduled-rides.js';
 
 export const marketIdSchema = z.enum(['south-florida', 'buenos-aires']);
 export const rideTypeSchema = z.enum(['one-way', 'hourly', 'round-trip']);
-export const vehicleClassSchema = z.enum(['confort', 'xl', 'suv-black', 'ultra-exclusive']);
+export const vehicleClassSchema = z.enum(['xl', 'suv-black']);
 
 const tripShape = {
   marketId: marketIdSchema,
@@ -22,6 +23,8 @@ const tripShape = {
 
 function validateTrip(
   value: {
+    vehicleClass: string;
+    passengers: number;
     marketId: string;
     pickupDate: string;
     pickupTime: string;
@@ -33,6 +36,7 @@ function validateTrip(
   },
   ctx: z.RefinementCtx,
 ) {
+  if (!canRequestVehicle(value.vehicleClass, value.passengers)) ctx.addIssue({ code: 'custom', path: ['passengers'], message: 'Passenger count exceeds this vehicle category. Select a larger category.' });
   const pickup = scheduledRideInstant(value.pickupDate, value.pickupTime, value.marketId);
   if (pickup === null || pickup <= Date.now()) {
     ctx.addIssue({ code: 'custom', path: ['pickupDate'], message: 'B1 accepts scheduled rides only. Choose a valid future date and time in the service market.' });

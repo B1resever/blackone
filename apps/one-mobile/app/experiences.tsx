@@ -4,11 +4,11 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 type Service = 'cars' | 'jets' | 'boats';
-const labels: Record<Service, string> = { cars: 'Luxury Cars', jets: 'Private Jets', boats: 'Yachts & Boats' };
+const labels: Record<Service, string> = { cars: 'Luxury Cars', jets: 'Private Jets', boats: 'Cabin Yachts' };
 const tabs: { id: Service; title: string; subtitle: string }[] = [
   { id: 'cars', title: 'Cars', subtitle: 'Premium rides' },
   { id: 'jets', title: 'Jets', subtitle: 'Private aviation' },
-  { id: 'boats', title: 'Boats', subtitle: 'Private charters' },
+  { id: 'boats', title: 'Yachts', subtitle: 'With guest cabins' },
 ];
 export default function ExperiencesScreen() {
   const [selected, setSelected] = useState<Service>('cars');
@@ -36,7 +36,7 @@ export default function ExperiencesScreen() {
         </View>
         <Text style={s.eyebrow}>THE ONE EXPERIENCE</Text>
         <Text style={s.title}>Where can we take you?</Text>
-        <Text style={s.description}>Select a service to start your reservation.</Text>
+        <Text style={s.description}>Scheduled road reservations. Aviation and yacht services are being prepared.</Text>
         <View style={s.tabs}>
           {tabs.map(tab => (
             <Pressable key={tab.id} onPress={() => {setSelected(tab.id);setNotice('');}} style={[s.tab, selected === tab.id && s.tabSelected]} accessibilityRole="button" accessibilityState={{ selected: selected === tab.id }}>
@@ -50,14 +50,14 @@ export default function ExperiencesScreen() {
           {selected === 'cars' ? (
             <>
               <Text style={s.panelTitle}>A better way to ride.</Text>
-              <Text style={s.description}>Airport transfer, point-to-point, hourly chauffeur and luxury vehicles.</Text>
+              <Text style={s.description}>Reserve a black luxury SUV or choose XL as an economical alternative. Airport transfers, point-to-point and hourly chauffeur service.</Text>
               <Pressable style={s.primary} onPress={() => router.push('/book')} accessibilityRole="button"><Text style={s.primaryText}>BOOK A RIDE  →</Text></Pressable>
               <Pressable style={s.secondary} onPress={() => router.push('/trips')} accessibilityRole="button"><Text style={s.secondaryText}>My reservations</Text></Pressable>
             </>
           ) : (
             <>
-              <Text style={s.panelTitle}>{selected === 'jets' ? 'Private aviation' : 'Explore by sea'}</Text>
-              <Text style={s.description}>Service preview. Operator availability, confirmed pricing and booking are not yet enabled.</Text>
+              <Text style={s.panelTitle}>{selected === 'jets' ? 'Private aviation' : 'Medium and large cabin yachts'}</Text>
+              <Text style={s.description}>{selected === 'jets' ? 'Aircraft selection will depend on your route, passengers and luggage.' : 'Our planned selection includes medium and large yachts with guest sleeping cabins. Vessels without guest cabins are excluded.'} Operator agreements, availability and booking are pending.</Text>
               <Text style={s.label}>{selected === 'jets' ? 'Departure airport or city' : 'Departure marina or city'} *</Text>
               <TextInput style={s.input} value={from} onChangeText={setFrom} placeholder="Enter location" placeholderTextColor="#8295A4" />
               {selected === 'jets' && <><Text style={s.label}>Destination *</Text><TextInput style={s.input} value={to} onChangeText={setTo} placeholder="Enter destination" placeholderTextColor="#8295A4" /></>}
