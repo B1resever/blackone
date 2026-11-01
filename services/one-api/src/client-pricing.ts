@@ -17,11 +17,13 @@ export const clientPricingSchema = z.object({
   currency: z.enum(['USD', 'ARS']),
   effectiveFrom: z.string().datetime({ offset: true }),
   effectiveTo: z.string().datetime({ offset: true }),
-  areas: z.array(z.object({
+  areas: z.array(z.union([z.object({
     id: z.string().min(1),
     south: z.number().min(-90).max(90), north: z.number().min(-90).max(90),
     west: z.number().min(-180).max(180), east: z.number().min(-180).max(180),
-  }).refine(a => a.north > a.south && a.east > a.west)).min(1),
+  }).refine(a => a.north > a.south && a.east > a.west), z.object({
+    id: z.string().min(1), center: point, radiusMiles: z.number().positive().max(150),
+  })])).min(1),
   rates: z.array(z.object({
     pickupAreaId: z.string().min(1), dropoffAreaId: z.string().min(1),
     vehicleClass: z.enum(['suv-black', 'xl']),
@@ -67,8 +69,20 @@ export function calculateClientQuote(raw: string | undefined, input: ClientPrici
       !point.safeParse(input.pickupLocation).success || !point.safeParse(input.dropoffLocation).success ||
       !Number.isFinite(input.distanceMeters) || !Number.isFinite(input.durationSeconds) ||
       input.distanceMeters! <= 0 || input.durationSeconds! <= 0) return manual;
-  const resolve = (p: Point) => card.areas.filter(a =>
-    p.latitude >= a.south && p.latitude <= a.north && p.longitude >= a.west && p.longitude <= a.east);
+  const resolve = (p: Point) => {
+    const matches = card.areas.filter(a => 'center' in a
+      ? milesBetween(p, a.center) <= a.radiusMiles
+      : p.latitude >= a.south && p.latitude <= a.north && p.longitude >= a.west && p.longitude <= a.east);
+    // Circular city zones overlap naturally. Choose the nearest configured city
+    // center consistently; ambiguous rectangle configurations still fail closed.
+    if (matches.length > 1 && matches.every(a => 'center' in a)) {
+      const ranked = matches.map(a => ({ area: a, distance: milesBetween(p, (a as { center: Point }).center) }))
+        .sort((a, b) => a.distance - b.distance);
+      if (ranked[1].distance - ranked[0].distance < 0.001) return [];
+      return [ranked[0].area];
+    }
+    return matches;
+  };
   const origin = resolve(input.pickupLocation!);
   const destination = resolve(input.dropoffLocation!);
   // Overlapping or missing area matches require Operations, not an arbitrary price.
@@ -92,6 +106,13 @@ export function calculateClientQuote(raw: string | undefined, input: ClientPrici
     pricing: { version: card.version, pickupAreaId: origin[0].id, dropoffAreaId: destination[0].id,
       multiplierBps, adjustmentIds: windows.filter(w => w.multiplierBps === multiplierBps).map(w => w.id) },
   };
+}
+
+export function milesBetween(a: Point, b: Point) {
+  const rad = Math.PI / 180;
+  const h = Math.sin((b.latitude - a.latitude) * rad / 2) ** 2 +
+    Math.cos(a.latitude * rad) * Math.cos(b.latitude * rad) * Math.sin((b.longitude - a.longitude) * rad / 2) ** 2;
+  return 3958.7613 * 2 * Math.atan2(Math.sqrt(Math.min(1, h)), Math.sqrt(Math.max(0, 1 - h)));
 }
 
 // A client waiting charge is distinct from the driver's compensation.
