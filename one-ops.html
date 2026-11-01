@@ -5,18 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive">
   <title>ONE Ops · BLACK ONE</title>
   <style>
-    :root{--bg:#02080e;--panel:#07131d;--line:#173747;--cyan:#00eaf0;--text:#f7fbff;--muted:#90a4b3}
+    :root{--bg:#f4f9fd;--panel:#fff;--line:#dce3e8;--cyan:#005bea;--text:#122536;--muted:#526473}
     *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--text);font:14px Inter,Arial,sans-serif}
-    header{position:sticky;top:0;background:rgba(2,8,14,.94);border-bottom:1px solid var(--line);padding:18px 24px;z-index:5}
+    header{position:sticky;top:0;background:rgba(255,255,255,.96);border-bottom:1px solid var(--line);padding:18px 24px;z-index:5}
     h1{margin:0;font-size:22px} .cyan{color:var(--cyan)} main{padding:22px;max-width:1500px;margin:auto}
     .controls,.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:16px}
     .controls{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;margin-bottom:16px}
-    input,select,button{background:#0b1c28;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
-    button{cursor:pointer;font-weight:800} button.primary{background:var(--cyan);color:#001217;border-color:var(--cyan)}
+    input,select,button{background:#fff;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px}
+    button{cursor:pointer;font-weight:800} button.primary{background:var(--cyan);color:#fff;border-color:var(--cyan)}
     table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:18px;overflow:hidden}
     th,td{padding:12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top} th{color:var(--cyan);font-size:11px;letter-spacing:1px}
     .muted{color:var(--muted)} .status{font-weight:900;text-transform:uppercase}.grid{overflow:auto}
     .money{font-weight:900}.small{font-size:11px}.actions{display:flex;gap:6px;flex-wrap:wrap}
+    dialog{max-width:560px;width:94vw;border:1px solid var(--line);border-radius:20px;padding:24px;color:var(--text)}dialog label{display:block;margin:16px 0 6px}dialog input,dialog textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px}dialog a{color:var(--cyan)}
     @media(max-width:800px){.controls{grid-template-columns:1fr}.hide-sm{display:none}}
   </style>
 </head>
@@ -34,6 +35,10 @@
       <tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load operations.</td></tr></tbody>
     </table>
   </div>
+<dialog id="dispatchDialog"><h2>Oferta por WhatsApp</h2><p class="muted">Solo compartir con conductores que aceptaron recibir ofertas. Generar un enlace nuevo invalida el anterior.</p>
+<form id="dispatchForm"><label for="offerSummary">Zonas y servicio · sin datos personales del pasajero</label><textarea id="offerSummary" required minlength="5" maxlength="240" placeholder="MIA → Brickell · traslado programado"></textarea>
+<label for="offerAmount">Importe ofrecido al conductor (<span id="offerCurrency"></span>)</label><input id="offerAmount" required type="number" min="0.01" max="1000000" step="0.01"><p class="muted">Los cargos del plan del conductor se registran aparte.</p><button class="primary" id="prepareOffer">PREPARAR ENLACE</button></form>
+<p id="dispatchMessage" role="status"></p><div id="dispatchReady" hidden><label for="dispatchLink">Enlace · vence en un máximo de 30 minutos</label><input id="dispatchLink" readonly><p><a id="shareWhatsApp" target="_blank" rel="noopener noreferrer">Abrir WhatsApp para compartir</a></p><p class="muted">No se envió ningún mensaje automáticamente. Seleccioná tu lista autorizada en WhatsApp.</p></div><button type="button" id="closeDispatch">CERRAR</button></dialog>
 </main>
 <script>
 if(!sessionStorage.getItem('one_session'))location.replace('/one-admin.html');
@@ -63,10 +68,10 @@ function render(list){
     <td>${esc(r.pickup_date_text)}<div class="muted">${esc(r.pickup_time_text)}</div></td>
     <td>${esc(r.vehicle_class_id)}<div class="muted">${esc(r.passenger_count)} pax</div></td>
     <td class="status">${esc(r.status)}</td>
-    <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div></td>
+    <td><span class="money">${money(r.quote_amount_minor,r.quote_currency)}</span><div class="muted">${esc(r.payment_status)}</div>${r.driver_offer_amount_minor?'<div class="muted">Driver offer: '+money(r.driver_offer_amount_minor,r.quote_currency)+'</div>':''}</td>
     <td><div class="actions">
       ${r.status==='confirmed'&&r.payment_status==='paid'
-        ? '<select onchange="assignDriver(\''+esc(r.request_code)+'\',this.value)">'+driverOptions(r.market_id,r.vehicle_class_id)+'</select>'
+        ? '<button onclick="prepareDispatch(\''+esc(r.request_code)+'\',\''+esc(r.quote_currency||'USD')+'\')">WhatsApp offer</button><select onchange="assignDriver(\''+esc(r.request_code)+'\',this.value)">'+driverOptions(r.market_id,r.vehicle_class_id)+'</select>'
         : '<span class="muted small">Driver assignment unlocks after confirmation + payment.</span>'}
       <button onclick="setQuote('${esc(r.request_code)}','${esc(r.quote_currency || (r.market_id==='buenos-aires'?'ARS':'USD'))}')">Set Quote</button>
       <button onclick="setStatus('${esc(r.request_code)}','confirmed')">Confirm</button>
@@ -128,6 +133,10 @@ async function setStatus(requestCode,status){
    alert('Reservation update failed. Active-trip states must be controlled by the assigned ONE Driver.');
  }
 }
+let dispatchRequestCode='';
+function prepareDispatch(code,currency){dispatchRequestCode=code;$('#offerCurrency').textContent=currency;$('#dispatchMessage').textContent='';$('#dispatchReady').hidden=true;$('#dispatchForm').reset();$('#dispatchDialog').showModal();}
+$('#closeDispatch').addEventListener('click',()=>$('#dispatchDialog').close());
+$('#dispatchForm').addEventListener('submit',async event=>{event.preventDefault();const button=$('#prepareOffer');if(button.disabled)return;button.disabled=true;$('#dispatchMessage').textContent='Preparando…';try{const result=await request('/one/api/admin-dispatch-offer',{method:'POST',body:JSON.stringify({requestCode:dispatchRequestCode,driverAmountMinor:Math.round(Number($('#offerAmount').value)*100),summary:$('#offerSummary').value,expiresInMinutes:30})});$('#dispatchLink').value=result.offerUrl;$('#shareWhatsApp').href='https://wa.me/?text='+encodeURIComponent('B1 ONE · Oferta de viaje programado. Abrí B1 para consultar y aceptar. El primero habilitado que confirme obtiene el viaje. '+result.offerUrl);$('#dispatchReady').hidden=false;$('#dispatchMessage').textContent='Enlace preparado. No se envió automáticamente.';}catch{$('#dispatchMessage').textContent='No se pudo preparar. Verificá confirmación, pago y que el viaje siga sin asignar.';}finally{button.disabled=false;}});
 $('#load').addEventListener('click',load);
 </script>
 </body>

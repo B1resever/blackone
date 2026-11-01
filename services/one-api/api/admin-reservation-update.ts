@@ -68,6 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       join one_reservations r on r.request_code = ${input.requestCode}
       join one_vehicle_classes c on c.id = v.vehicle_class_id
       where u.id = ${input.assignedDriverUserId}
+        and r.assigned_driver_user_id is null
         and r.status = 'confirmed'
         and r.payment_status = 'paid'
         and u.role = 'driver'
@@ -104,14 +105,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'driver_not_available' });
     }
 
-    await sql`
+    const assignedRows = await sql`
       update one_reservations
       set assigned_driver_user_id = ${input.assignedDriverUserId},
           assigned_vehicle_id = ${driverRows[0].vehicle_id},
           status = 'assigned',
           updated_at = now()
       where request_code = ${input.requestCode}
+        and assigned_driver_user_id is null
+        and status = 'confirmed' and payment_status = 'paid'
+      returning id
     `;
+    if (!assignedRows[0]) return res.status(409).json({ error: 'trip_already_assigned_or_unavailable' });
 
     await sql`
       insert into one_trip_events (reservation_id, actor_user_id, event_type, payload)

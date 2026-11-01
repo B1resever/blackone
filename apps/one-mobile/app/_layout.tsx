@@ -55,6 +55,7 @@ export default function RootLayout() {
           <Stack.Screen name="trip-support" options={{ title: 'ONE Support & SOS' }} />
           <Stack.Screen name="legal" options={{ title: 'Help & Legal' }} />
           <Stack.Screen name="driver" options={{ title: 'Drive with ONE' }} />
+          <Stack.Screen name="driver-offer" options={{ title: 'B1 Trip Offer' }} />
           <Stack.Screen name="driver-access" options={{ title: 'ONE Driver' }} />
           <Stack.Screen name="safety" options={{ title: 'ONE Safety' }} />
         </Stack>

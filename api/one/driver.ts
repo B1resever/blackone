@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import driverDispatchOffer from '../../services/one-api/api/driver-dispatch-offer.js';
 import driverApplications from '../../services/one-api/api/driver-applications.js';
 import driverActivate from '../../services/one-api/api/driver-activate.js';
 import driverAvailability from '../../services/one-api/api/driver-availability.js';
@@ -12,6 +13,7 @@ import driverVerifyRideCode from '../../services/one-api/api/driver-verify-ride-
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 const handlers: Record<string, Handler> = {
   'driver-applications': driverApplications,
+  'driver-dispatch-offer': driverDispatchOffer,
   'driver-activate': driverActivate,
   'driver-availability': driverAvailability,
   'driver-documents': driverDocuments,

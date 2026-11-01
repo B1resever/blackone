@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
+import adminDispatchOffer from '../../services/one-api/api/admin-dispatch-offer.js';
 import adminReservations from '../../services/one-api/api/admin-reservations.js';
 import adminReservationUpdate from '../../services/one-api/api/admin-reservation-update.js';
 import adminRefund from '../../services/one-api/api/admin-refund.js';
@@ -7,6 +8,7 @@ import adminRates from '../../services/one-api/api/admin-rates.js';
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 const handlers: Record<string, Handler> = {
   'admin-reservations': adminReservations,
+  'admin-dispatch-offer': adminDispatchOffer,
   'admin-reservation-update': adminReservationUpdate,
   'admin-refund': adminRefund,
   'admin-rates': adminRates,
