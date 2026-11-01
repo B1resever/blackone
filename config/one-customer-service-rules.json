@@ -19,7 +19,7 @@
     "activationEnvironmentVariable": "ONE_CLIENT_PRICING_JSON",
     "areaBoundaries": "ten_mile_city_circles_nearest_center_on_overlap",
     "areaMinimums": {
-      "xl": 12800,
+      "xl": 9500,
       "suv-black": 14720
     },
     "adjustments": "highest_applicable_uplift_no_discounts_below_base",

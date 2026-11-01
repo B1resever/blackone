@@ -13,7 +13,7 @@ export const southFloridaPricing = {
   areas,
   rates: areas.flatMap(area => [
     { pickupAreaId: area.id, dropoffAreaId: area.id, vehicleClass: 'xl',
-      minimumMinor: 12800, baseMinor: 12800, perMileMinor: 0, perMinuteMinor: 0 },
+      minimumMinor: 9500, baseMinor: 9500, perMileMinor: 0, perMinuteMinor: 0 },
     { pickupAreaId: area.id, dropoffAreaId: area.id, vehicleClass: 'suv-black',
       minimumMinor: 14720, baseMinor: 14720, perMileMinor: 0, perMinuteMinor: 0 },
   ]),

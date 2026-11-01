@@ -11,7 +11,7 @@ const quote = (patch = {}) => calculateClientQuote(JSON.stringify(southFloridaPr
 test('all four city areas have fixed category prices inside the same area', () => {
   for (const area of southFloridaPricing.areas) {
     assert.equal(quote({pickupLocation:area.center,dropoffLocation:area.center})?.amountMinor,14720);
-    assert.equal(quote({pickupLocation:area.center,dropoffLocation:area.center,vehicleClass:'xl'})?.amountMinor,12800);
+    assert.equal(quote({pickupLocation:area.center,dropoffLocation:area.center,vehicleClass:'xl'})?.amountMinor,9500);
   }
 });
 test('overlapping Miami circles resolve by nearest center without random rates', () => {
