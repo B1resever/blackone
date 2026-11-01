@@ -34,7 +34,7 @@ export const initialReservation: ReservationDraft = {
   pickupTime: '',
   returnDate: '',
   returnTime: '',
-  hourlyHours: 2,
+  hourlyHours: 3,
   passengers: 1,
   fullName: '',
   email: '',
@@ -71,7 +71,7 @@ export function isTripDetailsComplete(draft: ReservationDraft): boolean {
   const hasReturn =
     draft.rideType !== 'round-trip' ||
     (draft.returnDate.trim().length > 0 && draft.returnTime.trim().length > 0);
-  const hasHours = draft.rideType !== 'hourly' || draft.hourlyHours >= 1;
+  const hasHours = draft.rideType !== 'hourly' || draft.hourlyHours >= (draft.marketId === 'south-florida' ? 3 : 1);
 
   return (
     draft.pickup.trim().length > 2 &&

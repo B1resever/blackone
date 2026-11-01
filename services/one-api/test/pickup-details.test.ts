@@ -22,7 +22,7 @@ test('meet-and-greet preview does not calculate a payable fare before Operations
   const { default: handler } = await import('../api/quotes.js');
   let code = 0;
   let result: any;
-  const req = { method:'POST', headers:{}, body:{marketId:'south-florida',rideType:'hourly',pickup:'Miami Airport',pickupDate:'2099-12-01',pickupTime:'14:00',hourlyHours:2,passengers:2,vehicleClass:'suv-black',...details,pickupMeeting:'meet-and-greet'} };
+  const req = { method:'POST', headers:{}, body:{marketId:'south-florida',rideType:'hourly',pickup:'Miami Airport',pickupDate:'2099-12-01',pickupTime:'14:00',hourlyHours:3,passengers:2,vehicleClass:'suv-black',...details,pickupMeeting:'meet-and-greet'} };
   const res = {setHeader(){}, status(next:number){code=next;return this;}, json(data:unknown){result=data;return this;}};
   await handler(req as any,res as any);
   assert.equal(code,200);

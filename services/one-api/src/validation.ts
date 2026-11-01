@@ -16,7 +16,7 @@ const tripShape = {
   pickupTime: z.string().trim().min(2).max(20),
   returnDate: z.string().trim().max(20).default(''),
   returnTime: z.string().trim().max(20).default(''),
-  hourlyHours: z.number().int().min(1).max(24).default(2),
+  hourlyHours: z.number().int().min(1).max(24).default(3),
   passengers: z.number().int().min(1).max(20),
   vehicleClass: vehicleClassSchema,
 };
@@ -61,11 +61,11 @@ function validateTrip(
     });
   }
 
-  if (value.rideType === 'hourly' && value.hourlyHours < 1) {
+  if (value.rideType === 'hourly' && value.hourlyHours < (value.marketId === 'south-florida' ? 3 : 1)) {
     ctx.addIssue({
       code: 'custom',
       path: ['hourlyHours'],
-      message: 'Hourly service requires at least one hour',
+      message: 'South Florida hourly service requires at least three hours.',
     });
   }
 }

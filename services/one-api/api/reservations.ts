@@ -111,7 +111,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           hourlyHours: data.rideType === 'hourly' ? data.hourlyHours : null,
           routeDistanceMeters: route?.distanceMeters ?? null,
           routeDurationSeconds: route?.durationSeconds ?? null,
-          customerPricing: quote.status === 'quoted' ? quote.pricing ?? null : null
+          customerPricing: quote.status === 'quoted' ? quote.pricing ?? null : null,
+          hourlyCustomerTerms: quote.status !== 'quoted' ? quote.hourlyTerms ?? null : null,
+          hourlyBaseEstimateMinor: quote.status !== 'quoted' ? quote.hourlyEstimateMinor ?? null : null
         })},
         ${quote.status === 'quoted' ? 'quoted' : 'requested'},
         'not_started',
