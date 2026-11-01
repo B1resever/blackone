@@ -1,0 +1,80 @@
+{
+  "version": "2026-11-01-draft",
+  "status": "draft_not_active",
+  "scope": "customer_to_b1_only",
+  "categories": [
+    { "id": "suv-black", "name": "Super Lujo", "vehicleRequirement": "Luxury SUVs" },
+    { "id": "xl", "name": "XL", "vehicleRequirement": "Large passenger vehicles" }
+  ],
+  "pricing": {
+    "currency": "USD",
+    "activationEnvironmentVariable": "ONE_CLIENT_PRICING_JSON",
+    "areaBoundaries": "pending_configuration",
+    "areaMinimums": "pending_configuration",
+    "adjustments": "highest_applicable_uplift_no_discounts_below_base",
+    "eventDates": "verify_each_year_before_activation",
+    "outOfArea": "manual_b1_quote_before_payment",
+    "hourlyAndRoundTrip": "manual_b1_quote_until_separate_rates_are_defined",
+    "driverCompensation": "separate_agreement_not_defined_here"
+  },
+  "waiting": {
+    "perMinuteMinor": null,
+    "airportGraceMinutes": null,
+    "addressGraceMinutes": null,
+    "rounding": "started_minutes_after_grace",
+    "status": "pending_customer_tariff"
+  },
+  "changes": {
+    "passengerRequestedStopsAndDetours": "price_and_accept_before_change",
+    "trafficAndSafetyDetours": "no_passenger_penalty",
+    "stopFeeMinor": null
+  },
+  "extras": [
+    { "id": "child_seat", "priceMinor": null, "requiresAvailabilityConfirmation": true },
+    { "id": "food", "priceMinor": null, "requiresAvailabilityConfirmation": true }
+  ],
+  "incidents": {
+    "extraordinaryCleaningProposedMinimumMinor": 20000,
+    "cleaningStatus": "pending_florida_legal_review_and_cost_validation",
+    "ordinaryCleaningIncluded": true,
+    "automaticTripleChargeEnabled": false,
+    "requiresEvidence": true,
+    "driverRole": "report_only",
+    "chargeDecision": "b1_operations_review",
+    "customerNoticeAndDisputeProcessRequired": true,
+    "duplicateRecoveryProhibited": true,
+    "unsafeConduct": "safe_service_interruption_and_operations_incident_review"
+  },
+  "cardGuarantee": {
+    "enabled": false,
+    "amountMinor": null,
+    "status": "pending_terms_amount_and_stripe_implementation",
+    "separateFromFare": true,
+    "explicitCustomerAuthorizationRequired": true,
+    "driverAndPassengerCompletionReports": true,
+    "silenceOrDispute": "b1_review_with_bounded_deadline_before_authorization_expiry",
+    "releaseUnusedAuthorization": true,
+    "indefiniteHoldsAllowed": false
+  },
+  "eventWatchlist": {
+    "annualDatesToVerify": [
+      "Art Basel / Miami Art Week", "Ultra / Miami Music Week", "Miami Open",
+      "Formula 1 Miami Grand Prix", "Miami International Boat Show",
+      "South Beach Wine & Food Festival", "Miami Marathon",
+      "Fort Lauderdale International Boat Show", "Tortuga Music Festival",
+      "Palm Beach International Boat Show", "New Year's Eve", "Major holiday weekends"
+    ],
+    "variable": ["Concerts", "Sports fixtures", "Conventions", "Private events"],
+    "sources": [
+      "https://www.miamiandbeaches.com/events/annual-events",
+      "https://www.visitlauderdale.com/events/annual-events-festivals/",
+      "https://www.pbboatshow.com/"
+    ],
+    "autoSurchargesEnabled": false
+  },
+  "legalReviewSources": [
+    "https://www.flsenate.gov/Laws/Statutes/2026/501.204",
+    "https://library.law.fsu.edu/Digital-Collections/flsupct/dockets/75806/op-75806.pdf",
+    "https://docs.stripe.com/payments/place-a-hold-on-a-payment-method"
+  ]
+}
