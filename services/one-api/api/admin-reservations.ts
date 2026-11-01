@@ -31,6 +31,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       status,
       payment_status,
       quote_amount_minor,
+      driver_offer_amount_minor,
       quote_currency,
       assigned_driver_user_id,
       notes,

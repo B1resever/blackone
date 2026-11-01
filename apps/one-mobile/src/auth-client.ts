@@ -131,6 +131,7 @@ export type DriverTrip = {
   status: string;
   payment_status: string;
   quote_amount_minor?: number | null;
+  driver_offer_amount_minor?: number | string | null;
   quote_currency?: string | null;
   ride_code_verified?: boolean;
 };
@@ -334,4 +335,22 @@ export async function verifyRideCode(requestCode: string, rideCode: string) {
   const data = await response.json() as { verified?: boolean; error?: string };
   if (!response.ok || !data.verified) throw new Error(data.error ?? 'ride_code_failed');
   return true;
+}
+
+export type DriverDispatchOffer = {
+  market_id: string;
+  vehicle_class_id: string;
+  passenger_count: number;
+  pickup_date_text: string;
+  pickup_time_text: string;
+  summary: string;
+  amount_minor: number | string;
+  currency: string;
+  expires_at: string;
+};
+export async function driverDispatchOffer(token: string, action: 'preview' | 'accept', sessionToken?: string) {
+  const response = await api('driver-dispatch-offer', {method:'POST',body:JSON.stringify({token,action})},sessionToken);
+  const data = await response.json() as {status?:'offered'|'assigned';offer?:DriverDispatchOffer;requestCode?:string;error?:string};
+  if (!response.ok || !data.status) throw new Error(data.error ?? 'offer_request_failed');
+  return data;
 }

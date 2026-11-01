@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive"><meta name="referrer" content="no-referrer">
+<title>B1 ONE · Oferta para conductor</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f9fd;color:#122536;font:16px system-ui,sans-serif}main{max-width:540px;margin:8vh auto;padding:26px}.brand{font-size:30px;font-weight:900;letter-spacing:-1px}.brand span{color:#005bea}.card{background:#fff;border:1px solid #dce3e8;border-radius:24px;padding:26px;margin-top:25px}h1{font-size:30px;line-height:1.15}p{line-height:1.6;color:#526473}a.button{display:block;background:#005bea;color:#fff;padding:17px;border-radius:13px;text-align:center;text-decoration:none;font-weight:800;margin:22px 0}a[aria-disabled=true]{pointer-events:none;opacity:.4}.note{font-size:13px}.accent{color:#005bea}
+</style></head>
+<body><main><div class="brand">B1 <span>ONE</span></div><div class="card">
+<p class="accent">CONDUCTORES · DRIVERS</p><h1>Tu próxima reserva empieza en B1.</h1>
+<p>Abrí la oferta en la aplicación y confirmá con tu cuenta de conductor aprobado. El primero habilitado que acepte obtiene el viaje.</p>
+<a class="button" id="open" aria-disabled="true">ABRIR EN B1 / OPEN B1</a>
+<p id="status" role="status">Comprobando enlace…</p>
+<p class="note">Necesitás una versión de B1 que incluya ofertas de WhatsApp. Si todavía no la tenés instalada, coordiná la instalación con B1 y volvé a abrir este mismo enlace desde WhatsApp.</p>
+<p class="note">Opening the link does not reserve the trip. Sign in with your approved driver account and confirm in B1. Passenger details appear after assignment.</p>
+</div></main>
+<script>
+const token=new URLSearchParams(location.hash.slice(1)).get('token');
+if(token&&/^[A-Za-z0-9_-]{43}$/.test(token)){
+ const link=document.getElementById('open');link.href='one://driver-offer?token='+encodeURIComponent(token);link.setAttribute('aria-disabled','false');
+ document.getElementById('status').textContent='La disponibilidad se comprueba dentro de B1. / Availability is checked inside B1.';
+}else document.getElementById('status').textContent='Enlace incompleto o inválido. Abrí el mensaje original de WhatsApp. / Open the original WhatsApp invitation.';
+</script></body></html>

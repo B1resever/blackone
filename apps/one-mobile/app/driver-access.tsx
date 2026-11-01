@@ -432,6 +432,7 @@ export default function DriverAccessScreen() {
                 {trip.dropoff_text ? <Text style={styles.route}>→ {trip.dropoff_text}</Text> : null}
                 <Text style={styles.meta}>{trip.pickup_date_text} · {trip.pickup_time_text}</Text>
                 <Text style={styles.meta}>{trip.vehicle_class_id.toUpperCase()} · {trip.passenger_count} passenger(s)</Text>
+                {trip.driver_offer_amount_minor && trip.quote_currency ? <Text style={styles.meta}>Driver offer / Oferta: {new Intl.NumberFormat(undefined,{style:'currency',currency:trip.quote_currency}).format(Number(trip.driver_offer_amount_minor)/100)} · Platform plan charges separate / Cargos del plan aparte</Text> : null}
                 {trip.guest_full_name ? <Text style={styles.passenger}>{trip.guest_full_name}</Text> : null}
                 {trip.guest_phone ? <Text style={styles.meta}>{trip.guest_phone}</Text> : null}
 

@@ -16,6 +16,14 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/admin-dispatch-offer",
+      "destination": "/api/one/admin-ops?endpoint=admin-dispatch-offer"
+    },
+    {
+      "source": "/one/api/driver-dispatch-offer",
+      "destination": "/api/one/driver?endpoint=driver-dispatch-offer"
+    },
+    {
       "source": "/one/api/driver-document-file",
       "destination": "/api/one/driver?endpoint=driver-document-file"
     },
