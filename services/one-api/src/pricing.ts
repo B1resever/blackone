@@ -2,6 +2,7 @@ import { neon } from '@neondatabase/serverless';
 import type { RouteMetrics } from './maps.js';
 import { calculateClientQuote } from './client-pricing.js';
 import { hourlyBaseMinor, hourlyServiceTerms } from './hourly-service.js';
+import { southFloridaPricing } from './south-florida-pricing.js';
 
 type FareInput = {
   marketId: string;
@@ -64,7 +65,8 @@ export async function calculateQuote(input: FareInput): Promise<QuoteResult> {
       distanceMeters: null, durationSeconds: null,
       hourlyEstimateMinor: hourlyBaseMinor(input.hourlyHours), hourlyTerms: hourlyServiceTerms };
   }
-  const clientQuote = calculateClientQuote(process.env.ONE_CLIENT_PRICING_JSON, {
+  const clientQuote = calculateClientQuote(process.env.ONE_CLIENT_PRICING_JSON ??
+    (input.marketId === 'south-florida' ? JSON.stringify(southFloridaPricing) : undefined), {
     ...input, pickupAt: input.pickupAt ?? null,
     distanceMeters: input.route?.distanceMeters, durationSeconds: input.route?.durationSeconds,
     pickupLocation: input.route?.pickupLocation, dropoffLocation: input.route?.dropoffLocation,
