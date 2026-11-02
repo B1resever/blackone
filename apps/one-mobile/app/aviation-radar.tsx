@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { fetchAviationFeed, type AviationFeedResult } from '../src/aviation-feed';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AviationRadarScreen() {
@@ -47,6 +47,14 @@ export default function AviationRadarScreen() {
         </MapView>
         {radar.status === 'unavailable' && <Text style={s.disclaimer}>{radar.message}</Text>}
         {radar.status === 'stale' && <Text style={s.disclaimer}>Last data update: {radar.updatedAt}. Aircraft positions are hidden until current data is available.</Text>}
+        <Text style={s.heading}>Explore live aircraft externally</Text>
+        <Text style={s.disclaimer}>These services open in your browser. They are not connected to B1 and may have different coverage or privacy restrictions.</Text>
+        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void Linking.openURL('https://globe.adsbexchange.com/'); }}>
+          <Text style={s.externalText}>OPEN ADS-B EXCHANGE ↗</Text>
+        </Pressable>
+        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void Linking.openURL('https://www.flightradar24.com/'); }}>
+          <Text style={s.externalText}>OPEN FLIGHTRADAR24 ↗</Text>
+        </Pressable>
         <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
         {featuredAviationAirports.map(a => (
           <View key={a.icao} style={s.airport}>
@@ -81,6 +89,8 @@ const s = StyleSheet.create({
   disclaimer: { color: '#657E91', fontSize: 12, lineHeight: 18, marginTop: 18 },
   button: { backgroundColor: '#078EDC', padding: 16, borderRadius: 13, alignItems: 'center', marginTop: 24 },
   buttonText: { color: '#FFFFFF', fontWeight: '800' },
+  external: { marginTop: 10, padding: 15, borderRadius: 13, backgroundColor: '#FFFFFF', borderColor: '#C7E5F5', borderWidth: 1 },
+  externalText: { color: '#087FBF', fontWeight: '800', fontSize: 13 },
   region: { backgroundColor: '#EAF7FF', borderColor: '#C7E5F5', borderWidth: 1, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 18 },
   regionText: { color: '#125C85', fontWeight: '700', fontSize: 13 },
 });
