@@ -24,10 +24,10 @@ export type AviationFeedResult =
 function isFlight(value: unknown): value is AviationFlight {
   if (!value || typeof value !== 'object') return false;
   const f = value as Partial<AviationFlight>;
-  return typeof f.id === 'string' &&
+  return typeof f.id === 'string' && f.id.length > 0 &&
     typeof f.latitude === 'number' && Number.isFinite(f.latitude) && Math.abs(f.latitude) <= 90 &&
     typeof f.longitude === 'number' && Number.isFinite(f.longitude) && Math.abs(f.longitude) <= 180 &&
-    typeof f.observedAt === 'string';
+    typeof f.observedAt === 'string' && Number.isFinite(Date.parse(f.observedAt));
 }
 
 /** B1 server endpoint only; do not configure a third-party vendor endpoint here. */
@@ -49,7 +49,11 @@ export async function fetchAviationFeed(endpoint: string | undefined, signal?: A
     if (typeof feed.source !== 'string' || typeof feed.updatedAt !== 'string' || !Array.isArray(feed.flights) || !feed.flights.every(isFlight)) throw new Error('Invalid feed');
     const updated = Date.parse(feed.updatedAt);
     if (!Number.isFinite(updated) || updated > Date.now() + 60000 || Date.now() - updated > 5 * 60000) return { status: 'stale', updatedAt: feed.updatedAt };
-    return { status: 'ready', feed: { source: feed.source, updatedAt: feed.updatedAt, flights: feed.flights } };
+    const recentFlights = feed.flights.filter(flight => {
+      const observed = Date.parse(flight.observedAt);
+      return observed <= Date.now() + 60000 && Date.now() - observed <= 5 * 60000;
+    });
+    return { status: 'ready', feed: { source: feed.source, updatedAt: feed.updatedAt, flights: recentFlights } };
   } catch {
     return { status: 'unavailable', message: 'Could not load verified aviation positions.' };
   }
