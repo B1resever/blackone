@@ -1,13 +1,7 @@
+import { featuredAviationAirports } from '../src/aviation-airports';
 import { router } from 'expo-router';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const airports = [
-  { code: 'KOPF', name: 'Miami-Opa Locka Executive', city: 'Miami' },
-  { code: 'KTMB', name: 'Miami Executive', city: 'Miami' },
-  { code: 'KFXE', name: 'Fort Lauderdale Executive', city: 'Fort Lauderdale' },
-  { code: 'KPBI', name: 'Palm Beach International', city: 'West Palm Beach' },
-];
 
 export default function AviationRadarScreen() {
   return (
@@ -20,13 +14,13 @@ export default function AviationRadarScreen() {
           <Text style={s.statusTitle}>LIVE TRACKING NOT CONNECTED</Text>
           <Text style={s.body}>A licensed aviation data provider is required before real aircraft positions, routes or arrival times can be displayed. No simulated flights are shown.</Text>
         </View>
-        <Text style={s.heading}>South Florida aviation hubs</Text>
-        {airports.map(a => (
-          <View key={a.code} style={s.airport}>
-            <Text style={s.code}>{a.code}</Text>
+        <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
+        {featuredAviationAirports.map(a => (
+          <View key={a.icao} style={s.airport}>
+            <Text style={s.code}>{a.iata}</Text>
             <View style={{ flex: 1 }}>
               <Text style={s.airportName}>{a.name}</Text>
-              <Text style={s.city}>{a.city}</Text>
+              <Text style={s.city}>{a.region}</Text>
             </View>
           </View>
         ))}
