@@ -1,9 +1,18 @@
 import { featuredAviationAirports } from '../src/aviation-airports';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import MapView, { Marker } from 'react-native-maps';
+import { fetchAviationFeed, type AviationFeedResult } from '../src/aviation-feed';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AviationRadarScreen() {
+  const [radar, setRadar] = useState<AviationFeedResult>({ status: 'unconfigured' });
+  useEffect(() => {
+    const controller = new AbortController();
+    fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal).then(setRadar);
+    return () => controller.abort();
+  }, []);
   return (
     <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={s.page}>
@@ -14,6 +23,18 @@ export default function AviationRadarScreen() {
           <Text style={s.statusTitle}>LIVE TRACKING NOT CONNECTED</Text>
           <Text style={s.body}>A licensed aviation data provider is required before real aircraft positions, routes or arrival times can be displayed. No simulated flights are shown.</Text>
         </View>
+        {radar.status === 'ready' && (
+          <>
+            <Text style={s.heading}>Verified aircraft positions</Text>
+            <Text style={s.disclaimer}>Source: {radar.feed.source} · Updated: {radar.feed.updatedAt}</Text>
+            <MapView style={{ height: 310, borderRadius: 18, marginTop: 12 }} initialRegion={{ latitude: 25.8, longitude: -80.2, latitudeDelta: 8, longitudeDelta: 8 }}>
+              {radar.feed.flights.map(flight => (
+                <Marker key={flight.id} coordinate={{ latitude: flight.latitude, longitude: flight.longitude }} title={flight.registration || flight.aircraftType || 'Aircraft'} description={[flight.originIcao, flight.destinationIcao].filter(Boolean).join(' → ')} />
+              ))}
+            </MapView>
+          </>
+        )}
+        {radar.status === 'unavailable' && <Text style={s.disclaimer}>{radar.message}</Text>}
         <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
         {featuredAviationAirports.map(a => (
           <View key={a.icao} style={s.airport}>
