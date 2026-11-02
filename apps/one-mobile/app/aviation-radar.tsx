@@ -18,10 +18,19 @@ async function openExternalRadar(url: string) {
 export default function AviationRadarScreen() {
   const [radar, setRadar] = useState<AviationFeedResult>({ status: 'unconfigured' });
   const mapRef = useRef<MapView>(null);
+  const refreshInFlight = useRef(false);
   useEffect(() => {
     const controller = new AbortController();
-    const load = () => fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal)
-      .then(result => { if (!controller.signal.aborted) setRadar(result); });
+    const load = async () => {
+      if (refreshInFlight.current || controller.signal.aborted) return;
+      refreshInFlight.current = true;
+      try {
+        const result = await fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal);
+        if (!controller.signal.aborted) setRadar(result);
+      } finally {
+        refreshInFlight.current = false;
+      }
+    };
     void load();
     const refresh = setInterval(() => { void load(); }, 60000);
     return () => { clearInterval(refresh); controller.abort(); };
@@ -30,8 +39,8 @@ export default function AviationRadarScreen() {
     <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
       <ScrollView contentContainerStyle={s.page}>
         <Text style={s.eyebrow}>B1 PRIVATE AVIATION</Text>
-        <Text style={s.title}>Live Jet Radar</Text>
-        <Text style={s.body}>Track private aviation movements and discover executive airports.</Text>
+        <Text style={s.title}>Aviation Radar</Text>
+        <Text style={s.body}>Explore executive airports and access live aircraft tracking. B1 flight positions appear only when a verified provider is connected.</Text>
         {radar.status !== 'ready' && <View style={s.status}>
           <Text style={s.statusTitle}>{radar.status === 'unconfigured' ? 'LIVE TRACKING NOT CONNECTED' : radar.status === 'stale' ? 'AIRCRAFT DATA OUTDATED' : 'LIVE TRACKING UNAVAILABLE'}</Text>
           <Text style={s.body}>A licensed aviation data provider is required to display verified aircraft positions. No simulated flights are shown.</Text>
