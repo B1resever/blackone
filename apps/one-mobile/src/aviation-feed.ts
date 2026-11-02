@@ -42,7 +42,16 @@ export async function fetchAviationFeed(endpoint: string | undefined, signal?: A
   }
   try {
     const response = await fetch(url.toString(), { signal, headers: { Accept: 'application/json' } });
-    if (!response.ok) return { status: 'unavailable', message: 'Aviation data is temporarily unavailable.' };
+    if (!response.ok) {
+      if (response.status === 503) {
+        const errorBody: unknown = await response.json().catch(() => null);
+        if (errorBody && typeof errorBody === 'object' && 'status' in errorBody) {
+          if (errorBody.status === 'unconfigured') return { status: 'unconfigured' };
+          if (errorBody.status === 'stale') return { status: 'stale', updatedAt: 'Provider update expired' };
+        }
+      }
+      return { status: 'unavailable', message: 'Aviation data is temporarily unavailable.' };
+    }
     const data: unknown = await response.json();
     if (!data || typeof data !== 'object') throw new Error('Invalid feed');
     const feed = data as Partial<AviationFeed>;
