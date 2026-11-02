@@ -23,7 +23,7 @@ export default function AviationRadarScreen() {
         <Text style={s.title}>Live Jet Radar</Text>
         <Text style={s.body}>Track private aviation movements and discover executive airports.</Text>
         {radar.status !== 'ready' && <View style={s.status}>
-          <Text style={s.statusTitle}>{radar.status === 'unconfigured' ? 'LIVE TRACKING NOT CONNECTED' : 'LIVE TRACKING UNAVAILABLE'}</Text>
+          <Text style={s.statusTitle}>{radar.status === 'unconfigured' ? 'LIVE TRACKING NOT CONNECTED' : radar.status === 'stale' ? 'AIRCRAFT DATA OUTDATED' : 'LIVE TRACKING UNAVAILABLE'}</Text>
           <Text style={s.body}>A licensed aviation data provider is required to display verified aircraft positions. No simulated flights are shown.</Text>
         </View>}
         <Text style={s.heading}>Aviation map</Text>
@@ -37,6 +37,7 @@ export default function AviationRadarScreen() {
           ))}
         </MapView>
         {radar.status === 'unavailable' && <Text style={s.disclaimer}>{radar.message}</Text>}
+        {radar.status === 'stale' && <Text style={s.disclaimer}>Last data update: {radar.updatedAt}. Aircraft positions are hidden until current data is available.</Text>}
         <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
         {featuredAviationAirports.map(a => (
           <View key={a.icao} style={s.airport}>
