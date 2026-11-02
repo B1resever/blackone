@@ -19,10 +19,10 @@ export default function AviationRadarScreen() {
         <Text style={s.eyebrow}>B1 PRIVATE AVIATION</Text>
         <Text style={s.title}>Live Jet Radar</Text>
         <Text style={s.body}>Track private aviation movements and discover executive airports.</Text>
-        <View style={s.status}>
-          <Text style={s.statusTitle}>LIVE TRACKING NOT CONNECTED</Text>
-          <Text style={s.body}>A licensed aviation data provider is required before real aircraft positions, routes or arrival times can be displayed. No simulated flights are shown.</Text>
-        </View>
+        {radar.status !== 'ready' && <View style={s.status}>
+          <Text style={s.statusTitle}>{radar.status === 'unconfigured' ? 'LIVE TRACKING NOT CONNECTED' : 'LIVE TRACKING UNAVAILABLE'}</Text>
+          <Text style={s.body}>A licensed aviation data provider is required to display verified aircraft positions. No simulated flights are shown.</Text>
+        </View>}
         {radar.status === 'ready' && (
           <>
             <Text style={s.heading}>Verified aircraft positions</Text>
