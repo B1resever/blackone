@@ -16,6 +16,10 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/aviation",
+      "destination": "/api/one/aviation"
+    },
+    {
       "source": "/one/api/customer-terms",
       "destination": "/api/one/auth?endpoint=customer-terms"
     },
