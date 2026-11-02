@@ -1,6 +1,7 @@
 import { featuredAviationAirports } from '../src/aviation-airports';
+import { aviationRegions } from '../src/aviation-regions';
 import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { fetchAviationFeed, type AviationFeedResult } from '../src/aviation-feed';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -8,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AviationRadarScreen() {
   const [radar, setRadar] = useState<AviationFeedResult>({ status: 'unconfigured' });
+  const mapRef = useRef<MapView>(null);
   useEffect(() => {
     const controller = new AbortController();
     const load = () => fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal)
@@ -28,7 +30,14 @@ export default function AviationRadarScreen() {
         </View>}
         <Text style={s.heading}>Aviation map</Text>
         <Text style={s.disclaimer}>{radar.status === 'ready' ? `Source: ${radar.feed.source} · Updated: ${radar.feed.updatedAt}` : 'Featured airports only. Live aircraft data is not connected.'}</Text>
-        <MapView style={{ height: 310, borderRadius: 18, marginTop: 12 }} initialRegion={{ latitude: 24.8, longitude: -78, latitudeDelta: 15, longitudeDelta: 24 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 14 }} contentContainerStyle={{ gap: 8 }}>
+          {aviationRegions.map(region => (
+            <Pressable key={region.id} accessibilityRole="button" style={s.region} onPress={() => mapRef.current?.animateToRegion({ latitude: region.latitude, longitude: region.longitude, latitudeDelta: region.latitudeDelta, longitudeDelta: region.longitudeDelta }, 500)}>
+              <Text style={s.regionText}>{region.title}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+        <MapView ref={mapRef} style={{ height: 310, borderRadius: 18, marginTop: 12 }} initialRegion={{ latitude: 24.8, longitude: -78, latitudeDelta: 15, longitudeDelta: 24 }}>
           {featuredAviationAirports.map(airport => (
             <Marker key={airport.icao} coordinate={{ latitude: airport.latitude, longitude: airport.longitude }} title={airport.name} description={airport.iata} pinColor="#087FBF" />
           ))}
@@ -72,4 +81,6 @@ const s = StyleSheet.create({
   disclaimer: { color: '#657E91', fontSize: 12, lineHeight: 18, marginTop: 18 },
   button: { backgroundColor: '#078EDC', padding: 16, borderRadius: 13, alignItems: 'center', marginTop: 24 },
   buttonText: { color: '#FFFFFF', fontWeight: '800' },
+  region: { backgroundColor: '#EAF7FF', borderColor: '#C7E5F5', borderWidth: 1, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 18 },
+  regionText: { color: '#125C85', fontWeight: '700', fontSize: 13 },
 });
