@@ -20,7 +20,15 @@
 ## Build attempts (links authoritative)
 - https://github.com/B1resever/blackone/actions/runs/41361681972 — failed at Expo authentication (EXPO_TOKEN absent).
 - https://github.com/B1resever/blackone/actions/runs/41364580782 — Expo authentication passed, but Android credentials READ denied for scoped Runner token.
-- https://github.com/B1resever/blackone/actions/runs/41366129084 — started after user updated GitHub Actions secret EXPO_TOKEN with a scoped Developer access token. At last verified check: repository release gate PASS, npm ci PASS, expo-doctor PASS, TypeScript PASS, production API smoke PASS, EAS authentication PASS, Android build IN PROGRESS. Recheck this run and its artifacts before making any claim that APK exists.
+- https://github.com/B1resever/blackone/actions/runs/41366129084 — started after user updated GitHub Actions secret EXPO_TOKEN with a scoped Developer access token. Completed SUCCESS: repository release gate, npm ci, expo-doctor, TypeScript, production API smoke, EAS authentication, Android build all PASS. GitHub artifact one-build-android-preview confirmed.
+
+## Confirmed Android APK (2026-11-01)
+- EAS build ID: 1d3f4c52-69c4-42b7-9a71-aaf5ad4e6a4b
+- Expo build status: Succeeded (preview/internal distribution, app 1.0.0 build 2, SDK 57)
+- EAS build page: https://expo.dev/accounts/b1reserve/projects/blackonegroup/builds/1d3f4c52-69c4-42b7-9a71-aaf5ad4e6a4b
+- Direct APK: https://expo.dev/artifacts/eas/J0AFs_DIL5CwN9QSNmsZEbwpgdf-58-FumWs2hEXlIo.apk
+- APK installation on physical Android device and functional validation are NOT YET VERIFIED.
+- This preview APK is not a Google Play production AAB. No store submission or publication confirmed.
 
 ## Credentials and security
 - Repository secret name: EXPO_TOKEN. User confirmed updating it; never store token value in code, issues, chat, or this document.
@@ -30,10 +38,10 @@
 - Keep payments and bookings untouched during build diagnostics.
 
 ## Immediate next action
-1. Inspect GitHub Actions run 41366129084, especially Android build result and artifacts.
-2. If successful, capture EAS build ID and APK artifact URL, then install/test on a physical Android phone.
-3. If failed, inspect job logs, correct the specific error without changing unrelated production configuration, and rerun android preview only after the fix.
-4. Once Android is tested, initiate iOS internal testing; only submit tested store builds with verified store credentials.
+1. Install the confirmed preview APK on an Android device and test passenger/driver login, booking, quotes, maps, driver flow, permissions, notifications and operations against safe test accounts; do not create real charges.
+2. Record actual test results and fix any failures before release.
+3. Generate and test iOS TestFlight build using verified Apple signing credentials.
+4. Generate tested production Android AAB and iOS store builds; submit only after store credentials, legal/compliance requirements and functionality checks are complete.
 5. Do not claim App Store or Google Play publication until actual listings are approved/live.
 
 ## Customer requirement
