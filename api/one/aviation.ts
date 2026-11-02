@@ -5,8 +5,8 @@ const cache = new Map<string, { expires: number; payload: { source: string; upda
 const valid = (v: unknown): v is Aircraft => {
   if (!v || typeof v !== 'object') return false;
   const f = v as Partial<Aircraft>;
-  return typeof f.id === 'string' && typeof f.latitude === 'number' && Math.abs(f.latitude) <= 90 &&
-    typeof f.longitude === 'number' && Math.abs(f.longitude) <= 180 && typeof f.observedAt === 'string';
+  return typeof f.id === 'string' && f.id.length > 0 && typeof f.latitude === 'number' && Number.isFinite(f.latitude) && Math.abs(f.latitude) <= 90 &&
+    typeof f.longitude === 'number' && Number.isFinite(f.longitude) && Math.abs(f.longitude) <= 180 && typeof f.observedAt === 'string' && Number.isFinite(Date.parse(f.observedAt));
 };
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'no-store');
@@ -30,7 +30,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!raw || typeof raw !== 'object') throw new Error('Invalid upstream response');
     const data = raw as { source?: unknown; updatedAt?: unknown; flights?: unknown };
     if (typeof data.source !== 'string' || typeof data.updatedAt !== 'string' || !Array.isArray(data.flights) || !data.flights.every(valid)) throw new Error('Invalid aviation schema');
-    const payload = { source: data.source, updatedAt: data.updatedAt, flights: data.flights.slice(0, 500) };
+    const timestamp = Date.parse(data.updatedAt);
+    if (!Number.isFinite(timestamp) || timestamp > Date.now() + 60000 || Date.now() - timestamp > 300000) return res.status(503).json({ status: 'stale', message: 'Aviation provider data is outdated' });
+    const payload = { source: data.source, updatedAt: data.updatedAt, flights: data.flights.filter((flight: Aircraft) => {
+      const observed = Date.parse(flight.observedAt);
+      return observed <= Date.now() + 60000 && Date.now() - observed <= 300000;
+    }).slice(0, 500) };
     cache.set('feed', { expires: Date.now() + 55000, payload });
     return res.status(200).json(payload);
   } catch {
