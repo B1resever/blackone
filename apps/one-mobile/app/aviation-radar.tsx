@@ -10,8 +10,11 @@ export default function AviationRadarScreen() {
   const [radar, setRadar] = useState<AviationFeedResult>({ status: 'unconfigured' });
   useEffect(() => {
     const controller = new AbortController();
-    fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal).then(setRadar);
-    return () => controller.abort();
+    const load = () => fetchAviationFeed(process.env.EXPO_PUBLIC_B1_AVIATION_FEED_URL, controller.signal)
+      .then(result => { if (!controller.signal.aborted) setRadar(result); });
+    void load();
+    const refresh = setInterval(() => { void load(); }, 60000);
+    return () => { clearInterval(refresh); controller.abort(); };
   }, []);
   return (
     <SafeAreaView style={s.safe} edges={['top', 'bottom']}>
@@ -23,17 +26,16 @@ export default function AviationRadarScreen() {
           <Text style={s.statusTitle}>{radar.status === 'unconfigured' ? 'LIVE TRACKING NOT CONNECTED' : 'LIVE TRACKING UNAVAILABLE'}</Text>
           <Text style={s.body}>A licensed aviation data provider is required to display verified aircraft positions. No simulated flights are shown.</Text>
         </View>}
-        {radar.status === 'ready' && (
-          <>
-            <Text style={s.heading}>Verified aircraft positions</Text>
-            <Text style={s.disclaimer}>Source: {radar.feed.source} · Updated: {radar.feed.updatedAt}</Text>
-            <MapView style={{ height: 310, borderRadius: 18, marginTop: 12 }} initialRegion={{ latitude: 25.8, longitude: -80.2, latitudeDelta: 8, longitudeDelta: 8 }}>
-              {radar.feed.flights.map(flight => (
-                <Marker key={flight.id} coordinate={{ latitude: flight.latitude, longitude: flight.longitude }} title={flight.registration || flight.aircraftType || 'Aircraft'} description={[flight.originIcao, flight.destinationIcao].filter(Boolean).join(' → ')} />
-              ))}
-            </MapView>
-          </>
-        )}
+        <Text style={s.heading}>Aviation map</Text>
+        <Text style={s.disclaimer}>{radar.status === 'ready' ? `Source: ${radar.feed.source} · Updated: ${radar.feed.updatedAt}` : 'Featured airports only. Live aircraft data is not connected.'}</Text>
+        <MapView style={{ height: 310, borderRadius: 18, marginTop: 12 }} initialRegion={{ latitude: 24.8, longitude: -78, latitudeDelta: 15, longitudeDelta: 24 }}>
+          {featuredAviationAirports.map(airport => (
+            <Marker key={airport.icao} coordinate={{ latitude: airport.latitude, longitude: airport.longitude }} title={airport.name} description={airport.iata} pinColor="#087FBF" />
+          ))}
+          {radar.status === 'ready' && radar.feed.flights.map(flight => (
+            <Marker key={flight.id} coordinate={{ latitude: flight.latitude, longitude: flight.longitude }} title={flight.registration || flight.aircraftType || 'Aircraft'} description={[flight.originIcao, flight.destinationIcao].filter(Boolean).join(' → ')} pinColor="#D18A13" />
+          ))}
+        </MapView>
         {radar.status === 'unavailable' && <Text style={s.disclaimer}>{radar.message}</Text>}
         <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
         {featuredAviationAirports.map(a => (
