@@ -4,8 +4,16 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 import { fetchAviationFeed, type AviationFeedResult } from '../src/aviation-feed';
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Linking, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
+async function openExternalRadar(url: string) {
+  try {
+    await Linking.openURL(url);
+  } catch {
+    Alert.alert('Unable to open radar', 'Please check your connection and try again.');
+  }
+}
 
 export default function AviationRadarScreen() {
   const [radar, setRadar] = useState<AviationFeedResult>({ status: 'unconfigured' });
@@ -49,10 +57,10 @@ export default function AviationRadarScreen() {
         {radar.status === 'stale' && <Text style={s.disclaimer}>Last data update: {radar.updatedAt}. Aircraft positions are hidden until current data is available.</Text>}
         <Text style={s.heading}>Explore live aircraft externally</Text>
         <Text style={s.disclaimer}>These services open in your browser. They are not connected to B1 and may have different coverage or privacy restrictions.</Text>
-        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void Linking.openURL('https://globe.adsbexchange.com/'); }}>
+        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void openExternalRadar('https://globe.adsbexchange.com/'); }}>
           <Text style={s.externalText}>OPEN ADS-B EXCHANGE ↗</Text>
         </Pressable>
-        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void Linking.openURL('https://www.flightradar24.com/'); }}>
+        <Pressable accessibilityRole="link" style={s.external} onPress={() => { void openExternalRadar('https://www.flightradar24.com/'); }}>
           <Text style={s.externalText}>OPEN FLIGHTRADAR24 ↗</Text>
         </Pressable>
         <Text style={s.heading}>Featured Florida, Caribbean & Mexico airports</Text>
