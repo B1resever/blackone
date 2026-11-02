@@ -47,7 +47,7 @@ export async function fetchAviationFeed(endpoint: string | undefined, signal?: A
         const errorBody: unknown = await response.json().catch(() => null);
         if (errorBody && typeof errorBody === 'object' && 'status' in errorBody) {
           if (errorBody.status === 'unconfigured') return { status: 'unconfigured' };
-          if (errorBody.status === 'stale') return { status: 'stale', updatedAt: 'Provider update expired' };
+          if (errorBody.status === 'stale') return { status: 'stale', updatedAt: typeof errorBody.updatedAt === 'string' ? errorBody.updatedAt : 'Unknown' };
         }
       }
       return { status: 'unavailable', message: 'Aviation data is temporarily unavailable.' };
@@ -64,6 +64,7 @@ export async function fetchAviationFeed(endpoint: string | undefined, signal?: A
     });
     return { status: 'ready', feed: { source: feed.source, updatedAt: feed.updatedAt, flights: recentFlights } };
   } catch {
+    if (signal?.aborted) return { status: 'unavailable', message: 'Request cancelled.' };
     return { status: 'unavailable', message: 'Could not load verified aviation positions.' };
   }
 }
