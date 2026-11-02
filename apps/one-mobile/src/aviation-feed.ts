@@ -17,6 +17,7 @@ export type AviationFeed = {
 };
 export type AviationFeedResult =
   | { status: 'ready'; feed: AviationFeed }
+  | { status: 'stale'; updatedAt: string }
   | { status: 'unconfigured' }
   | { status: 'unavailable'; message: string };
 
@@ -46,6 +47,8 @@ export async function fetchAviationFeed(endpoint: string | undefined, signal?: A
     if (!data || typeof data !== 'object') throw new Error('Invalid feed');
     const feed = data as Partial<AviationFeed>;
     if (typeof feed.source !== 'string' || typeof feed.updatedAt !== 'string' || !Array.isArray(feed.flights) || !feed.flights.every(isFlight)) throw new Error('Invalid feed');
+    const updated = Date.parse(feed.updatedAt);
+    if (!Number.isFinite(updated) || updated > Date.now() + 60000 || Date.now() - updated > 5 * 60000) return { status: 'stale', updatedAt: feed.updatedAt };
     return { status: 'ready', feed: { source: feed.source, updatedAt: feed.updatedAt, flights: feed.flights } };
   } catch {
     return { status: 'unavailable', message: 'Could not load verified aviation positions.' };
