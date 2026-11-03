@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "defaultLanguage": "es",
+  "languages": [
+    "es",
+    "en"
+  ],
+  "providerStatus": "unverified",
+  "channels": {
+    "personal": {
+      "last4": "1737",
+      "automationAllowed": false
+    },
+    "business": {
+      "last4": "9424",
+      "provider": "telnyx",
+      "status": "pending-verification"
+    }
+  },
+  "projects": [
+    {
+      "id": "granelli-property",
+      "enabled": false,
+      "priority": 1
+    },
+    {
+      "id": "nodo-applications",
+      "enabled": false,
+      "priority": 2
+    },
+    {
+      "id": "black-one",
+      "enabled": false,
+      "priority": 3
+    },
+    {
+      "id": "nodo-facility",
+      "enabled": false,
+      "priority": 4,
+      "scope": "internal-technical-only"
+    },
+    {
+      "id": "open-research",
+      "enabled": false,
+      "priority": 5,
+      "requiresPrivacyReview": true
+    },
+    {
+      "id": "nodo-property-manager",
+      "enabled": false
+    },
+    {
+      "id": "nodo-adultos-mayores",
+      "enabled": false
+    },
+    {
+      "id": "family-game",
+      "enabled": false,
+      "minorAutomationsAllowed": false
+    }
+  ]
+}
