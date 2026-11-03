@@ -1,0 +1,14 @@
+# Production acceptance checklist
+- [ ] Verify business-number ownership and SMS/voice delivery
+- [ ] Audit and isolate legacy AAA configurations and data
+- [ ] Confirm Meta business verification, templates and messaging windows
+- [ ] Confirm WhatsApp Business App/API coexistence for this number and provider
+- [ ] Compare Telnyx vs Kapso pricing and provider requirements
+- [ ] Authenticate administrators and enforce project-scoped RBAC
+- [ ] Validate signed webhooks and event deduplication
+- [ ] Enforce consent, opt-out, retention and audit
+- [ ] Test bilingual classification and human handoff
+- [ ] Test failure/retry and prevent cross-project leakage
+- [ ] Verify CRM writebacks for each authorized project
+- [ ] Test iPhone experience
+- [ ] Obtain explicit production approval
