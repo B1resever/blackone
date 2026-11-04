@@ -1,0 +1,22 @@
+name: EL OJO Communications CI
+on:
+  push:
+    branches: [feature/el-ojo-communications-foundation]
+    paths:
+      - 'services/el-ojo-communications/**'
+      - '.github/workflows/el-ojo-communications-ci.yml'
+  workflow_dispatch:
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/el-ojo-communications
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm install --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
