@@ -1,0 +1,13 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {canTransition,checkEligibility,type ProfessionalEligibility,type DispatchRequest} from "../src/b1-lab/dispatch-rules.ts";
+const now=new Date("2026-11-16T12:00:00Z");
+const req:DispatchRequest={specialty:"phlebotomy",coverageZone:"miami-dade",status:"searching"};
+const professional:ProfessionalEligibility={credentialStatus:"verified",available:true,specialties:["phlebotomy"],coverageZones:["miami-dade"],authorizationExpiresAt:"2027-01-01T00:00:00Z",maxConcurrentAssignments:1,activeAssignments:0};
+test("eligible verified professional",()=>assert.deepEqual(checkEligibility(req,professional,now),{eligible:true,reason:"eligible"}));
+test("rejects expired credential",()=>assert.equal(checkEligibility(req,{...professional,credentialStatus:"expired"},now).eligible,false));
+test("rejects missing or expired authorization",()=>{assert.equal(checkEligibility(req,{...professional,authorizationExpiresAt:null},now).eligible,false);assert.equal(checkEligibility(req,{...professional,authorizationExpiresAt:now.toISOString()},now).eligible,false)});
+test("rejects wrong specialty and coverage",()=>{assert.equal(checkEligibility(req,{...professional,specialties:["massage"]},now).eligible,false);assert.equal(checkEligibility(req,{...professional,coverageZones:["broward"]},now).eligible,false)});
+test("rejects unavailable and at capacity",()=>{assert.equal(checkEligibility(req,{...professional,available:false},now).eligible,false);assert.equal(checkEligibility(req,{...professional,activeAssignments:1},now).eligible,false)});
+test("rejects assignment when request is not searching",()=>assert.equal(checkEligibility({...req,status:"completed"},professional,now).eligible,false));
+test("enforces service lifecycle",()=>{assert.equal(canTransition("requested","searching"),true);assert.equal(canTransition("searching","offered"),true);assert.equal(canTransition("offered","accepted"),true);assert.equal(canTransition("accepted","en_route"),true);assert.equal(canTransition("in_service","completed"),true);assert.equal(canTransition("completed","accepted"),false);assert.equal(canTransition("requested","completed"),false)});
