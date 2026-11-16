@@ -24,6 +24,6 @@ jobs:
       - name: Install dependencies
         working-directory: services/one-api
         run: npm install --ignore-scripts --no-audit --no-fund
-      - name: Run simulated payments and Stripe reconciliation
+      - name: Verify webhook handler with automated tests\n        working-directory: services/one-api\n        run: node --import tsx --test test/b1-lab-stripe-webhook.test.ts\n      - name: Run simulated payments and Stripe reconciliation
         working-directory: services/one-api
         run: node --import tsx scripts/b1-lab-stripe-sandbox.ts
