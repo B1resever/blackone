@@ -12,14 +12,14 @@ import assert from "node:assert/strict";
 const key = process.env.STRIPE_SECRET_KEY;
 if (!key?.startsWith("sk_test_")) throw new Error("SANDBOX_ONLY: STRIPE_SECRET_KEY must begin with sk_test_");
 const stripe = new Stripe(key);
-const customerIds = ["cus_Vdkivg45zBCyHc", "cus_VdkiIUXOUvvE6e"];
+const testCases = ["Laboratory Requester", "Clinic Requester"];
 const webhookSecret = process.env.B1_LAB_TEST_WEBHOOK_SECRET ?? "whsec_b1_lab_local_signature_test_only";
 
 async function run() {
   const results: Array<Record<string, unknown>> = [];
-  for (const [index, customerId] of customerIds.entries()) {
-    const customer = await stripe.customers.retrieve(customerId);
-    assert.equal(customer.deleted, undefined);
+  for (const [index, label] of testCases.entries()) {
+    const customer = await stripe.customers.create({ name: `B1 LAB TEST - ${label}`, description: "Synthetic B1 LAB test only; no patient data", metadata: { project: "B1_LAB", environment: "sandbox", role: "institution_test" } });
+    const customerId = customer.id;
     assert.equal(customer.livemode, false);
     assert.equal(customer.metadata?.project, "B1_LAB");
 
@@ -40,7 +40,7 @@ async function run() {
       off_session: true,
       description: "B1 LAB synthetic service payment - TEST ONLY",
       metadata: { project: "B1_LAB", environment: "sandbox", test_case: String(index + 1) },
-    }, { idempotencyKey: `b1lab-sandbox-v1-${customerId}-${index}` });
+    }, { idempotencyKey: `b1lab-sandbox-v2-${process.env.GITHUB_RUN_ID ?? "local"}-${customerId}-${index}` });
 
     assert.equal(payment.livemode, false);
     assert.equal(payment.status, "succeeded");
