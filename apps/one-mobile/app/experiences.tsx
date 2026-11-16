@@ -58,6 +58,7 @@ export default function ExperiencesScreen() {
             <>
               <Text style={s.panelTitle}>{selected === 'jets' ? 'Private aviation' : 'Medium and large cabin yachts'}</Text>
               <Text style={s.description}>{selected === 'jets' ? 'Aircraft selection will depend on your route, passengers and luggage.' : 'Our planned selection includes medium and large yachts with guest sleeping cabins. Vessels without guest cabins are excluded.'} Operator agreements, availability and booking are pending.</Text>
+              {selected === 'jets' && <Pressable style={s.secondary} accessibilityRole="button" onPress={() => router.push('/aviation-radar')}><Text style={s.secondaryText}>EXPLORE B1 AVIATION RADAR →</Text></Pressable>}
               <Text style={s.label}>{selected === 'jets' ? 'Departure airport or city' : 'Departure marina or city'} *</Text>
               <TextInput style={s.input} value={from} onChangeText={setFrom} placeholder="Enter location" placeholderTextColor="#8295A4" />
               {selected === 'jets' && <><Text style={s.label}>Destination *</Text><TextInput style={s.input} value={to} onChangeText={setTo} placeholder="Enter destination" placeholderTextColor="#8295A4" /></>}
