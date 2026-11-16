@@ -1,0 +1,11 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {validateJobTransition} from "../src/b1-lab/marketplace-state.ts";
+test("professional accepts offer",()=>assert.deepEqual(validateJobTransition({from:"offered",to:"accepted",actor:"professional",hasAcceptedProfessional:false}),{ok:true}));
+test("organization cannot self-accept",()=>assert.equal(validateJobTransition({from:"offered",to:"accepted",actor:"organization",hasAcceptedProfessional:false}).ok,false));
+test("no direct completion from created",()=>assert.equal(validateJobTransition({from:"created",to:"completed",actor:"admin",hasAcceptedProfessional:true,completionConfirmed:true}).ok,false));
+test("cannot start without accepted professional",()=>assert.deepEqual(validateJobTransition({from:"accepted",to:"in_progress",actor:"professional",hasAcceptedProfessional:false}),{ok:false,reason:"not_assigned"}));
+test("completion requires confirmation",()=>assert.deepEqual(validateJobTransition({from:"in_progress",to:"completed",actor:"organization",hasAcceptedProfessional:true}),{ok:false,reason:"completion_not_confirmed"}));
+test("confirmed completion",()=>assert.deepEqual(validateJobTransition({from:"in_progress",to:"completed",actor:"organization",hasAcceptedProfessional:true,completionConfirmed:true}),{ok:true}));
+test("completed job cannot reopen",()=>assert.equal(validateJobTransition({from:"completed",to:"offered",actor:"admin",hasAcceptedProfessional:true}).ok,false));
+test("dispute after completion",()=>assert.equal(validateJobTransition({from:"completed",to:"disputed",actor:"organization",hasAcceptedProfessional:true}).ok,true));
