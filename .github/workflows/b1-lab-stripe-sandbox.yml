@@ -1,0 +1,31 @@
+name: B1 LAB Stripe sandbox verification
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stripe-sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      STRIPE_SECRET_KEY: ${{ secrets.B1_LAB_STRIPE_TEST_SECRET_KEY }}
+      B1_LAB_TEST_WEBHOOK_SECRET: ${{ secrets.B1_LAB_TEST_WEBHOOK_SECRET }}
+    steps:
+      - name: Check test secret exists (without displaying it)
+        shell: bash
+        run: |
+          if [ -z "$STRIPE_SECRET_KEY" ]; then
+            echo "::error::Missing B1_LAB_STRIPE_TEST_SECRET_KEY GitHub Actions secret"
+            exit 1
+          fi
+          case "$STRIPE_SECRET_KEY" in sk_test_*) ;; *) echo "::error::Only Stripe test keys are permitted"; exit 1;; esac
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install backend dependencies
+        working-directory: services/one-api
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Run Stripe test-only payment and reconciliation
+        working-directory: services/one-api
+        run: node --import tsx scripts/b1-lab-stripe-sandbox.ts
