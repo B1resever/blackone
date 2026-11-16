@@ -1,0 +1,12 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import {validateWorkOrderDraft} from "../src/b1-lab/work-order.ts";
+const now=new Date("2026-11-16T12:00:00Z");
+const valid={organizationId:"11111111-1111-4111-8111-111111111111",specialty:"phlebotomy",coverageZone:"miami-dade",scheduledAt:"2026-11-17T12:00:00Z",offeredCompensationCents:8000,requesterReference:"LAB-42"};
+test("accepts valid non-PHI work order",()=>assert.equal(validateWorkOrderDraft(valid,now).ok,true));
+test("rejects disabled clinical category",()=>assert.deepEqual(validateWorkOrderDraft({...valid,specialty:"injections"},now),{ok:false,errors:["service_not_enabled"]}));
+test("rejects unsupported zone",()=>assert.equal(validateWorkOrderDraft({...valid,coverageZone:"unknown"},now).ok,false));
+test("rejects invalid dates",()=>{assert.equal(validateWorkOrderDraft({...valid,scheduledAt:"2020-01-01"},now).ok,false);assert.equal(validateWorkOrderDraft({...valid,scheduledAt:"invalid"},now).ok,false)});
+test("rejects invalid compensation",()=>{assert.equal(validateWorkOrderDraft({...valid,offeredCompensationCents:-1},now).ok,false);assert.equal(validateWorkOrderDraft({...valid,offeredCompensationCents:1.5},now).ok,false)});
+test("rejects patient-like free text reference",()=>assert.equal(validateWorkOrderDraft({...valid,requesterReference:"Patient John Doe"},now).ok,false));
+test("does not propagate unexpected input fields",()=>{const result=validateWorkOrderDraft({...valid,patientName:"Do not store"},now);assert.equal(result.ok,true);if(result.ok)assert.equal("patientName" in result.value,false)});
