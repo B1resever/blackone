@@ -23,6 +23,7 @@ const fleet = [
       ['Onboard Wi-Fi', 'Wi-Fi a bordo'],
     ],
     photos: [
+      ['door-illustration', 'Open sliding door · Illustration', 'Puerta corrediza abierta · Ilustración'],
       ['exterior', 'Front exterior', 'Exterior delantero'],
       ['cabin', 'Turquoise VIP cabin', 'Cabina VIP turquesa'],
       ['seat', 'Side view of the cabin', 'Vista lateral de la cabina'],
@@ -35,7 +36,7 @@ const fleet = [
     name: 'Desert Sand',
     capacity: 15,
     edition: ['Cream cabin', 'Cabina color crema'],
-    choicePhoto: ['door'],
+    choicePhoto: ['exterior'],
     description: [
       'Mercedes Sprinter VIP. Black exterior, cream cabin and an onboard kitchen.',
       'Mercedes Sprinter VIP. Exterior negro, cabina color crema y cocina a bordo.',
@@ -46,6 +47,7 @@ const fleet = [
     ],
     photos: [
       ['exterior', 'Front exterior', 'Exterior delantero'],
+      ['door', 'Open sliding door', 'Puerta corrediza abierta'],
       ['entry', 'Cabin entry', 'Acceso a la cabina'],
       ['seat', 'Cream seats', 'Asientos color crema'],
       ['cabin', 'Cabin overview', 'Vista general de la cabina'],
@@ -68,12 +70,12 @@ const copy = {
   title: ['B1 Black One VIP | Private Chauffeur Service', 'B1 Black One VIP | Servicio privado con chofer'],
   fleet: ['Fleet', 'Flota'],
   fleetTitle: ['The VIP fleet', 'La flota VIP'],
-  inquire: ['Reserve', 'Reservar'],
+  inquire: ['Book now', 'Reservar ahora'],
   language: ['Language', 'Idioma'],
   headline: ['Book a private chauffeur', 'Reserva un chofer privado'],
   requestIntro: [
-    'Choose your vehicle, date and time.',
-    'Elige tu vehículo, fecha y hora.',
+    'Choose your vehicle and schedule your ride.',
+    'Elige tu vehículo y programa tu viaje.',
   ],
   details: ['Vehicle details', 'Detalles del vehículo'],
   services: ['Services', 'Servicios'],
@@ -89,7 +91,28 @@ const copy = {
   pickup: ['Pickup location', 'Lugar de recogida'],
   hours: ['Hours', 'Horas'],
   passengers: ['Passengers', 'Pasajeros'],
-  whatsapp: ['Continue on WhatsApp', 'Continuar por WhatsApp'],
+  whatsapp: ['Confirm details on WhatsApp', 'Confirmar datos por WhatsApp'],
+  review: ['Continue to payment', 'Continuar al pago'],
+  reviewTitle: ['Review your reservation', 'Revisa tu reserva'],
+  reviewNote: [
+    'B1 Concierge confirms availability and payment details. Your card is not charged on this page.',
+    'B1 Concierge confirma disponibilidad y datos de pago. Esta página no realiza cargos.',
+  ],
+  transferReview: [
+    'B1 Concierge will confirm the route, final price and payment details before you pay.',
+    'B1 Concierge confirmará la ruta, el precio final y los datos de pago antes de que pagues.',
+  ],
+  close: ['Close', 'Cerrar'],
+  edit: ['Edit', 'Editar'],
+  gallery: ['See photos', 'Ver fotos'],
+  fullName: ['Full name', 'Nombre completo'],
+  email: ['Email', 'Correo electrónico'],
+  phone: ['Phone', 'Teléfono'],
+  guide: ['Guide me', 'Guiame'],
+  conciergeWelcome: ['I can guide you through your reservation.', 'Puedo guiarte durante la reserva.'],
+  conciergeVehicle: ['First, choose a vehicle.', 'Primero, elige un vehículo.'],
+  conciergeField: ['Your next step', 'Tu siguiente paso'],
+  conciergeReady: ['Your details are ready. Continue to review your reservation.', 'Tus datos están listos. Continúa para revisar tu reserva.'],
   serviceType: ['Service', 'Servicio'],
   hourly: ['Hourly', 'Por hora'],
   transfer: ['Transfer', 'Traslado'],
@@ -110,7 +133,6 @@ const copy = {
     'El pago es completo por adelantado y el bloqueo separado equivale al precio del servicio antes de la propina. Se firma un acuerdo de cuidado de la cabina, los asientos y la limpieza durante la reserva.',
   ],
   illustration: ['Illustration', 'Ilustración'],
-  extraHour: ['per additional hour', 'por hora adicional'],
   concierge: ['Contact B1 Concierge', 'Contactar a B1 Concierge'],
   previous: ['Previous photo', 'Foto anterior'],
   next: ['Next photo', 'Siguiente foto'],
@@ -131,6 +153,13 @@ const service = inquiry.elements.namedItem('service');
 const routeMap = document.querySelector('#route-map');
 const quote = document.querySelector('#hourly-price');
 const galleries = [];
+const galleryDialog = document.querySelector('#fleet-dialog');
+const galleryContent = document.querySelector('#gallery-content');
+const reviewDialog = document.querySelector('#review-dialog');
+const conciergeMessage = document.querySelector('#concierge-message');
+let galleryVehicle;
+let galleryRender;
+let guiding = false;
 let localeIndex = 0;
 
 const t = key => copy[key][localeIndex];
@@ -148,7 +177,7 @@ function updateCapacity() {
 
 function refreshPrice() {
   quote.replaceChildren();
-  if (isTransfer() || !hours.value || !hours.validity.valid) return;
+  if (!reviewDialog.open || isTransfer() || !hours.value || !hours.validity.valid) return;
   const vehicle = currentVehicle();
   if (!vehicle) return;
   const rate = rates.vehicles[vehicle.id];
@@ -191,19 +220,32 @@ function refreshService() {
   const transfer = isTransfer();
   hours.disabled = transfer;
   hours.required = !transfer;
-  destination.disabled = !transfer;
-  destination.required = transfer;
   document.querySelector('label[data-hourly-only]').hidden = transfer;
-  document.querySelector('label[data-transfer-only]').hidden = !transfer;
   document.querySelector('#service-note').textContent = t(transfer ? 'transferNote' : 'hourlyNote');
-  document.querySelectorAll('[data-option-rate]').forEach(element => {
-    element.hidden = transfer;
-  });
-  refreshPrice();
   refreshRoute();
 }
 
+function chooseVehicle(vehicle) {
+  vehicleOptions.querySelector(`input[value="${vehicle.id}"]`).checked = true;
+  updateCapacity();
+  guiding = true;
+  refreshConcierge();
+  inquiry.elements.namedItem('date').focus();
+}
+
+function openGallery(vehicle) {
+  galleryVehicle = vehicle;
+  document.querySelector('#gallery-title').textContent = vehicle.name;
+  const gallery = createGallery(vehicle, true);
+  galleryContent.replaceChildren(gallery.figure);
+  galleryRender = gallery.render;
+  galleryDialog.showModal();
+  galleryRender();
+}
+
 function createVehicleOption(vehicle) {
+  const card = document.createElement('div');
+  card.className = 'vehicle-choice';
   const label = document.createElement('label');
   const input = document.createElement('input');
   input.type = 'radio';
@@ -213,27 +255,37 @@ function createVehicleOption(vehicle) {
   label.append(input);
   if (vehicle.choicePhoto) {
     const [file, note] = vehicle.choicePhoto;
+    const preview = document.createElement('button');
+    preview.type = 'button';
+    preview.className = 'photo-button';
+    preview.dataset.galleryButton = vehicle.id;
     const image = document.createElement('img');
     image.src = `/images/vip/${vehicle.id}/${file}.webp`;
     image.alt = '';
-    label.append(image);
+    preview.append(image);
+    preview.addEventListener('click', () => openGallery(vehicle));
+    card.append(preview);
     if (note) {
       const caption = document.createElement('small');
       caption.dataset.copy = note;
-      label.append(caption);
+      card.append(caption);
     }
   }
   const name = document.createElement('b');
   name.textContent = vehicle.name;
   const spec = document.createElement('small');
   spec.dataset.optionSpec = vehicle.id;
-  const rate = document.createElement('small');
-  rate.dataset.optionRate = vehicle.id;
-  label.append(name, spec, rate);
-  return label;
+  label.append(name, spec);
+  const reserve = document.createElement('button');
+  reserve.type = 'button';
+  reserve.className = 'action';
+  reserve.dataset.copy = 'inquire';
+  reserve.addEventListener('click', () => chooseVehicle(vehicle));
+  card.append(label, reserve);
+  return card;
 }
 
-function createGallery(vehicle) {
+function createGallery(vehicle, modal = false) {
   const figure = document.createElement('figure');
   figure.className = 'gallery';
   figure.innerHTML = `
@@ -256,11 +308,13 @@ function createGallery(vehicle) {
   }
 
   figure.querySelectorAll('button').forEach(button => {
+    button.setAttribute('aria-label', t(button.dataset.label));
     button.addEventListener('click', () => {
       index = (index + Number(button.dataset.step) + vehicle.photos.length) % vehicle.photos.length;
       render();
     });
   });
+  if (modal) return { figure, render };
   galleries.push(render);
   return figure;
 }
@@ -285,13 +339,7 @@ function createVehicleCard(vehicle) {
   card.append(body);
   body.querySelector('a').addEventListener('click', event => {
     event.preventDefault();
-    const option = vehicleOptions.querySelector(`input[value="${vehicle.id}"]`);
-    option.checked = true;
-    updateCapacity();
-    refreshPrice();
-    history.replaceState(null, '', '#availability');
-    document.querySelector('#availability').scrollIntoView();
-    inquiry.elements.namedItem('date').focus({ preventScroll: true });
+    chooseVehicle(vehicle);
   });
   return card;
 }
@@ -319,12 +367,11 @@ function renderLanguage() {
     if (vehicle.edition) spec.push(vehicle.edition[localeIndex]);
     if (vehicle.capacity) spec.push(`${vehicle.capacity} ${t('passengers').toLowerCase()}`);
     card.querySelector('[data-spec]').textContent = spec.join(' · ') || vehicle.description[localeIndex];
-    const rate = rates.vehicles[vehicle.id];
     const optionSpec = document.querySelector(`[data-option-spec="${vehicle.id}"]`);
     optionSpec.textContent = spec.join(' · ');
     optionSpec.hidden = !spec.length;
-    document.querySelector(`[data-option-rate="${vehicle.id}"]`).textContent =
-      `${money(rate.minimumPackageCents)} / ${rates.minimumHours} h · ${money(rate.additionalHourCents)} ${t('extraHour')}`;
+    const preview = vehicleOptions.querySelector(`[data-gallery-button="${vehicle.id}"]`);
+    if (preview) preview.setAttribute('aria-label', `${t('gallery')}: ${vehicle.name}`);
     if (!vehicle.features.length) continue;
     card.querySelector('[data-description]').textContent = vehicle.description[localeIndex];
     const features = vehicle.features.map(feature => feature[localeIndex]);
@@ -335,7 +382,9 @@ function renderLanguage() {
     }));
   }
   galleries.forEach(render => render());
+  if (galleryDialog.open) galleryRender();
   refreshService();
+  refreshConcierge();
 }
 
 const requestedLanguage = new URLSearchParams(location.search).get('lang');
@@ -350,44 +399,102 @@ language.addEventListener('change', () => {
   }
   history.replaceState(null, '', url);
 });
+function nextField() {
+  for (const name of ['date', 'time', 'pickup', 'destination', 'hours', 'passengers', 'fullName', 'email', 'phone']) {
+    const field = inquiry.elements.namedItem(name);
+    if (!field.disabled && (!field.validity.valid || !field.value.trim())) return field;
+  }
+  return null;
+}
+
+function refreshConcierge() {
+  if (!guiding) {
+    conciergeMessage.textContent = t('conciergeWelcome');
+    return;
+  }
+  if (!currentVehicle()) {
+    conciergeMessage.textContent = t('conciergeVehicle');
+    return;
+  }
+  const field = nextField();
+  const label = field?.closest('label').querySelector('[data-copy]').textContent;
+  conciergeMessage.textContent = field ? `${t('conciergeField')}: ${label}.` : t('conciergeReady');
+}
+
+document.querySelector('#concierge-next').addEventListener('click', () => {
+  guiding = true;
+  refreshConcierge();
+  if (!currentVehicle()) vehicleOptions.querySelector('input').focus();
+  else (nextField() ?? inquiry.querySelector('[type=submit]')).focus();
+});
+
+document.querySelector('#gallery-book').addEventListener('click', () => {
+  galleryDialog.close();
+  chooseVehicle(galleryVehicle);
+});
+
 vehicleOptions.addEventListener('change', () => {
   updateCapacity();
-  refreshPrice();
+  guiding = true;
+  refreshConcierge();
 });
 hours.min = rates.minimumHours;
-hours.addEventListener('input', refreshPrice);
-service.addEventListener('change', refreshService);
-for (const address of [pickup, destination]) {
-  address.addEventListener('input', () => {
-    address.setCustomValidity('');
-    refreshRoute();
-  });
-}
-inquiry.addEventListener('submit', event => {
-  event.preventDefault();
-  const vehicle = currentVehicle();
-  if (!vehicle) return;
-  if (!pickup.value.trim()) {
-    pickup.setCustomValidity(localeIndex === 0 ? 'Enter a pickup location.' : 'Ingresa un lugar de recogida.');
-    pickup.reportValidity();
-    return;
-  }
-  if (isTransfer() && !destination.value.trim()) {
-    destination.setCustomValidity(localeIndex === 0 ? 'Enter a drop-off location.' : 'Ingresa un destino.');
-    destination.reportValidity();
-    return;
-  }
+service.addEventListener('change', () => {
+  refreshService();
+  refreshConcierge();
+});
+inquiry.addEventListener('input', refreshConcierge);
+for (const address of [pickup, destination]) address.addEventListener('input', refreshRoute);
+
+function bookingDetails() {
   const data = new FormData(inquiry);
-  const fields = [
-    ['vehicle', vehicle.name],
+  return [
+    ['vehicle', currentVehicle().name],
     ['serviceType', t(isTransfer() ? 'transfer' : 'hourly')],
     ['pickupDate', data.get('date')],
     ['pickupTime', data.get('time')],
     ['pickup', pickup.value.trim()],
-    isTransfer() ? ['destination', destination.value.trim()] : ['hours', data.get('hours')],
+    ['destination', destination.value.trim()],
+    ...(!isTransfer() ? [['hours', data.get('hours')]] : []),
     ['passengers', data.get('passengers')],
+    ['fullName', data.get('fullName').trim()],
+    ['email', data.get('email').trim()],
+    ['phone', data.get('phone').trim()],
   ];
-  const message = [t('inquiryGreeting'), '', ...fields.map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
+}
+
+inquiry.addEventListener('submit', event => {
+  event.preventDefault();
+  if (!currentVehicle()) return;
+  const missing = nextField();
+  if (missing) {
+    guiding = true;
+    refreshConcierge();
+    missing.focus();
+    return;
+  }
+  const summary = document.querySelector('#booking-summary');
+  summary.replaceChildren();
+  for (const [key, value] of bookingDetails()) {
+    const label = document.createElement('dt');
+    const detail = document.createElement('dd');
+    label.textContent = t(key);
+    detail.textContent = value;
+    summary.append(label, detail);
+  }
+  document.querySelector('#review-note').textContent = t(isTransfer() ? 'transferReview' : 'reviewNote');
+  reviewDialog.showModal();
+  refreshPrice();
+});
+
+reviewDialog.addEventListener('close', () => {
+  if (reviewDialog.open) return;
+  quote.replaceChildren();
+  document.querySelector('#booking-summary').replaceChildren();
+});
+
+document.querySelector('#request-confirmation').addEventListener('click', () => {
+  const message = [t('inquiryGreeting'), '', ...bookingDetails().map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
   location.assign(link);

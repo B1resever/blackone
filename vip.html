@@ -15,7 +15,7 @@
     </a>
     <nav>
       <a href="#fleet" data-copy="fleet">Fleet</a>
-      <a href="#availability" data-copy="inquire">Reserve</a>
+      <a class="action" href="#availability" data-copy="inquire">Book now</a>
       <label class="language"><span class="sr-only" data-copy="language">Language</span>
         <select id="language">
           <option value="en">English</option>
@@ -37,7 +37,7 @@
             <legend data-copy="vehicle">Vehicle</legend>
             <div id="vehicle-options" class="vehicle-options"></div>
           </fieldset>
-          <div class="booking-fields">
+          <div class="booking-fields" id="booking-fields">
             <label class="wide"><span data-copy="serviceType">Service</span>
               <select name="service">
                 <option value="hourly" data-copy="hourly">Hourly</option>
@@ -47,17 +47,20 @@
             <label><span data-copy="pickupDate">Pickup date</span><input name="date" type="date" required></label>
             <label><span data-copy="pickupTime">Pickup time (local)</span><input name="time" type="time" required></label>
             <label class="wide"><span data-copy="pickup">Pickup location</span><input name="pickup" type="text" maxlength="180" required></label>
-            <label class="wide" data-transfer-only hidden><span data-copy="destination">Drop-off location</span><input name="destination" type="text" maxlength="180" disabled></label>
+            <label class="wide"><span data-copy="destination">Drop-off location</span><input name="destination" type="text" maxlength="180" required></label>
             <a class="wide" id="route-map" data-transfer-only data-copy="routeMap" target="_blank" rel="noopener" hidden>View route map</a>
             <label data-hourly-only><span data-copy="hours">Hours</span><input name="hours" type="number" min="3" max="24" step="1" value="3" required></label>
             <label><span data-copy="passengers">Passengers</span><input name="passengers" type="number" min="1" step="1" required></label>
-            <div class="wide quote" id="hourly-price" aria-live="polite"></div>
+            <label class="wide"><span data-copy="fullName">Full name</span><input name="fullName" autocomplete="name" maxlength="120" required></label>
+            <label><span data-copy="email">Email</span><input name="email" type="email" autocomplete="email" maxlength="160" required></label>
+            <label><span data-copy="phone">Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="35" required></label>
             <p class="wide booking-note" id="service-note"></p>
-            <button class="action wide" type="submit" data-copy="whatsapp">Continue on WhatsApp</button>
-            <details class="wide booking-note">
-              <summary data-copy="paymentTerms">Payment and vehicle care</summary>
-              <p data-copy="care">Full advance payment and a separate card hold equal to the service price before gratuity. A signed agreement covers care of the cabin, seats and cleanliness during the reservation.</p>
-            </details>
+            <button class="action wide" type="submit" data-copy="review">Continue to payment</button>
+            <aside class="concierge wide" aria-label="B1 Concierge">
+              <b>B1 Concierge</b>
+              <p id="concierge-message" role="status"></p>
+              <button class="secondary" id="concierge-next" type="button" data-copy="guide">Guide me</button>
+            </aside>
           </div>
         </form>
       </div>
@@ -77,6 +80,30 @@
       </div>
     </section>
   </main>
+
+  <dialog id="fleet-dialog" aria-labelledby="gallery-title">
+    <div class="dialog-heading">
+      <h2 id="gallery-title"></h2>
+      <form method="dialog"><button class="secondary" data-copy="close">Close</button></form>
+    </div>
+    <div id="gallery-content"></div>
+    <button id="gallery-book" class="action" type="button" data-copy="inquire">Book now</button>
+  </dialog>
+
+  <dialog id="review-dialog" aria-labelledby="review-title">
+    <div class="dialog-heading">
+      <h2 id="review-title" data-copy="reviewTitle">Review your reservation</h2>
+      <form method="dialog"><button class="secondary" data-copy="edit">Edit</button></form>
+    </div>
+    <dl id="booking-summary" class="quote"></dl>
+    <div class="quote" id="hourly-price"></div>
+    <details class="booking-note">
+      <summary data-copy="paymentTerms">Payment and vehicle care</summary>
+      <p data-copy="care"></p>
+    </details>
+    <p class="booking-note" id="review-note"></p>
+    <button class="action" id="request-confirmation" type="button" data-copy="whatsapp">Confirm details on WhatsApp</button>
+  </dialog>
 
   <footer class="site-footer page-width">
     <a href="tel:+13058501737">305-850-1737</a>
