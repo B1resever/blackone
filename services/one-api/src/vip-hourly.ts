@@ -12,6 +12,8 @@ export interface VipHourlyVehicle {
   currency: "USD";
   hourlyRateCents: number;
   minimumHours: number;
+  minimumPackageCents?: number;
+  gratuityBasisPoints?: number | null;
   maximumPassengers: number;
   active: boolean;
 }
@@ -29,6 +31,9 @@ export interface VipHourlyQuote {
   currency: "USD";
   durationHours: number;
   hourlyRateCents: number;
+  subtotalCents: number;
+  gratuityCents: number | null;
+  securityHoldCents: number;
   totalCents: number;
   minimumHours: number;
 }
@@ -60,7 +65,21 @@ export function quoteVipHourly(
   if (!request.pickupAddress.trim() || !Number.isFinite(Date.parse(request.pickupAt))) {
     throw new Error("VIP_PICKUP_INVALID");
   }
-  const totalCents = vehicle.hourlyRateCents * request.durationHours;
+  const packageCents = vehicle.minimumPackageCents ?? vehicle.hourlyRateCents * vehicle.minimumHours;
+  if (!Number.isSafeInteger(packageCents) || packageCents <= 0) {
+    throw new Error("VIP_RATE_INVALID");
+  }
+  const subtotalCents = packageCents + vehicle.hourlyRateCents * (request.durationHours - vehicle.minimumHours);
+  const basisPoints = vehicle.gratuityBasisPoints;
+  if (basisPoints != null && (!Number.isSafeInteger(basisPoints) || basisPoints < 0 || basisPoints > 10_000)) {
+    throw new Error("VIP_GRATUITY_INVALID");
+  }
+  const gratuityNumerator = basisPoints == null ? null : subtotalCents * basisPoints;
+  if (gratuityNumerator !== null && !Number.isSafeInteger(gratuityNumerator)) {
+    throw new Error("VIP_TOTAL_OVERFLOW");
+  }
+  const gratuityCents = gratuityNumerator === null ? null : Math.round(gratuityNumerator / 10_000);
+  const totalCents = subtotalCents + (gratuityCents ?? 0);
   if (!Number.isSafeInteger(totalCents)) throw new Error("VIP_TOTAL_OVERFLOW");
   return {
     vehicleId: vehicle.id,
@@ -68,6 +87,9 @@ export function quoteVipHourly(
     durationHours: request.durationHours,
     hourlyRateCents: vehicle.hourlyRateCents,
     minimumHours: vehicle.minimumHours,
+    subtotalCents,
+    gratuityCents,
+    securityHoldCents: subtotalCents,
     totalCents,
   };
 }

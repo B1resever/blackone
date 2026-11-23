@@ -4,6 +4,8 @@
  * Media paths identify photographs supplied by the fleet owner.
  * This module does not replace the existing ONE vehicle catalog.
  */
+import hourlyRates from "../../../config/b1-vip-hourly-rates.json" with { type: "json" };
+
 export type VipMediaSlot =
   | "exterior" | "door_open" | "cabin" | "seat_detail" | "rear_exterior";
 export interface VipCatalogEntry {
@@ -17,7 +19,7 @@ export interface VipCatalogEntry {
   mediaSlots: readonly VipMediaSlot[];
   doorPresentation: "open_for_cabin" | "closed_only";
   bookingMode: "hourly";
-  hourlyRateCents: null;
+  hourlyPricing: (typeof hourlyRates.vehicles)[keyof typeof hourlyRates.vehicles];
   verifiedMedia: readonly string[];
   illustrativeMedia?: readonly string[];
 }
@@ -33,7 +35,7 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     mediaSlots: ["exterior", "door_open", "cabin", "seat_detail", "rear_exterior"],
     doorPresentation: "open_for_cabin",
     bookingMode: "hourly",
-    hourlyRateCents: null,
+    hourlyPricing: hourlyRates.vehicles["maybach-tifanni"],
     verifiedMedia: [
       "/images/vip/maybach-tifanni/exterior.webp",
       "/images/vip/maybach-tifanni/cabin.webp",
@@ -54,7 +56,7 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     mediaSlots: ["exterior", "door_open", "cabin", "seat_detail", "rear_exterior"],
     doorPresentation: "open_for_cabin",
     bookingMode: "hourly",
-    hourlyRateCents: null,
+    hourlyPricing: hourlyRates.vehicles["desert-sand"],
     verifiedMedia: [
       "/images/vip/desert-sand/exterior.webp",
       "/images/vip/desert-sand/door.webp",
@@ -74,7 +76,7 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     mediaSlots: ["exterior"],
     doorPresentation: "closed_only",
     bookingMode: "hourly",
-    hourlyRateCents: null,
+    hourlyPricing: hourlyRates.vehicles["cadillac-escalade"],
     verifiedMedia: [],
   },
 ] as const;
