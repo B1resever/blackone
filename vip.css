@@ -65,10 +65,16 @@ summary { cursor: pointer; font-weight: 650; }
 .service-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
 .service-list details { border-top: 1px solid var(--line); padding-top: 0.85rem; }
 .service-list p { margin-block: 0.5rem 0; }
-.availability { background: var(--aqua); }
-.request-layout { display: grid; grid-template-columns: 1fr 1.3fr; align-items: center; gap: clamp(1rem, 5vw, 4rem); }
-.booking-heading p { margin-bottom: 0; }
-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.availability { background: linear-gradient(125deg, #d1f4ef 0%, #eaf8ee 65%, #fbf5e8 100%); }
+.booking-heading { margin-bottom: 1.5rem; }
+.booking-heading h1 { font-size: clamp(2.65rem, 5vw, 4.75rem); }
+.booking-heading p { margin: 0.6rem 0 0; }
+#inquiry { display: grid; grid-template-columns: 1.5fr 1fr; align-items: start; gap: clamp(1rem, 3vw, 2rem); }
+.booking-fields {
+ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem;
+ padding: clamp(1rem, 2vw, 1.5rem); background: #fdfcf7;
+ border: 1px solid var(--line); border-radius: 9px;
+}
 form label { display: grid; gap: 0.3rem; font-weight: 650; min-width: 0; }
 .wide { grid-column: 1 / -1; }
 input, select {
@@ -77,7 +83,7 @@ input, select {
 }
 .site-footer { min-height: 84px; padding-block: 1rem; }
 @media (max-width: 740px) {
-  .fleet-grid, .request-layout, .service-list { grid-template-columns: 1fr; }
+  .fleet-grid, .service-list, #inquiry { grid-template-columns: 1fr; }
   .site-header { flex-wrap: wrap; }
   .availability { padding-block: 1.5rem; }
   nav { column-gap: 1rem; row-gap: 0.25rem; }
@@ -87,16 +93,20 @@ input, select {
 [hidden] { display: none !important; }
 .picker { border: 0; margin: 0; padding: 0; min-width: 0; }
 .picker legend { font-weight: 650; margin-bottom: 0.35rem; }
-.vehicle-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.55rem; }
+.vehicle-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; }
 .vehicle-options label {
-  position: relative; grid-template-columns: minmax(0, 1fr); align-content: start;
-  padding: 0.35rem; border: 1px solid #8aaba4; border-radius: 5px; background: white; cursor: pointer;
+  position: relative; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1.2em auto auto auto; align-content: start;
+  padding: 0.4rem; border: 1px solid #8aaba4; border-radius: 8px; background: white; cursor: pointer;
 }
-.vehicle-options label:last-child { grid-column: 1 / -1; }
+.vehicle-options label:last-child { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.65rem; padding: 0.7rem; }
 .vehicle-options label:has(:checked) { outline: 2px solid #0b6d68; outline-offset: -2px; }
 .vehicle-options label:focus-within { outline: 3px solid #0b6d68; outline-offset: 2px; }
 .vehicle-options input { position: absolute; inset: 0 auto auto 0; clip-path: inset(50%); width: 1px; min-height: 1px; }
-.vehicle-options img { width: 100%; aspect-ratio: 4 / 3; object-fit: contain; background: #e8eeeb; }
+.vehicle-options img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 54%; background: #e8eeeb; border-radius: 5px; }
+.vehicle-options label > b { grid-row: 3; }
+.vehicle-options small[data-option-spec] { grid-row: 4; }
+.vehicle-options small[data-option-rate] { grid-row: 5; }
+.vehicle-options small[data-copy="illustration"] { grid-row: 2; color: #365650; }
 .vehicle-options b, .vehicle-options small { padding-inline: 0.2rem; }
 .vehicle-options small { font-weight: 500; }
 .quote:empty { display: none; }
@@ -104,3 +114,8 @@ input, select {
 .quote strong { font-weight: 750; }
 .booking-note { margin: 0; font-size: 0.9rem; }
 #route-map { justify-self: start; text-decoration: underline; }
+
+@media (max-width: 420px) {
+  .vehicle-options { gap: 0.5rem; }
+  .vehicle-options b, .vehicle-options small { padding-inline: 0; }
+}
