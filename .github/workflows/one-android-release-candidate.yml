@@ -1,0 +1,61 @@
+name: ONE Android Release Candidate
+
+on:
+  push:
+    branches:
+      - release/b1-one-android-20261123
+    paths:
+      - .github/workflows/one-android-release-candidate.yml
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.repository == 'B1resever/blackone'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      group: one-android-release-candidate-20261123
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: apps/one-mobile
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/one-mobile/package-lock.json
+      - name: Repository release gate
+        working-directory: .
+        run: node scripts/one-release-check.mjs
+      - run: npm ci
+      - run: npm run doctor
+      - run: npm run typecheck
+      - run: npm test
+      - name: Verify production API
+        working-directory: .
+        env:
+          ONE_PRODUCTION_URL: ${{ secrets.ONE_PRODUCTION_URL }}
+        run: node scripts/one-production-smoke.mjs
+      - name: Install EAS CLI
+        run: npm install --global eas-cli@27.2.0
+      - name: Verify EAS authentication
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas whoami
+      - name: Queue signed Android App Bundle
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: eas build --platform android --profile production --non-interactive --json --no-wait > build-result.json
+      - name: Retain Expo build identifier
+        uses: actions/upload-artifact@v4
+        with:
+          name: one-android-release-candidate
+          path: apps/one-mobile/build-result.json
+          if-no-files-found: error
+          retention-days: 7
