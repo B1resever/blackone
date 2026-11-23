@@ -132,6 +132,12 @@ const copy = {
     'We quote the transfer using driving distance and time, including the vehicle’s return to the pickup point.',
     'Cotizamos el traslado según las millas y el tiempo de conducción, incluido el regreso del vehículo al punto de recogida.',
   ],
+  paymentPreference: ['Preferred payment method', 'Método de pago preferido'],
+  noPaymentPreference: ['No preference', 'Sin preferencia'],
+  paymentPreferenceNote: [
+    'B1 will confirm which payment methods are available for your reservation.',
+    'B1 confirmará qué métodos de pago están disponibles para tu reserva.',
+  ],
   servicePrice: ['Service price', 'Precio del servicio'],
   gratuity: ['Gratuity (15%)', 'Propina (15%)'],
   total: ['Total payable', 'Total a pagar'],
@@ -169,6 +175,7 @@ const reviewDialog = document.querySelector('#review-dialog');
 const conciergeMessage = document.querySelector('#concierge-message');
 const sendRequestButton = document.querySelector('#submit-vip-request');
 const requestStatus = document.querySelector('#vip-request-status');
+const paymentPreference = document.querySelector('#payment-preference');
 const editReviewButton = reviewDialog.querySelector('form button');
 let savedRequest;
 let requestInProgress = false;
@@ -504,6 +511,7 @@ inquiry.addEventListener('submit', event => {
   requestStatus.textContent = '';
   sendRequestButton.hidden = isTransfer() || !requestEnabled;
   sendRequestButton.disabled = false;
+  paymentPreference.disabled = false;
   reviewDialog.showModal();
   refreshPrice();
 });
@@ -532,6 +540,7 @@ sendRequestButton.addEventListener('click', async () => {
     fullName: data.get('fullName').trim(),
     email: data.get('email').trim(),
     phone: data.get('phone').trim(),
+    ...(paymentPreference.value ? { preferredPaymentMethod: paymentPreference.value } : {}),
   };
   const signature = JSON.stringify(details);
   if (savedRequest?.signature !== signature) {
@@ -546,6 +555,7 @@ sendRequestButton.addEventListener('click', async () => {
   requestInProgress = true;
   sendRequestButton.disabled = true;
   editReviewButton.disabled = true;
+  paymentPreference.disabled = true;
   requestStatus.textContent = t('requestSaving');
   try {
     const response = await fetch('/one/api/vip-hourly-request', {
@@ -571,6 +581,7 @@ sendRequestButton.addEventListener('click', async () => {
   } finally {
     requestInProgress = false;
     editReviewButton.disabled = false;
+    paymentPreference.disabled = attempt.completed;
     sendRequestButton.disabled = attempt.completed;
   }
 });
@@ -583,7 +594,11 @@ fetch('/one/api/vip-hourly-request')
   })
   .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
-  const message = [t('inquiryGreeting'), '', ...bookingDetails().map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
+  const details = bookingDetails();
+  if (paymentPreference.value) {
+    details.push(['paymentPreference', paymentPreference.selectedOptions[0].textContent]);
+  }
+  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
   location.assign(link);

@@ -145,3 +145,5 @@ dialog .booking-note { margin-top: 0.7rem; }
   .vehicle-options { gap: 0.5rem; }
   .vehicle-choice > .action { padding-inline: 0.3rem; }
 }
+
+.payment-preference { display: grid; gap: 0.35rem; margin-top: 0.85rem; font-weight: 650; }

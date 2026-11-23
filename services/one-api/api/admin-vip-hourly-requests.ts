@@ -16,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const requests = await sql`
       select request_id, vehicle_key, pickup_at, pickup_address, destination_address,
              duration_hours, passengers, guest_full_name, guest_email, guest_phone,
-             status, quote, created_at
+             status, quote, preferred_payment_method, created_at
       from b1_vip_hourly_requests
       order by created_at desc, request_id desc
       limit 100

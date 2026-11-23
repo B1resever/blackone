@@ -104,6 +104,18 @@
       <summary data-copy="paymentTerms">Payment and vehicle care</summary>
       <p data-copy="care"></p>
     </details>
+    <label class="payment-preference">
+      <span data-copy="paymentPreference">Preferred payment method</span>
+      <select id="payment-preference" aria-describedby="payment-preference-note">
+        <option value="" data-copy="noPaymentPreference">No preference</option>
+        <option value="zelle">Zelle</option>
+        <option value="cash-app">Cash App</option>
+        <option value="venmo">Venmo</option>
+        <option value="apple-cash">Apple Cash</option>
+        <option value="paypal">PayPal</option>
+      </select>
+    </label>
+    <p class="booking-note" id="payment-preference-note" data-copy="paymentPreferenceNote">B1 will confirm which payment methods are available for your reservation.</p>
     <p class="booking-note" id="review-note"></p>
     <p id="vip-request-status" role="status"></p>
     <button class="action" id="submit-vip-request" type="button" data-copy="sendRequest" hidden>Send reservation request</button>

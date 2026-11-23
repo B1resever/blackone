@@ -41,7 +41,7 @@
   <p id="vipOpsStatus" role="status"></p>
   <div class="grid">
     <table>
-      <thead><tr><th>REQUEST</th><th>PASSENGER</th><th>TRIP</th><th>WHEN</th><th>VEHICLE</th><th>STATUS</th><th>TOTAL</th></tr></thead>
+      <thead><tr><th>REQUEST</th><th>PASSENGER</th><th>TRIP</th><th>WHEN</th><th>VEHICLE</th><th>STATUS</th><th>TOTAL</th><th>PREFERRED PAYMENT</th></tr></thead>
       <tbody id="vipRows"></tbody>
     </table>
   </div>
@@ -159,6 +159,7 @@ $('#loadVip').addEventListener('click', async () => {
   const date = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/New_York' });
   try {
     const { requests } = await request('/one/api/admin-vip-hourly-requests');
+    const paymentLabels = { zelle: 'Zelle', 'cash-app': 'Cash App', venmo: 'Venmo', 'apple-cash': 'Apple Cash', paypal: 'PayPal' };
     for (const booking of requests) {
       const row = list.insertRow();
       for (const value of [
@@ -169,6 +170,7 @@ $('#loadVip').addEventListener('click', async () => {
         booking.vehicle_key + ' · ' + booking.passengers + ' pax · ' + booking.duration_hours + ' h',
         booking.status,
         money(booking.quote?.totalCents, 'USD'),
+        paymentLabels[booking.preferred_payment_method] ?? '—',
       ]) row.insertCell().textContent = value;
     }
     status.textContent = requests.length ? 'VIP requests are awaiting confirmation and payment.' : 'No VIP requests found.';

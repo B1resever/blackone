@@ -106,3 +106,22 @@ test('bounds Maps spend, fails closed on missing coordinates and rejects destina
   });
   assert.equal(deps.saved.size, 0);
 });
+
+test('records only supported payment preferences and leaves requests unpaid', async () => {
+  for (const method of ['zelle', 'cash-app', 'venmo', 'apple-cash', 'paypal']) {
+    const deps = options();
+    const save = deps.store.save;
+    deps.store.save = async request => {
+      assert.equal(request.preferredPaymentMethod, method);
+      return save(request);
+    };
+    const input = { ...payload, preferredPaymentMethod: method };
+    const result = await processVipHourlyRequest(input, deps);
+    assert.equal(result.statusCode, 201);
+    assert.equal(result.body.status, 'requested');
+    assert.deepEqual(await processVipHourlyRequest(input, deps), result);
+    assert.equal((await processVipHourlyRequest({ ...input, preferredPaymentMethod: 'other' }, deps)).statusCode, 400);
+    assert.equal((await processVipHourlyRequest({ ...input, paid: true }, deps)).statusCode, 400);
+    assert.equal(deps.saved.size, 1);
+  }
+});

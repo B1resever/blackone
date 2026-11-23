@@ -10,6 +10,7 @@ import { VIP_FLEET } from './vip-approved-catalog.js';
 import { quoteVipHourly, type VipHourlyQuote } from './vip-hourly.js';
 
 const requestSchema = z.strictObject({
+  preferredPaymentMethod: z.enum(['zelle', 'cash-app', 'venmo', 'apple-cash', 'paypal']).optional(),
   requestId: z.string().uuidv4().transform(value => value.toLowerCase()),
   vehicleId: z.string().max(64),
   pickupDate: z.string().trim().max(20),
@@ -54,7 +55,7 @@ export async function vipHourlyRequestSchemaAvailable(databaseUrl: string) {
   const sql = neon(databaseUrl);
   try {
     await sql`
-      select (select request_id from b1_vip_hourly_requests limit 0),
+      select (select preferred_payment_method from b1_vip_hourly_requests limit 0),
              (select used_calls from b1_vip_hourly_route_budget limit 0)
     `;
     return true;
@@ -93,12 +94,12 @@ export function createVipHourlyRequestStore(sql: SqlQuery): VipHourlyRequestStor
         insert into b1_vip_hourly_requests (
           request_id, request_fingerprint, vehicle_key, pickup_at, pickup_address,
           destination_address, duration_hours, passengers, guest_full_name, guest_email,
-          guest_phone, quote, radius_miles
+          guest_phone, quote, radius_miles, preferred_payment_method
         ) values (
           ${request.requestId}::uuid, ${request.fingerprint}, ${request.vehicleId},
           ${request.pickupAt}::timestamptz, ${request.pickup}, ${request.destination}, ${request.hours},
           ${request.passengers}, ${request.fullName}, ${request.email}, ${request.phone},
-          ${JSON.stringify(request.quote)}::jsonb, ${request.radiusMiles}
+          ${JSON.stringify(request.quote)}::jsonb, ${request.radiusMiles}, ${request.preferredPaymentMethod ?? null}
         )
         on conflict (request_id) do update set request_id = excluded.request_id
           where b1_vip_hourly_requests.request_fingerprint = excluded.request_fingerprint
