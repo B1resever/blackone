@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  Alert,
   Image,
   ImageBackground,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,8 +18,10 @@ import { useReservation } from '../src/reservation-context';
 import { BrandMark } from '../src/brand-mark';
 import { RideType, ReservationDraft } from '../src/reservation';
 import { useAuth } from '../src/auth-context';
+import { fetchJsonResponse } from '../src/http-client';
 
 const HERO = 'https://raw.githubusercontent.com/B1resever/blackone/main/images/hero/b1-daytime-luxury.png';
+const VIP_URL = 'https://b1reserve.com/vip';
 
 const vehicles = [
   { id: 'suv-black', name: 'SUV BLACK', detail: 'Black luxury SUVs · Escalade, Suburban, Tahoe, Yukon/Denali', meta: '1–6 · Luggage confirmed by B1', image: 'https://raw.githubusercontent.com/B1resever/blackone/main/images/fleet/Escalade.png' },
@@ -36,9 +40,26 @@ const features = [
 
 export default function HomeScreen() {
   const [language, setLanguage] = useState<Language>(getDeviceLanguage);
+  const [vipAvailable, setVipAvailable] = useState(false);
   const { user } = useAuth();
   const { draft, updateDraft } = useReservation();
   const copy = (key: Parameters<typeof t>[1]) => t(language, key);
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchJsonResponse('https://b1reserve.com/one/api/vip-hourly-request', {
+      signal: controller.signal,
+    }).then(async (response) => {
+      if (!response.ok) return;
+      const status = await response.json() as { enabled?: boolean } | null;
+      if (!controller.signal.aborted) setVipAvailable(status?.enabled === true);
+    }).catch(() => {});
+    return () => controller.abort();
+  }, []);
+
+  const openVip = () => {
+    const url = language === 'es' ? VIP_URL + '?lang=es' : VIP_URL;
+    void Linking.openURL(url).catch(() => Alert.alert('B1 VIP', copy('vipUnavailable')));
+  };
   const chooseMarket = (marketId: ReservationDraft['marketId']) => {
     updateDraft(draft.marketId === marketId ? { marketId } : { marketId, pickup: '', dropoff: '' });
     router.push('/book');
@@ -106,6 +127,11 @@ export default function HomeScreen() {
                 <Text style={styles.outlineButtonText}>●  {copy('driveWithOne')}</Text>
               </Pressable>
             </View>
+            {vipAvailable && (
+              <Pressable style={styles.outlineButton} accessibilityRole="link" onPress={openVip}>
+                <Text style={styles.outlineButtonText}>{copy('bookVip')}</Text>
+              </Pressable>
+            )}
 
             <Text style={styles.heroMarkets}>🇺🇸  USA   |   🇦🇷  ARGENTINA</Text>
           </View>

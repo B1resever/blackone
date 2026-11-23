@@ -100,7 +100,8 @@ input, select {
   padding: 0.5rem; border: 1px solid #8aaba4; border-radius: 8px; background: white;
 }
 #fleet-video {
-  display: block; grid-column: 1 / -1; width: 100%; aspect-ratio: 16 / 9;
+  display: block; grid-column: 1 / -1; width: min(100%, 260px); margin-inline: auto;
+  aspect-ratio: 512 / 910;
   object-fit: contain; background: #172d2c; border-radius: 8px;
 }
 .vehicle-choice:last-child {
