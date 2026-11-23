@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Explore the B1 Black One VIP fleet and request private chauffeur service by the hour.">
+  <title>B1 Black One VIP | Private Chauffeur Service</title>
+  <link rel="stylesheet" href="/vip.css">
+  <script type="module" src="/vip.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="#home" aria-label="B1 Black One VIP">
+      <img class="wordmark" src="/images/vip/black-one-vip.png" alt="B1 | Black One VIP" width="357" height="63">
+    </a>
+    <nav>
+      <a href="#fleet" data-copy="fleet">Fleet</a>
+      <a href="#availability" data-copy="inquire">Request availability</a>
+      <label class="language"><span class="sr-only" data-copy="language">Language</span>
+        <select id="language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </label>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section class="hero page-width" aria-labelledby="hero-title">
+      <div class="intro">
+        <p class="eyebrow" data-copy="service">Private chauffeur service by the hour</p>
+        <h1 id="hero-title" data-copy="headline">The Art of Arriving.</h1>
+        <p data-copy="intro">Choose your vehicle and speak with B1 Concierge about your itinerary.</p>
+        <a class="action" href="#fleet" data-copy="explore">Explore the fleet</a>
+      </div>
+      <div id="lead-vehicle"></div>
+    </section>
+
+    <section id="fleet" class="section page-width" aria-labelledby="fleet-title">
+      <h2 id="fleet-title" data-copy="fleetTitle">The VIP fleet</h2>
+      <div id="fleet-details" class="fleet-grid"></div>
+    </section>
+
+    <section id="availability" class="section availability" aria-labelledby="availability-title">
+      <div class="page-width request-layout">
+        <div>
+          <h2 id="availability-title" data-copy="inquire">Request availability</h2>
+          <p data-copy="requestIntro">Your request opens WhatsApp. B1 Concierge confirms the vehicle, availability and price with you directly.</p>
+        </div>
+        <form id="inquiry">
+          <label class="wide"><span data-copy="vehicle">Vehicle</span><select id="request-vehicle" name="vehicle" required></select></label>
+          <label><span data-copy="pickupDate">Pickup date</span><input name="date" type="date" required></label>
+          <label><span data-copy="pickupTime">Pickup time (local)</span><input name="time" type="time" required></label>
+          <label class="wide"><span data-copy="pickup">Pickup location</span><input name="pickup" type="text" maxlength="180" required></label>
+          <label><span data-copy="hours">Hours</span><input name="hours" type="number" min="1" max="24" step="1" required></label>
+          <label><span data-copy="passengers">Passengers</span><input name="passengers" type="number" min="1" step="1" required></label>
+          <button class="action wide" type="submit" data-copy="whatsapp">Continue to WhatsApp</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer page-width">
+    <a href="tel:+13058501737">305-850-1737</a>
+    <a href="https://wa.me/13058501737" data-copy="concierge">Contact B1 Concierge</a>
+  </footer>
+</body>
+</html>

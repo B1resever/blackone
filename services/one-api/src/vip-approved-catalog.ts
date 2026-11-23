@@ -1,7 +1,7 @@
 /**
  * B1 VIP authorized catalog data. Customer-facing copy is English by default.
- * Spanish is a localization option. Do not infer pricing or media filenames.
- * Images must be uploaded by the fleet owner and mapped after verification.
+ * Spanish is a localization option. Pricing requires a verified commercial rate.
+ * Media paths identify photographs supplied by the fleet owner.
  * This module does not replace the existing ONE vehicle catalog.
  */
 export type VipMediaSlot =
@@ -33,7 +33,13 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     doorPresentation: "open_for_cabin",
     bookingMode: "hourly",
     hourlyRateCents: null,
-    verifiedMedia: [],
+    verifiedMedia: [
+      "/images/vip/maybach-tifanni/exterior.webp",
+      "/images/vip/maybach-tifanni/cabin.webp",
+      "/images/vip/maybach-tifanni/seat.webp",
+      "/images/vip/maybach-tifanni/tables.webp",
+      "/images/vip/maybach-tifanni/rear.webp",
+    ],
   },
   {
     id: "desert-sand",
@@ -47,7 +53,13 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     doorPresentation: "open_for_cabin",
     bookingMode: "hourly",
     hourlyRateCents: null,
-    verifiedMedia: [],
+    verifiedMedia: [
+      "/images/vip/desert-sand/exterior.webp",
+      "/images/vip/desert-sand/door.webp",
+      "/images/vip/desert-sand/entry.webp",
+      "/images/vip/desert-sand/seat.webp",
+      "/images/vip/desert-sand/cabin.webp",
+    ],
   },
   {
     id: "cadillac-escalade",
