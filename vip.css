@@ -146,4 +146,7 @@ dialog .booking-note { margin-top: 0.7rem; }
   .vehicle-choice > .action { padding-inline: 0.3rem; }
 }
 
-.payment-preference { display: grid; gap: 0.35rem; margin-top: 0.85rem; font-weight: 650; }
+.payment-methods > p:first-child { margin-bottom: 0; }
+.payment-methods ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.payment-methods li { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.24rem 0.45rem; border: 1px solid var(--line); border-radius: 4px; font-size: 0.82rem; }
+.payment-methods img { width: 1.7rem; height: 1rem; object-fit: contain; }

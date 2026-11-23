@@ -132,20 +132,20 @@ const copy = {
     'We quote the transfer using driving distance and time, including the vehicle’s return to the pickup point.',
     'Cotizamos el traslado según las millas y el tiempo de conducción, incluido el regreso del vehículo al punto de recogida.',
   ],
-  paymentPreference: ['Preferred payment method', 'Método de pago preferido'],
-  noPaymentPreference: ['No preference', 'Sin preferencia'],
-  paymentPreferenceNote: [
-    'B1 will confirm which payment methods are available for your reservation.',
-    'B1 confirmará qué métodos de pago están disponibles para tu reserva.',
+  creditOnly: ['Credit card only', 'Solo tarjeta de crédito'],
+  paymentAuthorization: [
+    'The cardholder must sign an authorization for the exact charge and the separate card hold before we process payment.',
+    'El titular debe firmar la autorización por el importe exacto del cobro y la retención separada antes de procesar el pago.',
   ],
+  inactiveMethods: ['Unavailable payment methods', 'Métodos de pago no disponibles'],
   servicePrice: ['Service price', 'Precio del servicio'],
   gratuity: ['Gratuity (15%)', 'Propina (15%)'],
   total: ['Total payable', 'Total a pagar'],
   hold: ['Separate card hold', 'Bloqueo separado en la tarjeta'],
-  paymentTerms: ['Payment and vehicle care', 'Pago y cuidado del vehículo'],
+  paymentTerms: ['Payment, cancellations and vehicle care', 'Pago, cancelaciones y cuidado del vehículo'],
   care: [
-    'Full advance payment and a separate card hold equal to the service price before gratuity. A signed agreement covers care of the cabin, seats and cleanliness during the reservation.',
-    'El pago es completo por adelantado y el bloqueo separado equivale al precio del servicio antes de la propina. Se firma un acuerdo de cuidado de la cabina, los asientos y la limpieza durante la reserva.',
+    'Confirmed reservations are non-cancelable by the customer. Completed trips are non-refundable except when required by law or when B1 approves a refund for a service issue. Contact B1 about a service problem. Your rights regarding billing errors or unauthorized charges are preserved. The separate card hold is based on the service price before gratuity. A signed agreement covers care of the cabin, seats and cleanliness.',
+    'El cliente no puede cancelar una reserva confirmada. Los viajes completados no son reembolsables, salvo cuando la ley lo exija o B1 apruebe un reembolso por un problema del servicio. Contacta a B1 si hubo un inconveniente. Conservas tus derechos ante errores de facturación o cargos no autorizados. La retención separada se calcula sobre el precio del servicio antes de la propina. Se firma un acuerdo de cuidado de la cabina, los asientos y la limpieza.',
   ],
   illustration: ['Illustration', 'Ilustración'],
   concierge: ['Contact B1 Concierge', 'Contactar a B1 Concierge'],
@@ -175,7 +175,6 @@ const reviewDialog = document.querySelector('#review-dialog');
 const conciergeMessage = document.querySelector('#concierge-message');
 const sendRequestButton = document.querySelector('#submit-vip-request');
 const requestStatus = document.querySelector('#vip-request-status');
-const paymentPreference = document.querySelector('#payment-preference');
 const editReviewButton = reviewDialog.querySelector('form button');
 let savedRequest;
 let requestInProgress = false;
@@ -511,7 +510,6 @@ inquiry.addEventListener('submit', event => {
   requestStatus.textContent = '';
   sendRequestButton.hidden = isTransfer() || !requestEnabled;
   sendRequestButton.disabled = false;
-  paymentPreference.disabled = false;
   reviewDialog.showModal();
   refreshPrice();
 });
@@ -540,7 +538,6 @@ sendRequestButton.addEventListener('click', async () => {
     fullName: data.get('fullName').trim(),
     email: data.get('email').trim(),
     phone: data.get('phone').trim(),
-    ...(paymentPreference.value ? { preferredPaymentMethod: paymentPreference.value } : {}),
   };
   const signature = JSON.stringify(details);
   if (savedRequest?.signature !== signature) {
@@ -555,7 +552,6 @@ sendRequestButton.addEventListener('click', async () => {
   requestInProgress = true;
   sendRequestButton.disabled = true;
   editReviewButton.disabled = true;
-  paymentPreference.disabled = true;
   requestStatus.textContent = t('requestSaving');
   try {
     const response = await fetch('/one/api/vip-hourly-request', {
@@ -581,7 +577,6 @@ sendRequestButton.addEventListener('click', async () => {
   } finally {
     requestInProgress = false;
     editReviewButton.disabled = false;
-    paymentPreference.disabled = attempt.completed;
     sendRequestButton.disabled = attempt.completed;
   }
 });
@@ -595,9 +590,6 @@ fetch('/one/api/vip-hourly-request')
   .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
   const details = bookingDetails();
-  if (paymentPreference.value) {
-    details.push(['paymentPreference', paymentPreference.selectedOptions[0].textContent]);
-  }
   const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
