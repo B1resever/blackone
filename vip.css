@@ -113,17 +113,11 @@ input, select {
 .vehicle-choice small { font-weight: 500; }
 .vehicle-choice > small { grid-row: 2; color: #365650; }
 .vehicle-choice > .action { grid-row: 4; align-self: end; }
-.vehicle-previews {
-  grid-row: 1; display: grid; grid-template-columns: minmax(0, 1fr);
-  gap: 0.3rem; aspect-ratio: 4 / 3;
-}
-.vehicle-previews:has(.door-caption) { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
 .photo-button {
-  display: grid; grid-template-rows: minmax(0, 1fr) auto; min-width: 0; min-height: 0;
+  grid-row: 1; display: block; width: 100%; aspect-ratio: 4 / 3; min-width: 0;
   border: 0; padding: 0; border-radius: 5px; background: #eef3ee; overflow: hidden;
 }
-.photo-button img { width: 100%; height: 100%; object-fit: contain; }
-.door-caption { padding: 0.25rem 0.15rem; font-size: 0.8rem; font-weight: 650; color: var(--ink); }
+.photo-button img { width: 100%; height: 100%; object-fit: cover; object-position: center 58%; }
 .secondary {
   display: inline-flex; justify-content: center; align-items: center; min-height: 44px; padding: 0.4rem 0.75rem;
   border: 1px solid #8aaba4; border-radius: 5px; background: white; color: var(--ink); font-weight: 650;

@@ -36,8 +36,7 @@ const fleet = [
     name: 'Desert Sand',
     capacity: 15,
     edition: ['Cream cabin', 'Cabina color crema'],
-    choicePhoto: ['exterior'],
-    doorPreview: 'door',
+    choicePhoto: ['door', 'doorOpen'],
     description: [
       'Mercedes Sprinter VIP. Black exterior, cream cabin and an onboard kitchen.',
       'Mercedes Sprinter VIP. Exterior negro, cabina color crema y cocina a bordo.',
@@ -259,29 +258,16 @@ function createVehicleOption(vehicle) {
   label.append(input);
   if (vehicle.choicePhoto) {
     const [file, note] = vehicle.choicePhoto;
-    const previews = document.createElement('div');
-    previews.className = 'vehicle-previews';
-    const photos = vehicle.doorPreview ? [[file, 'gallery'], [vehicle.doorPreview, 'doorOpen']] : [[file, 'gallery']];
-    for (const [photo, labelKey] of photos) {
-      const preview = document.createElement('button');
-      preview.type = 'button';
-      preview.className = 'photo-button';
-      preview.dataset.galleryButton = vehicle.id;
-      preview.dataset.previewLabel = labelKey;
-      const image = document.createElement('img');
-      image.src = `/images/vip/${vehicle.id}/${photo}.webp`;
-      image.alt = '';
-      preview.append(image);
-      if (labelKey === 'doorOpen') {
-        const caption = document.createElement('span');
-        caption.className = 'door-caption';
-        caption.dataset.copy = labelKey;
-        preview.append(caption);
-      }
-      preview.addEventListener('click', () => openGallery(vehicle, photo));
-      previews.append(preview);
-    }
-    card.append(previews);
+    const preview = document.createElement('button');
+    preview.type = 'button';
+    preview.className = 'photo-button';
+    preview.dataset.galleryButton = vehicle.id;
+    const image = document.createElement('img');
+    image.src = `/images/vip/${vehicle.id}/${file}.webp`;
+    image.alt = '';
+    preview.append(image);
+    preview.addEventListener('click', () => openGallery(vehicle, file));
+    card.append(preview);
     if (note) {
       const caption = document.createElement('small');
       caption.dataset.copy = note;
@@ -389,9 +375,8 @@ function renderLanguage() {
     const optionSpec = document.querySelector(`[data-option-spec="${vehicle.id}"]`);
     optionSpec.textContent = spec.join(' · ');
     optionSpec.hidden = !spec.length;
-    for (const preview of vehicleOptions.querySelectorAll(`[data-gallery-button="${vehicle.id}"]`)) {
-      preview.setAttribute('aria-label', `${t(preview.dataset.previewLabel)}: ${vehicle.name}`);
-    }
+    const preview = vehicleOptions.querySelector(`[data-gallery-button="${vehicle.id}"]`);
+    if (preview) preview.setAttribute('aria-label', `${t('gallery')}: ${vehicle.name}`);
     if (!vehicle.features.length) continue;
     card.querySelector('[data-description]').textContent = vehicle.description[localeIndex];
     const features = vehicle.features.map(feature => feature[localeIndex]);
