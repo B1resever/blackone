@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Choose your B1 Black One VIP vehicle for hourly chauffeur service or a private transfer.">
+  <title>B1 Black One VIP | Private Chauffeur Service</title>
+  <link rel="stylesheet" href="/vip.css">
+  <script type="module" src="/vip.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <a href="#home" aria-label="B1 Black One VIP">
+      <img class="wordmark" src="/images/vip/black-one-vip.png" alt="B1 | Black One VIP" width="357" height="63">
+    </a>
+    <nav>
+      <a href="#fleet" data-copy="fleet">Fleet</a>
+      <a class="action" href="#availability" data-copy="inquire">Book now</a>
+      <label class="language"><span class="sr-only" data-copy="language">Language</span>
+        <select id="language">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+        </select>
+      </label>
+    </nav>
+  </header>
+
+  <main id="home">
+    <section id="availability" class="section availability" aria-labelledby="availability-title">
+      <div class="page-width request-layout">
+        <div class="booking-heading">
+          <h1 id="availability-title" data-copy="headline">Book a private chauffeur</h1>
+          <p data-copy="requestIntro">Choose your vehicle, date and time.</p>
+        </div>
+        <form id="inquiry">
+          <fieldset class="picker">
+            <legend data-copy="vehicle">Vehicle</legend>
+            <div id="vehicle-options" class="vehicle-options"></div>
+            <video id="fleet-video" controls playsinline preload="none" poster="/images/vip/b1-tifanni-video-poster.webp">
+              <source src="/images/vip/B1_Tifanni.mp4" type="video/mp4">
+            </video>
+          </fieldset>
+          <div class="booking-fields" id="booking-fields">
+            <label class="wide"><span data-copy="serviceType">Service</span>
+              <select name="service">
+                <option value="hourly" data-copy="hourly">Hourly</option>
+                <option value="transfer" data-copy="transfer">Transfer</option>
+              </select>
+            </label>
+            <label><span data-copy="pickupDate">Pickup date</span><input name="date" type="date" required></label>
+            <label><span data-copy="pickupTime">Pickup time (local)</span><input name="time" type="time" required></label>
+            <label class="wide"><span data-copy="pickup">Pickup location</span><input name="pickup" type="text" maxlength="180" required></label>
+            <label class="wide"><span data-copy="destination">Drop-off location</span><input name="destination" type="text" maxlength="180" required></label>
+            <a class="wide" id="route-map" data-transfer-only data-copy="routeMap" target="_blank" rel="noopener" hidden>View route map</a>
+            <label data-hourly-only><span data-copy="hours">Hours</span><input name="hours" type="number" min="3" max="24" step="1" value="3" required></label>
+            <label><span data-copy="passengers">Passengers</span><input name="passengers" type="number" min="1" step="1" required></label>
+            <label class="wide"><span data-copy="fullName">Full name</span><input name="fullName" autocomplete="name" maxlength="120" required></label>
+            <label><span data-copy="email">Email</span><input name="email" type="email" autocomplete="email" maxlength="160" required></label>
+            <label><span data-copy="phone">Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="35" required></label>
+            <p class="wide booking-note" id="service-note"></p>
+            <button class="action wide" type="submit" data-copy="review">Review reservation</button>
+            <aside class="concierge wide" aria-label="B1 Concierge">
+              <b>B1 Concierge</b>
+              <p id="concierge-message" role="status"></p>
+              <button class="secondary" id="concierge-next" type="button" data-copy="guide">Guide me</button>
+            </aside>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="fleet" class="section page-width" aria-labelledby="fleet-title">
+      <h2 id="fleet-title" data-copy="fleetTitle">The VIP fleet</h2>
+      <div id="fleet-details" class="fleet-grid"></div>
+    </section>
+
+    <section class="section page-width services" aria-labelledby="services-title">
+      <h2 id="services-title" data-copy="services">Services</h2>
+      <div class="service-list">
+        <details><summary data-copy="weddings">Weddings &amp; Quinceañeras</summary><p data-copy="weddingsDetail">Private chauffeur service for your celebration.</p></details>
+        <details><summary data-copy="corporate">Corporate Events</summary><p data-copy="corporateDetail">Punctual, discreet transportation for clients and teams.</p></details>
+        <details><summary data-copy="airports">Airport Transfers</summary><p data-copy="airportsDetail">Ask B1 about flight monitoring and luggage assistance.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="fleet-dialog" aria-labelledby="gallery-title">
+    <div class="dialog-heading">
+      <h2 id="gallery-title"></h2>
+      <form method="dialog"><button class="secondary" data-copy="close">Close</button></form>
+    </div>
+    <div id="gallery-content"></div>
+    <button id="gallery-book" class="action" type="button" data-copy="inquire">Book now</button>
+  </dialog>
+
+  <dialog id="review-dialog" aria-labelledby="review-title">
+    <div class="dialog-heading">
+      <h2 id="review-title" data-copy="reviewTitle">Review your reservation</h2>
+      <form method="dialog"><button class="secondary" data-copy="edit">Edit</button></form>
+    </div>
+    <dl id="booking-summary" class="quote"></dl>
+    <div class="quote" id="hourly-price"></div>
+    <details class="booking-note">
+      <summary data-copy="paymentTerms">Payment and vehicle care</summary>
+      <p data-copy="care"></p>
+    </details>
+    <section class="payment-methods" aria-labelledby="payment-heading">
+      <p id="payment-heading"><strong data-copy="creditOnly">Credit card only</strong></p>
+      <p class="booking-note" data-copy="paymentAuthorization">The cardholder must sign an authorization for the exact charge and the separate card hold before we process payment.</p>
+      <p class="booking-note" id="inactive-payment-methods" data-copy="inactiveMethods">Unavailable payment methods</p>
+      <ul aria-labelledby="inactive-payment-methods">
+        <li><img src="/images/vip/payments/zelle.svg" alt="">Zelle</li>
+        <li><img src="/images/vip/payments/cash-app.svg" alt="">Cash App</li>
+        <li><img src="/images/vip/payments/venmo.svg" alt="">Venmo</li>
+        <li><img src="/images/vip/payments/apple-cash.jpg" alt="">Apple Cash</li>
+        <li><img src="/images/vip/payments/paypal.svg" alt="">PayPal</li>
+      </ul>
+    </section>
+    <p class="booking-note" id="review-note"></p>
+    <p id="vip-request-status" role="status"></p>
+    <button class="action" id="submit-vip-request" type="button" data-copy="sendRequest" hidden>Send reservation request</button>
+    <button class="action" id="request-confirmation" type="button" data-copy="whatsapp">Confirm details on WhatsApp</button>
+  </dialog>
+
+  <footer class="site-footer page-width">
+    <a href="tel:+13058501737">305-850-1737</a>
+    <a href="https://wa.me/13058501737" data-copy="concierge">Contact B1 Concierge</a>
+  </footer>
+</body>
+</html>

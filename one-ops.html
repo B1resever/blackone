@@ -35,6 +35,17 @@
       <tbody id="rows"><tr><td colspan="8" class="muted">Connect ONE API to load operations.</td></tr></tbody>
     </table>
   </div>
+<section aria-labelledby="vip-requests-title">
+  <h2 id="vip-requests-title">VIP hourly requests</h2>
+  <button id="loadVip" type="button">Load VIP requests</button>
+  <p id="vipOpsStatus" role="status"></p>
+  <div class="grid">
+    <table>
+      <thead><tr><th>REQUEST</th><th>PASSENGER</th><th>TRIP</th><th>WHEN</th><th>VEHICLE</th><th>STATUS</th><th>TOTAL</th><th>PREFERRED PAYMENT</th></tr></thead>
+      <tbody id="vipRows"></tbody>
+    </table>
+  </div>
+</section>
 <dialog id="dispatchDialog"><h2>Oferta por WhatsApp</h2><p class="muted">Solo compartir con conductores que aceptaron recibir ofertas. Generar un enlace nuevo invalida el anterior.</p>
 <form id="dispatchForm"><label for="offerSummary">Zonas y servicio · sin datos personales del pasajero</label><textarea id="offerSummary" required minlength="5" maxlength="240" placeholder="MIA → Brickell · traslado programado"></textarea>
 <label for="offerAmount">Importe ofrecido al conductor (<span id="offerCurrency"></span>)</label><input id="offerAmount" required type="number" min="0.01" max="1000000" step="0.01"><p class="muted">Los cargos del plan del conductor se registran aparte.</p><button class="primary" id="prepareOffer">PREPARAR ENLACE</button></form>
@@ -138,6 +149,37 @@ function prepareDispatch(code,currency){dispatchRequestCode=code;$('#offerCurren
 $('#closeDispatch').addEventListener('click',()=>$('#dispatchDialog').close());
 $('#dispatchForm').addEventListener('submit',async event=>{event.preventDefault();const button=$('#prepareOffer');if(button.disabled)return;button.disabled=true;$('#dispatchMessage').textContent='Preparando…';try{const result=await request('/one/api/admin-dispatch-offer',{method:'POST',body:JSON.stringify({requestCode:dispatchRequestCode,driverAmountMinor:Math.round(Number($('#offerAmount').value)*100),summary:$('#offerSummary').value,expiresInMinutes:30})});$('#dispatchLink').value=result.offerUrl;$('#shareWhatsApp').href='https://wa.me/?text='+encodeURIComponent('B1 ONE · Oferta de viaje programado. Abrí B1 para consultar y aceptar. El primero habilitado que confirme obtiene el viaje. '+result.offerUrl);$('#dispatchReady').hidden=false;$('#dispatchMessage').textContent='Enlace preparado. No se envió automáticamente.';}catch{$('#dispatchMessage').textContent='No se pudo preparar. Verificá confirmación, pago y que el viaje siga sin asignar.';}finally{button.disabled=false;}});
 $('#load').addEventListener('click',load);
+$('#loadVip').addEventListener('click', async () => {
+  const button = $('#loadVip');
+  const status = $('#vipOpsStatus');
+  const list = $('#vipRows');
+  list.replaceChildren();
+  button.disabled = true;
+  status.textContent = 'Loading VIP requests…';
+  const date = new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'America/New_York' });
+  try {
+    const { requests } = await request('/one/api/admin-vip-hourly-requests');
+    const paymentLabels = { zelle: 'Zelle', 'cash-app': 'Cash App', venmo: 'Venmo', 'apple-cash': 'Apple Cash', paypal: 'PayPal' };
+    for (const booking of requests) {
+      const row = list.insertRow();
+      for (const value of [
+        booking.request_id,
+        [booking.guest_full_name, booking.guest_email, booking.guest_phone].join(' · '),
+        booking.pickup_address + ' → ' + booking.destination_address,
+        date.format(new Date(booking.pickup_at)),
+        booking.vehicle_key + ' · ' + booking.passengers + ' pax · ' + booking.duration_hours + ' h',
+        booking.status,
+        money(booking.quote?.totalCents, 'USD'),
+        paymentLabels[booking.preferred_payment_method] ?? '—',
+      ]) row.insertCell().textContent = value;
+    }
+    status.textContent = requests.length ? 'VIP requests are awaiting confirmation and payment.' : 'No VIP requests found.';
+  } catch {
+    status.textContent = 'VIP requests are unavailable. Verify your Operations session.';
+  } finally {
+    button.disabled = false;
+  }
+});
 </script>
 </body>
 </html>

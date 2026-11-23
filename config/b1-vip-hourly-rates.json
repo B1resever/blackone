@@ -1,0 +1,22 @@
+{
+  "currency": "USD",
+  "minimumHours": 3,
+  "maximumRadiusMiles": 30,
+  "vehicles": {
+    "maybach-tifanni": {
+      "minimumPackageCents": 100000,
+      "additionalHourCents": 40000,
+      "gratuityBasisPoints": 1500
+    },
+    "desert-sand": {
+      "minimumPackageCents": 100000,
+      "additionalHourCents": 40000,
+      "gratuityBasisPoints": 1500
+    },
+    "cadillac-escalade": {
+      "minimumPackageCents": 60000,
+      "additionalHourCents": 26000,
+      "gratuityBasisPoints": 1500
+    }
+  }
+}
