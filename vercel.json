@@ -16,6 +16,10 @@
   },
   "rewrites": [
     {
+      "source": "/vip",
+      "destination": "/vip.html"
+    },
+    {
       "source": "/one/api/vip-hourly-request",
       "destination": "/api/one/booking?endpoint=vip-hourly-request"
     },
