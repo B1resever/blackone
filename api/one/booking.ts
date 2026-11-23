@@ -7,9 +7,11 @@ import reservationStatus from '../../services/one-api/api/reservation-status.js'
 import cancelReservation from '../../services/one-api/api/cancel-reservation.js';
 import claimReservations from '../../services/one-api/api/claim-reservations.js';
 import myReservations from '../../services/one-api/api/my-reservations.js';
+import vipHourlyRequest from '../../services/one-api/api/vip-hourly-request.js';
 
 type Handler = (req: VercelRequest, res: VercelResponse) => unknown | Promise<unknown>;
 const handlers: Record<string, Handler> = {
+  'vip-hourly-request': vipHourlyRequest,
   'places': places,
   'route': route,
   'quotes': quotes,

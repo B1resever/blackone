@@ -58,7 +58,7 @@
             <label><span data-copy="email">Email</span><input name="email" type="email" autocomplete="email" maxlength="160" required></label>
             <label><span data-copy="phone">Phone</span><input name="phone" type="tel" autocomplete="tel" maxlength="35" required></label>
             <p class="wide booking-note" id="service-note"></p>
-            <button class="action wide" type="submit" data-copy="review">Continue to payment</button>
+            <button class="action wide" type="submit" data-copy="review">Review reservation</button>
             <aside class="concierge wide" aria-label="B1 Concierge">
               <b>B1 Concierge</b>
               <p id="concierge-message" role="status"></p>
@@ -105,6 +105,8 @@
       <p data-copy="care"></p>
     </details>
     <p class="booking-note" id="review-note"></p>
+    <p id="vip-request-status" role="status"></p>
+    <button class="action" id="submit-vip-request" type="button" data-copy="sendRequest" hidden>Send reservation request</button>
     <button class="action" id="request-confirmation" type="button" data-copy="whatsapp">Confirm details on WhatsApp</button>
   </dialog>
 

@@ -16,6 +16,14 @@
   },
   "rewrites": [
     {
+      "source": "/one/api/vip-hourly-request",
+      "destination": "/api/one/booking?endpoint=vip-hourly-request"
+    },
+    {
+      "source": "/one/api/admin-vip-hourly-requests",
+      "destination": "/api/one/admin-ops?endpoint=admin-vip-hourly-requests"
+    },
+    {
       "source": "/one/api/customer-terms",
       "destination": "/api/one/auth?endpoint=customer-terms"
     },

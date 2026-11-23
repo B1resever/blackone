@@ -92,7 +92,14 @@ const copy = {
   hours: ['Hours', 'Horas'],
   passengers: ['Passengers', 'Pasajeros'],
   whatsapp: ['Confirm details on WhatsApp', 'Confirmar datos por WhatsApp'],
-  review: ['Continue to payment', 'Continuar al pago'],
+  review: ['Review reservation', 'Revisar reserva'],
+  sendRequest: ['Send reservation request', 'Enviar solicitud de reserva'],
+  requestSaving: ['Sending your request…', 'Enviando tu solicitud…'],
+  requestSaved: ['Request received. B1 will confirm availability and payment.', 'Solicitud recibida. B1 confirmará la disponibilidad y el pago.'],
+  requestUnavailable: ['Online requests are unavailable. You can continue on WhatsApp.', 'La solicitud en línea no está disponible. Puedes continuar por WhatsApp.'],
+  requestRoute: ['The hourly service area is limited to 30 miles from pickup. Check the destination or select a transfer.', 'El servicio por hora se limita a 30 millas desde la recogida. Revisa el destino o selecciona un traslado.'],
+  requestCapacity: ['Contact B1 on WhatsApp to confirm this vehicle’s capacity.', 'Contacta a B1 por WhatsApp para confirmar la capacidad de este vehículo.'],
+  requestDetails: ['Check your trip date, passenger count and contact details.', 'Revisa la fecha, la cantidad de pasajeros y tus datos de contacto.'],
   reviewTitle: ['Review your reservation', 'Revisa tu reserva'],
   reviewNote: [
     'B1 Concierge confirms availability and payment details. Your card is not charged on this page.',
@@ -160,6 +167,12 @@ const galleryDialog = document.querySelector('#fleet-dialog');
 const galleryContent = document.querySelector('#gallery-content');
 const reviewDialog = document.querySelector('#review-dialog');
 const conciergeMessage = document.querySelector('#concierge-message');
+const sendRequestButton = document.querySelector('#submit-vip-request');
+const requestStatus = document.querySelector('#vip-request-status');
+const editReviewButton = reviewDialog.querySelector('form button');
+let savedRequest;
+let requestInProgress = false;
+let requestEnabled = false;
 let galleryVehicle;
 let galleryRender;
 let guiding = false;
@@ -488,8 +501,15 @@ inquiry.addEventListener('submit', event => {
     summary.append(label, detail);
   }
   document.querySelector('#review-note').textContent = t(isTransfer() ? 'transferReview' : 'reviewNote');
+  requestStatus.textContent = '';
+  sendRequestButton.hidden = isTransfer() || !requestEnabled;
+  sendRequestButton.disabled = false;
   reviewDialog.showModal();
   refreshPrice();
+});
+
+reviewDialog.addEventListener('cancel', event => {
+  if (requestInProgress) event.preventDefault();
 });
 
 reviewDialog.addEventListener('close', () => {
@@ -498,6 +518,70 @@ reviewDialog.addEventListener('close', () => {
   document.querySelector('#booking-summary').replaceChildren();
 });
 
+sendRequestButton.addEventListener('click', async () => {
+  if (isTransfer() || !requestEnabled || sendRequestButton.disabled) return;
+  const data = new FormData(inquiry);
+  const details = {
+    vehicleId: currentVehicle().id,
+    pickupDate: data.get('date'),
+    pickupTime: data.get('time'),
+    pickup: pickup.value.trim(),
+    destination: destination.value.trim(),
+    hours: Number(hours.value),
+    passengers: Number(passengers.value),
+    fullName: data.get('fullName').trim(),
+    email: data.get('email').trim(),
+    phone: data.get('phone').trim(),
+  };
+  const signature = JSON.stringify(details);
+  if (savedRequest?.signature !== signature) {
+    savedRequest = { signature, id: crypto.randomUUID(), completed: false };
+  }
+  const attempt = savedRequest;
+  if (attempt.completed) {
+    requestStatus.textContent = `${t('requestSaved')} ${attempt.id}`;
+    sendRequestButton.disabled = true;
+    return;
+  }
+  requestInProgress = true;
+  sendRequestButton.disabled = true;
+  editReviewButton.disabled = true;
+  requestStatus.textContent = t('requestSaving');
+  try {
+    const response = await fetch('/one/api/vip-hourly-request', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...details, requestId: attempt.id }),
+    });
+    const result = await response.json();
+    if (response.ok && result.requestId === attempt.id && result.status === 'requested') {
+      attempt.completed = true;
+      requestStatus.textContent = `${t('requestSaved')} ${attempt.id}`;
+    } else if (result.error === 'vehicle_capacity_unverified') {
+      requestStatus.textContent = t('requestCapacity');
+    } else if (result.error === 'hourly_radius_exceeded') {
+      requestStatus.textContent = t('requestRoute');
+    } else if (response.status === 400 || result.error === 'pickup_time_invalid') {
+      requestStatus.textContent = t('requestDetails');
+    } else {
+      requestStatus.textContent = t('requestUnavailable');
+    }
+  } catch {
+    requestStatus.textContent = t('requestUnavailable');
+  } finally {
+    requestInProgress = false;
+    editReviewButton.disabled = false;
+    sendRequestButton.disabled = attempt.completed;
+  }
+});
+
+fetch('/one/api/vip-hourly-request')
+  .then(response => response.ok ? response.json() : null)
+  .then(result => {
+    requestEnabled = result?.enabled === true;
+    if (requestEnabled && reviewDialog.open && !isTransfer()) sendRequestButton.hidden = false;
+  })
+  .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
   const message = [t('inquiryGreeting'), '', ...bookingDetails().map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
   const link = new URL('https://wa.me/13058501737');
