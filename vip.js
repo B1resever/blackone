@@ -37,6 +37,7 @@ const fleet = [
     capacity: 15,
     edition: ['Cream cabin', 'Cabina color crema'],
     choicePhoto: ['exterior'],
+    doorPreview: 'door',
     description: [
       'Mercedes Sprinter VIP. Black exterior, cream cabin and an onboard kitchen.',
       'Mercedes Sprinter VIP. Exterior negro, cabina color crema y cocina a bordo.',
@@ -105,6 +106,8 @@ const copy = {
   close: ['Close', 'Cerrar'],
   edit: ['Edit', 'Editar'],
   gallery: ['See photos', 'Ver fotos'],
+  doorOpen: ['Door open', 'Puerta abierta'],
+  fleetVideo: ['B1 Black One video', 'Video de B1 Black One'],
   fullName: ['Full name', 'Nombre completo'],
   email: ['Email', 'Correo electrónico'],
   phone: ['Phone', 'Teléfono'],
@@ -144,6 +147,7 @@ const copy = {
 
 const language = document.querySelector('#language');
 const vehicleOptions = document.querySelector('#vehicle-options');
+const fleetVideo = document.querySelector('#fleet-video');
 const inquiry = document.querySelector('#inquiry');
 const passengers = inquiry.elements.namedItem('passengers');
 const pickup = inquiry.elements.namedItem('pickup');
@@ -233,10 +237,10 @@ function chooseVehicle(vehicle) {
   inquiry.elements.namedItem('date').focus();
 }
 
-function openGallery(vehicle) {
+function openGallery(vehicle, photo) {
   galleryVehicle = vehicle;
   document.querySelector('#gallery-title').textContent = vehicle.name;
-  const gallery = createGallery(vehicle, true);
+  const gallery = createGallery(vehicle, photo);
   galleryContent.replaceChildren(gallery.figure);
   galleryRender = gallery.render;
   galleryDialog.showModal();
@@ -255,16 +259,29 @@ function createVehicleOption(vehicle) {
   label.append(input);
   if (vehicle.choicePhoto) {
     const [file, note] = vehicle.choicePhoto;
-    const preview = document.createElement('button');
-    preview.type = 'button';
-    preview.className = 'photo-button';
-    preview.dataset.galleryButton = vehicle.id;
-    const image = document.createElement('img');
-    image.src = `/images/vip/${vehicle.id}/${file}.webp`;
-    image.alt = '';
-    preview.append(image);
-    preview.addEventListener('click', () => openGallery(vehicle));
-    card.append(preview);
+    const previews = document.createElement('div');
+    previews.className = 'vehicle-previews';
+    const photos = vehicle.doorPreview ? [[file, 'gallery'], [vehicle.doorPreview, 'doorOpen']] : [[file, 'gallery']];
+    for (const [photo, labelKey] of photos) {
+      const preview = document.createElement('button');
+      preview.type = 'button';
+      preview.className = 'photo-button';
+      preview.dataset.galleryButton = vehicle.id;
+      preview.dataset.previewLabel = labelKey;
+      const image = document.createElement('img');
+      image.src = `/images/vip/${vehicle.id}/${photo}.webp`;
+      image.alt = '';
+      preview.append(image);
+      if (labelKey === 'doorOpen') {
+        const caption = document.createElement('span');
+        caption.className = 'door-caption';
+        caption.dataset.copy = labelKey;
+        preview.append(caption);
+      }
+      preview.addEventListener('click', () => openGallery(vehicle, photo));
+      previews.append(preview);
+    }
+    card.append(previews);
     if (note) {
       const caption = document.createElement('small');
       caption.dataset.copy = note;
@@ -285,7 +302,7 @@ function createVehicleOption(vehicle) {
   return card;
 }
 
-function createGallery(vehicle, modal = false) {
+function createGallery(vehicle, initialPhoto) {
   const figure = document.createElement('figure');
   figure.className = 'gallery';
   figure.innerHTML = `
@@ -297,7 +314,7 @@ function createGallery(vehicle, modal = false) {
     </figcaption>`;
   const image = figure.querySelector('img');
   const caption = figure.querySelector('[aria-live]');
-  let index = 0;
+  let index = Math.max(0, vehicle.photos.findIndex(([file]) => file === initialPhoto));
 
   function render() {
     const [file, english, spanish] = vehicle.photos[index];
@@ -314,7 +331,7 @@ function createGallery(vehicle, modal = false) {
       render();
     });
   });
-  if (modal) return { figure, render };
+  if (initialPhoto) return { figure, render };
   galleries.push(render);
   return figure;
 }
@@ -348,12 +365,14 @@ for (const vehicle of fleet) {
   document.querySelector('#fleet-details').append(createVehicleCard(vehicle));
   vehicleOptions.append(createVehicleOption(vehicle));
 }
+vehicleOptions.lastElementChild.before(fleetVideo);
 
 function renderLanguage() {
   const locale = language.value === 'es' ? 'es' : 'en';
   localeIndex = locale === 'es' ? 1 : 0;
   document.documentElement.lang = locale;
   document.title = t('title');
+  fleetVideo.setAttribute('aria-label', t('fleetVideo'));
 
   document.querySelectorAll('[data-copy]').forEach(element => {
     element.textContent = t(element.dataset.copy);
@@ -370,8 +389,9 @@ function renderLanguage() {
     const optionSpec = document.querySelector(`[data-option-spec="${vehicle.id}"]`);
     optionSpec.textContent = spec.join(' · ');
     optionSpec.hidden = !spec.length;
-    const preview = vehicleOptions.querySelector(`[data-gallery-button="${vehicle.id}"]`);
-    if (preview) preview.setAttribute('aria-label', `${t('gallery')}: ${vehicle.name}`);
+    for (const preview of vehicleOptions.querySelectorAll(`[data-gallery-button="${vehicle.id}"]`)) {
+      preview.setAttribute('aria-label', `${t(preview.dataset.previewLabel)}: ${vehicle.name}`);
+    }
     if (!vehicle.features.length) continue;
     card.querySelector('[data-description]').textContent = vehicle.description[localeIndex];
     const features = vehicle.features.map(feature => feature[localeIndex]);
