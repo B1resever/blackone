@@ -19,6 +19,7 @@ export interface VipCatalogEntry {
   bookingMode: "hourly";
   hourlyRateCents: null;
   verifiedMedia: readonly string[];
+  illustrativeMedia?: readonly string[];
 }
 export const VIP_FLEET: readonly VipCatalogEntry[] = [
   {
@@ -27,7 +28,7 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
     exteriorColor: "black",
     passengerCapacity: 10,
     descriptionEn: "Mercedes Sprinter Maybach Style. Nine guests in the rear VIP cabin and one beside the chauffeur.",
-    featuresEn: ["Turquoise VIP cabin", "Ambient lighting", "Premium leather", "Individual climate control", "Entertainment system", "Privacy", "Onboard Wi-Fi"],
+    featuresEn: ["Turquoise VIP cabin", "Premium turquoise leather", "Black marble floor", "Embroidered Maybach emblems", "Integrated Apple TV", "Ambient lighting", "Individual climate control", "Audio system", "Full privacy", "Onboard Wi-Fi"],
     priority: 1,
     mediaSlots: ["exterior", "door_open", "cabin", "seat_detail", "rear_exterior"],
     doorPresentation: "open_for_cabin",
@@ -40,6 +41,7 @@ export const VIP_FLEET: readonly VipCatalogEntry[] = [
       "/images/vip/maybach-tifanni/tables.webp",
       "/images/vip/maybach-tifanni/rear.webp",
     ],
+    illustrativeMedia: ["/images/vip/maybach-tifanni/door-illustration.webp"],
   },
   {
     id: "desert-sand",

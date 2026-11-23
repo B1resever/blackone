@@ -29,13 +29,10 @@ nav select { padding: 0.5rem; min-height: 44px; }
   overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
 h1, h2, h3 { font-family: Georgia, serif; font-weight: 500; line-height: 1.05; margin: 0; }
-h1 { font-size: clamp(3rem, 7vw, 6rem); letter-spacing: -0.055em; }
+h1 { font-size: clamp(2.75rem, 6vw, 5rem); letter-spacing: -0.055em; }
 h2 { font-size: clamp(2.25rem, 5vw, 3.5rem); letter-spacing: -0.035em; }
 h3 { font-size: clamp(1.7rem, 4vw, 2.25rem); }
 p { line-height: 1.6; }
-.hero { display: grid; grid-template-columns: 0.76fr 1fr; gap: clamp(1.5rem, 5vw, 5rem); align-items: center; padding-block: 3rem; }
-.intro p { max-width: 34ch; }
-.eyebrow { font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.875rem; }
 .action {
   display: inline-flex; align-items: center; justify-content: center; min-height: 46px;
   padding: 0.65rem 1.15rem; border: 1px solid var(--accent); background: var(--accent);
@@ -43,7 +40,7 @@ p { line-height: 1.6; }
 }
 .action:hover { background: #873009; }
 .section { padding-block: 2.75rem; }
-.fleet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+.fleet-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; align-items: start; margin-top: 1.5rem; }
 .vehicle { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: white; }
 .vehicle-info { padding: clamp(1rem, 3vw, 1.7rem); }
 .vehicle-info p { margin-block: 0.65rem 0; }
@@ -52,7 +49,7 @@ p { line-height: 1.6; }
 .features li { background: var(--aqua); border-radius: 4px; padding: 0.28rem 0.55rem; font-size: 0.9rem; }
 .gallery { margin: 0; }
 .gallery img {
-  width: 100%; height: clamp(15rem, 38vw, 27rem); object-fit: contain; background: #e8eeeb;
+  width: 100%; height: clamp(13rem, 23vw, 20rem); object-fit: contain; background: #e8eeeb;
 }
 .gallery-controls {
   display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 0.5rem;
@@ -63,8 +60,14 @@ p { line-height: 1.6; }
   background: white; color: var(--ink); font-size: 1.25rem;
 }
 .gallery-controls figcaption { text-align: center; }
+summary { cursor: pointer; font-weight: 650; }
+.vehicle-details { margin-top: 0.75rem; }
+.service-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem; }
+.service-list details { border-top: 1px solid var(--line); padding-top: 0.85rem; }
+.service-list p { margin-block: 0.5rem 0; }
 .availability { background: var(--aqua); }
-.request-layout { display: grid; grid-template-columns: 1fr 1.3fr; gap: clamp(1.25rem, 5vw, 4rem); }
+.request-layout { display: grid; grid-template-columns: 1fr 1.3fr; align-items: center; gap: clamp(1rem, 5vw, 4rem); }
+.booking-heading p { margin-bottom: 0; }
 form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 form label { display: grid; gap: 0.3rem; font-weight: 650; min-width: 0; }
 .wide { grid-column: 1 / -1; }
@@ -74,9 +77,9 @@ input, select {
 }
 .site-footer { min-height: 84px; padding-block: 1rem; }
 @media (max-width: 740px) {
-  .hero, .fleet-grid, .request-layout { grid-template-columns: 1fr; }
+  .fleet-grid, .request-layout, .service-list { grid-template-columns: 1fr; }
   .site-header { flex-wrap: wrap; }
-  .hero { padding-block: 2rem; }
+  .availability { padding-block: 1.5rem; }
   nav { column-gap: 1rem; row-gap: 0.25rem; }
   .page-width { width: calc(100% - 2rem); }
 }
