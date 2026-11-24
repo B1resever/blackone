@@ -151,3 +151,30 @@ dialog .booking-note { margin-top: 0.7rem; }
 .payment-methods ul { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.35rem; }
 .payment-methods li { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.24rem 0.45rem; border: 1px solid var(--line); border-radius: 4px; font-size: 0.82rem; }
 .payment-methods img { width: 1.7rem; height: 1rem; object-fit: contain; }
+
+/* VIP editorial presentation; existing wordmark and accent retained. */
+:root { --line:#ded8ce; --aqua:#f0ece4; background:#faf8f3; }
+body { background:#faf8f3; }
+.site-header { background:#faf8f3; border-bottom:1px solid var(--line); position:sticky; top:0; z-index:20; }
+nav a { text-decoration:none; }
+.action,.secondary { border-radius:2px; }
+.vip-hero { display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:clamp(2rem,6vw,7rem); min-height: min(780px, 83vh); padding-block:2.5rem; }
+.hero-copy { padding-block:2rem; }
+.hero-kicker { font-size:.72rem; letter-spacing:.24em; font-weight:700; color:#765d40; }
+.hero-copy h1 { font-size:clamp(3.6rem,7vw,7rem); line-height:.96; max-width:8ch; }
+.hero-description { font-size:1.2rem; color:#50544e; max-width:30ch; }
+.hero-actions { display:flex; flex-wrap:wrap; gap:.75rem; margin-top:2rem; }
+.hero-actions .secondary { text-decoration:none; background:transparent; }
+.hero-film { display:flex; align-items:center; justify-content:center; background:#e9e2d5; padding:1rem; }
+.hero-film #fleet-video { width:100%; max-width:380px; max-height:68vh; aspect-ratio:512/910; object-fit:contain; border-radius:0; background:#171b19; }
+#fleet { border-top:1px solid var(--line); padding-block:4rem; }
+.fleet-grid { align-items:stretch; gap:1.5rem; }
+.vehicle { border-radius:2px; }
+.gallery img,.collection-escalade { width:100%; height:clamp(15rem,23vw,21rem); object-fit:contain; background:#ede9e0; }
+.gallery-controls { background:#faf8f3; }
+.availability { background:#f0ece4; scroll-margin-top:90px; }
+#fleet { scroll-margin-top:90px; }
+.booking-heading h2 { font-size:clamp(2.4rem,4vw,4rem); }
+#fleet-dialog { width:min(960px,calc(100% - 2rem)); }
+#fleet-dialog .gallery img { height:min(65dvh,650px); }
+@media(max-width:740px) { .vip-hero { grid-template-columns:1fr; gap:1rem; min-height:0; padding-block:1.5rem; } .hero-copy { padding-block:.5rem; } .hero-copy h1 { font-size:clamp(3rem,12vw,5rem); } .hero-film #fleet-video { max-height:65vh; } .site-header { position:relative; } #fleet { padding-block:2rem; } }
