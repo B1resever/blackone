@@ -627,9 +627,9 @@ syncFilm();
 
 const bookingScreen=document.querySelector('#booking-screen');
 const hero=document.querySelector('.vip-hero');
-fleetVideo.defaultPlaybackRate=.75;
-fleetVideo.playbackRate=.75;
-fleetVideo.addEventListener('loadedmetadata',()=>{fleetVideo.playbackRate=.75;});
+fleetVideo.defaultPlaybackRate=.5;
+fleetVideo.playbackRate=.5;
+fleetVideo.addEventListener('loadedmetadata',()=>{fleetVideo.playbackRate=.5;});
 function showPage(){
  const booking=location.hash==='#availability'||location.hash==='#fleet';
  const wasBooking=!bookingScreen.hidden;
