@@ -3,6 +3,7 @@ import { getMapsServerKey } from './maps-config.js';
 export type RouteMetrics = {
   distanceMeters: number;
   durationSeconds: number;
+  tollCents?: number | null;
   pickupLocation?: { latitude: number; longitude: number };
   dropoffLocation?: { latitude: number; longitude: number };
 };
@@ -20,7 +21,7 @@ function getMapsKey() {
   return key;
 }
 
-export async function computeRoute(pickup: string, dropoff: string): Promise<RouteMetrics> {
+export async function computeRoute(pickup: string, dropoff: string, options?: { departureTime?: string; tolls?: boolean }): Promise<RouteMetrics> {
   const key = getMapsKey();
 
   const response = await fetch('https://routes.googleapis.com/directions/v2:computeRoutes', {
@@ -28,7 +29,7 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
     headers: {
       'Content-Type': 'application/json',
       'X-Goog-Api-Key': key,
-      'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.legs.startLocation,routes.legs.endLocation',
+      'X-Goog-FieldMask': 'routes.distanceMeters,routes.duration,routes.legs.startLocation,routes.legs.endLocation' + (options?.tolls ? ',routes.travelAdvisory.tollInfo' : ''),
     },
     body: JSON.stringify({
       origin: { address: pickup },
@@ -38,6 +39,8 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
       computeAlternativeRoutes: false,
       languageCode: 'en-US',
       units: 'IMPERIAL',
+      ...(options?.departureTime ? { departureTime: options.departureTime } : {}),
+      ...(options?.tolls ? { extraComputations: ['TOLLS'], routeModifiers: { vehicleInfo: { emissionType: 'GASOLINE' } } } : {}),
     }),
   });
 
@@ -47,7 +50,7 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
   }
 
   const data = (await response.json()) as {
-    routes?: Array<{ distanceMeters?: number; duration?: string; legs?: Array<{
+    routes?: Array<{ distanceMeters?: number; duration?: string; travelAdvisory?: { tollInfo?: { estimatedPrice?: Array<{currencyCode?: string; units?: string; nanos?: number}> } }; legs?: Array<{
       startLocation?: { latLng?: { latitude: number; longitude: number } };
       endLocation?: { latLng?: { latitude: number; longitude: number } };
     }> }>;
@@ -62,7 +65,11 @@ export async function computeRoute(pickup: string, dropoff: string): Promise<Rou
     throw new Error('Google Routes returned an invalid duration');
   }
 
+  const toll = route.travelAdvisory?.tollInfo;
+  const prices = toll?.estimatedPrice;
+  const tollCents = !toll ? 0 : prices?.length && prices.every(p=>p.currencyCode==='USD') ? Math.round(prices.reduce((sum,p)=>sum+Number(p.units??0)*100+Number(p.nanos??0)/10000000,0)) : null;
   return {
+    ...(options?.tolls ? {tollCents} : {}),
     distanceMeters: route.distanceMeters,
     durationSeconds,
     ...(route.legs?.[0]?.startLocation?.latLng ? { pickupLocation: route.legs[0].startLocation.latLng } : {}),
