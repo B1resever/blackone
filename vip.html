@@ -6,7 +6,7 @@
   <meta name="description" content="Choose your B1 Black One VIP vehicle for hourly chauffeur service or a private transfer.">
   <title>B1 Black One VIP | Private Chauffeur Service</title>
   <link rel="stylesheet" href="/vip.css?v=86">
-  <script type="module" src="/vip.js?v=86"></script>
+  <script type="module" src="/vip.js?v=87"></script>
 </head>
 <body>
   <header class="site-header">
@@ -47,6 +47,7 @@
             
           </fieldset>
           <div class="booking-fields" id="booking-fields">
+<label class="wide"><span data-copy="occasion">Purpose of your reservation</span><select name="occasion" required><option value="privateRide" data-copy="privateRide">Private chauffeur</option><option value="airports" data-copy="airports">Airport Transfers</option><option value="corporate" data-copy="corporate">Corporate Events</option><option value="weddings" data-copy="weddings">Weddings</option><option value="specialEvents" data-copy="specialEvents">Special events</option><option value="photoVideo" data-copy="photoVideo">Photo &amp; video</option><option value="nightOut" data-copy="nightOut">VIP night out</option></select></label>
             <label class="wide"><span data-copy="serviceType">Service</span>
               <select name="service">
                 <option value="hourly" data-copy="hourly">Hourly</option>
@@ -58,7 +59,7 @@
             <label class="wide"><span data-copy="pickup">Pickup location</span><input name="pickup" type="text" maxlength="180" required></label>
             <label class="wide"><span data-copy="destination">Drop-off location</span><input name="destination" type="text" maxlength="180" required></label>
             <a class="wide" id="route-map" data-transfer-only data-copy="routeMap" target="_blank" rel="noopener" hidden>View route map</a>
-            <label data-hourly-only><span data-copy="hours">Hours</span><input name="hours" type="number" min="3" max="24" step="1" value="3" required></label>
+            <label data-hourly-only><span data-copy="hours">Hours</span><input name="hours" type="number" min="4" max="24" step="1" value="4" required></label>
             <label><span data-copy="passengers">Passengers</span><input name="passengers" type="number" min="1" step="1" required></label>
             <label class="wide"><span data-copy="fullName">Full name</span><input name="fullName" autocomplete="name" maxlength="120" required></label>
             <label><span data-copy="email">Email</span><input name="email" type="email" autocomplete="email" maxlength="160" required></label>

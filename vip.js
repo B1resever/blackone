@@ -1,8 +1,9 @@
 // Shared pricing snapshot from config/b1-vip-hourly-rates.json; keep in sync with server configuration.
-const rates = {"currency":"USD","minimumHours":3,"maximumRadiusMiles":30,"vehicles":{"maybach-tifanni":{"minimumPackageCents":100000,"additionalHourCents":40000,"gratuityBasisPoints":1500},"desert-sand":{"minimumPackageCents":100000,"additionalHourCents":40000,"gratuityBasisPoints":1500},"cadillac-escalade":{"minimumPackageCents":60000,"additionalHourCents":26000,"gratuityBasisPoints":1500}}};
+const rates = {"currency":"USD","minimumHours":4,"maximumRadiusMiles":30,"vehicles":{"maybach-tifanni":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"desert-sand":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"cadillac-escalade":{"minimumPackageCents":81000,"additionalHourCents":20250,"gratuityBasisPoints":1500},"rolls-royce-cullinan":{"minimumPackageCents":162000,"additionalHourCents":40500,"gratuityBasisPoints":1500},"range-rover-sv":{"minimumPackageCents":94500,"additionalHourCents":23625,"gratuityBasisPoints":1500},"classic-car":{"minimumPackageCents":54000,"additionalHourCents":13500,"gratuityBasisPoints":1500}}};
 
 
 const fleet = [
+  {id:'rolls-royce-cullinan',name:'Rolls-Royce Cullinan',capacity:null,edition:['Ultra Luxury · On request','Ultra lujo · Bajo solicitud'],description:['Availability subject to confirmation.','Disponibilidad sujeta a confirmación.'],features:[],photos:[]},
   {
     id: 'maybach-tifanni',
     name: 'Maybach Tifanni',
@@ -57,7 +58,7 @@ const fleet = [
   },
   {
     id: 'cadillac-escalade',
-    name: 'Cadillac Escalade',
+    name: 'Cadillac Escalade-V ESV',
     capacity: null,
     description: [
       'Black Cadillac Escalade for private chauffeur service.',
@@ -66,9 +67,17 @@ const fleet = [
     features: [],
     photos: [],
   },
+  {id:'range-rover-sv',name:'Range Rover SV',capacity:null,edition:['Executive SUV · On request','SUV ejecutivo · Bajo solicitud'],description:['Availability subject to confirmation.','Disponibilidad sujeta a confirmación.'],features:[],photos:[]},
+  {id:'classic-car',name:'Classic Car',capacity:null,edition:['Photo & video · On request','Foto y video · Bajo solicitud'],description:['Photo and video sessions only; availability subject to confirmation.','Solo sesiones de foto y video; disponibilidad sujeta a confirmación.'],features:[],photos:[]},
 ];
 
 const copy = {
+  occasion: ['Purpose of your reservation','Motivo de la reserva'],
+  privateRide: ['Private chauffeur','Chofer privado'],
+  specialEvents: ['Special events','Eventos especiales'],
+  photoVideo: ['Photo & video','Foto y video'],
+  nightOut: ['VIP night out','Salida VIP'],
+  onRequest: ['Available on request · Confirmation required','Bajo solicitud · Requiere confirmación'],
   backHome: ['Back to B1','Volver a B1'],
   heroKicker: ['PRIVATE CHAUFFEUR · SOUTH FLORIDA','CHOFER PRIVADO · SUR DE FLORIDA'],
   heroTitle: ['Luxury Private Transportation','Transportación Privada de Lujo'],
@@ -226,7 +235,7 @@ function refreshPrice() {
 
 function money(cents) {
   return new Intl.NumberFormat(localeIndex === 0 ? 'en-US' : 'es-US', {
-    style: 'currency', currency: rates.currency, minimumFractionDigits: 0,
+    style: 'currency', currency: rates.currency, minimumFractionDigits: 2,
   }).format(cents / 100);
 }
 
@@ -260,7 +269,7 @@ function chooseVehicle(vehicle) {
   updateCapacity();
   guiding = true;
   refreshConcierge();
-  inquiry.elements.namedItem('date').focus();
+  inquiry.elements.namedItem('occasion').focus();
 }
 
 function openGallery(vehicle, photo) {
@@ -480,6 +489,7 @@ vehicleOptions.addEventListener('change', () => {
   refreshConcierge();
 });
 hours.min = rates.minimumHours;
+hours.value = rates.minimumHours;
 service.addEventListener('change', () => {
   refreshService();
   refreshConcierge();
@@ -492,6 +502,7 @@ function bookingDetails() {
   return [
     ['vehicle', currentVehicle().name],
     ['serviceType', t(isTransfer() ? 'transfer' : 'hourly')],
+    ['occasion', t(data.get('occasion'))],
     ['pickupDate', data.get('date')],
     ['pickupTime', data.get('time')],
     ['pickup', pickup.value.trim()],
@@ -525,7 +536,7 @@ inquiry.addEventListener('submit', event => {
   }
   document.querySelector('#review-note').textContent = t(isTransfer() ? 'transferReview' : 'reviewNote');
   requestStatus.textContent = '';
-  sendRequestButton.hidden = isTransfer() || !requestEnabled;
+  sendRequestButton.hidden = true;
   sendRequestButton.disabled = false;
   reviewDialog.showModal();
   refreshPrice();
@@ -542,7 +553,7 @@ reviewDialog.addEventListener('close', () => {
 });
 
 sendRequestButton.addEventListener('click', async () => {
-  if (isTransfer() || !requestEnabled || sendRequestButton.disabled) return;
+  return; // Server intake suspended for revised quotes; concierge confirmation only.
   const data = new FormData(inquiry);
   const details = {
     vehicleId: currentVehicle().id,
@@ -602,12 +613,12 @@ fetch('/one/api/vip-hourly-request')
   .then(response => response.ok ? response.json() : null)
   .then(result => {
     requestEnabled = result?.enabled === true;
-    if (requestEnabled && reviewDialog.open && !isTransfer()) sendRequestButton.hidden = false;
+    // Manual concierge confirmation until supplier inventory and server pricing are synchronized.
   })
   .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
   const details = bookingDetails();
-  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`)].join('\n');
+  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ...(!isTransfer() ? Array.from(quote.children).reduce((a,node,i)=>{if(i%2===0)a.push(node.textContent+': '+(node.nextElementSibling?.textContent??''));return a;},[]) : [])].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
   location.assign(link);
