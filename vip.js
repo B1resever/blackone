@@ -75,6 +75,12 @@ const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","r
 fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
+ mileageEstimate:['Mileage estimate (outbound only)','Estimación por millas (solo ida)'],
+ tollEstimate:['Estimated tolls','Peajes estimados'],
+ tollUnknown:['Tolls pending confirmation','Peajes pendientes de confirmación'],
+ estimateTotal:['Estimated subtotal before unconfirmed charges','Subtotal estimado antes de cargos pendientes'],
+ transferEstimateNotice:['Mileage estimate only. Concierge must confirm minimum fare, return mileage and tolls before payment.','Estimación por millas. Concierge debe confirmar tarifa mínima, millas de regreso y peajes antes del pago.'],
+ hourlyTollNotice:['Known itinerary tolls only; additional stops and tolls require confirmation.','Peajes del itinerario conocido; paradas y peajes adicionales sujetos a confirmación.'],
  privateQuote:['Contact B1 Concierge for a private quote: 305-850-1737','Contacta a B1 Concierge para una cotización privada: 305-850-1737'],
  validateRoute:['Hourly estimate only — route and availability must be confirmed.','Estimación por hora — recorrido y disponibilidad sujetos a confirmación.'],
  classicOnly:['Classic Car is available for photo and video only; contact Concierge.','Classic Car disponible solo para fotografía y video; contacta a Concierge.'],
@@ -234,20 +240,23 @@ function updateCapacity() {
 }
 
 function refreshPrice() {
- const live=document.querySelector('#live-price');
- const vehicle=currentVehicle();
+ const live=document.querySelector('#live-price'), vehicle=currentVehicle();
  const selected=inquiry.querySelector('input[name="tip"]:checked');
  const tipBps=selected?Number(selected.value):null;
  const rows=[];
- if(vehicle?.id==='classic-car'&&isTransfer() || metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344){const message=t(vehicle?.id==='classic-car'?'classicOnly':'privateQuote');live.textContent=message;quote.textContent=message;return;}
- if(isTransfer()){live.textContent=t('transferPending');quote.textContent=t('transferPending');return;}
- if(!vehicle||!hours.value||!hours.validity.valid){live.replaceChildren();quote.replaceChildren();return;}
+ if(!vehicle){live.replaceChildren();quote.replaceChildren();return;}
+ if((vehicle.id==='classic-car'&&isTransfer())||metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344){const message=t(vehicle.id==='classic-car'?'classicOnly':'privateQuote');live.textContent=message;quote.textContent=message;return;}
+ if(isTransfer()&&!metrics){live.textContent=t('transferPending');quote.textContent=t('transferPending');return;}
+ if(!isTransfer()&&(!hours.value||!hours.validity.valid)){live.replaceChildren();quote.replaceChildren();return;}
  const rate=rates.vehicles[vehicle.id];
- const subtotal=rate.minimumPackageCents+(Number(hours.value)-rates.minimumHours)*rate.additionalHourCents;
- rows.push([t('servicePrice'),money(subtotal)]);
- if(tipBps!==null){const tip=Math.round(subtotal*tipBps/10000);rows.push([t('gratuity')+' ('+(tipBps/100)+'%)',money(tip)],[t('total'),money(subtotal+tip)]);}
+ const subtotal=isTransfer()?Math.round(metrics.distanceMeters/1609.344*607.5):rate.minimumPackageCents+(Number(hours.value)-rates.minimumHours)*rate.additionalHourCents;
+ const toll=Number.isFinite(metrics?.tollCents)&&metrics.tollCents>=0?metrics.tollCents:null;
+ rows.push([t(isTransfer()?'mileageEstimate':'servicePrice'),money(subtotal)]);
+ rows.push([t('tollEstimate'),toll===null?t('tollUnknown'):money(toll)]);
+ if(tipBps!==null){const tip=Math.round(subtotal*tipBps/10000);rows.push([t('gratuity')+' ('+(tipBps/100)+'%)',money(tip)],[t('estimateTotal'),money(subtotal+tip+(toll??0))]);}
  else rows.push([t('selectTip'),'']);
- for(const node of [live,quote]){node.replaceChildren();for(const [label,value] of rows){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;node.append(l,v);}if(node===quote){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=t('hold');v.textContent=money(subtotal);node.append(l,v);}}
+ rows.push([t(isTransfer()?'transferEstimateNotice':'hourlyTollNotice'),'']);
+ for(const node of [live,quote]){node.replaceChildren();for(const [label,value] of rows){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;node.append(l,v);}}
 }
 
 function money(cents) {
@@ -561,7 +570,7 @@ inquiry.addEventListener('submit', event => {
     detail.textContent = value;
     summary.append(label, detail);
   }
-  document.querySelector('#review-note').textContent = t(metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344?'privateQuote':isTransfer()?'transferReview':'validateRoute');
+  document.querySelector('#review-note').textContent = t(metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344?'privateQuote':isTransfer()?'transferEstimateNotice':'validateRoute');
   requestStatus.textContent = '';
   sendRequestButton.hidden = true;
   sendRequestButton.disabled = false;
@@ -645,7 +654,7 @@ fetch('/one/api/vip-hourly-request')
   .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
   const details = bookingDetails();
-  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ...(!isTransfer() ? Array.from(quote.children).reduce((a,node,i)=>{if(i%2===0)a.push(node.textContent+': '+(node.nextElementSibling?.textContent??''));return a;},[]) : [])].join('\n');
+  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ... (Array.from(quote.children).reduce((a,node,i)=>{if(i%2===0)a.push(node.textContent+': '+(node.nextElementSibling?.textContent??''));return a;},[]))].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
   location.assign(link);
@@ -702,7 +711,7 @@ const routeStatus=document.querySelector('#route-metrics');
 
 async function postMaps(path,body,signal){const res=await fetch('/one/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});if(!res.ok)throw Error('maps unavailable');return res.json();}
 function showMetrics(){if(!metrics)return;routeStatus.textContent=t('distanceLabel')+': '+(metrics.distanceMeters/1609.344).toFixed(1)+' mi · '+t('durationLabel')+': '+Math.ceil(metrics.durationSeconds/60)+' min';}
-function scheduleMetrics(){clearTimeout(routeTimer);const serial=++routeSerial;metrics=null;const from=pickup.value.trim(),to=destination.value.trim();routeStatus.textContent='';if(from.length<3||to.length<3)return;routeTimer=setTimeout(async()=>{routeStatus.textContent=t('routePending');try{const result=await postMaps('route',{pickup:from,dropoff:to});if(serial!==routeSerial)return;if(!Number.isFinite(result.distanceMeters)||!Number.isFinite(result.durationSeconds))throw Error();metrics=result;showMetrics();refreshPrice();}catch{if(serial===routeSerial)routeStatus.textContent=t('routeUnavailable');}},700);}
+function scheduleMetrics(){clearTimeout(routeTimer);const serial=++routeSerial;metrics=null;const from=pickup.value.trim(),to=destination.value.trim();routeStatus.textContent='';if(from.length<3||to.length<3)return;routeTimer=setTimeout(async()=>{routeStatus.textContent=t('routePending');try{const result=await postMaps('route',{pickup:from,dropoff:to,vip:true,pickupDate:inquiry.elements.namedItem('date').value,pickupTime:inquiry.elements.namedItem('time').value});if(serial!==routeSerial)return;if(!Number.isFinite(result.distanceMeters)||!Number.isFinite(result.durationSeconds))throw Error();metrics=result;showMetrics();refreshPrice();}catch{if(serial===routeSerial)routeStatus.textContent=t('routeUnavailable');}},700);}
 for(const field of [pickup,destination]){
  let timer,controller,version=0;
  const list=document.createElement('div');list.className='places-results';list.hidden=true;field.after(list);field.autocomplete='off';
@@ -712,6 +721,7 @@ for(const field of [pickup,destination]){
  field.addEventListener('change',scheduleMetrics);
  field.addEventListener('input',()=>{clearTimeout(routeTimer);routeSerial++;metrics=null;routeStatus.textContent='';refreshPrice();});
 }
+for(const name of ['date','time'])inquiry.elements.namedItem(name).addEventListener('change',()=>{scheduleMetrics();refreshPrice();});
 inquiry.addEventListener('input',refreshPrice);
 inquiry.addEventListener('change',refreshPrice);
 language.addEventListener('change',()=>{refreshPrice();showMetrics();});
