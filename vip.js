@@ -1,5 +1,6 @@
 // Shared pricing snapshot from config/b1-vip-hourly-rates.json; keep in sync with server configuration.
-const rates = {"currency":"USD","minimumHours":4,"maximumRadiusMiles":30,"vehicles":{"maybach-tifanni":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"desert-sand":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"cadillac-escalade":{"minimumPackageCents":81000,"additionalHourCents":20250,"gratuityBasisPoints":1500},"rolls-royce-cullinan":{"minimumPackageCents":162000,"additionalHourCents":40500,"gratuityBasisPoints":1500},"range-rover-sv":{"minimumPackageCents":94500,"additionalHourCents":23625,"gratuityBasisPoints":1500},"classic-car":{"minimumPackageCents":54000,"additionalHourCents":13500,"gratuityBasisPoints":1500}}};
+let metrics=null;
+const rates = {"currency":"USD","minimumHours":4,"maximumRadiusMiles":50,"vehicles":{"maybach-tifanni":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"desert-sand":{"minimumPackageCents":108000,"additionalHourCents":27000,"gratuityBasisPoints":1500},"cadillac-escalade":{"minimumPackageCents":81000,"additionalHourCents":20250,"gratuityBasisPoints":1500},"rolls-royce-cullinan":{"minimumPackageCents":162000,"additionalHourCents":40500,"gratuityBasisPoints":1500},"range-rover-sv":{"minimumPackageCents":94500,"additionalHourCents":23625,"gratuityBasisPoints":1500},"classic-car":{"minimumPackageCents":54000,"additionalHourCents":13500,"gratuityBasisPoints":1500}}};
 
 
 const fleet = [
@@ -74,6 +75,9 @@ const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","r
 fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
+ privateQuote:['Contact B1 Concierge for a private quote: 305-850-1737','Contacta a B1 Concierge para una cotización privada: 305-850-1737'],
+ validateRoute:['Hourly estimate only — route and availability must be confirmed.','Estimación por hora — recorrido y disponibilidad sujetos a confirmación.'],
+ classicOnly:['Classic Car is available for photo and video only; contact Concierge.','Classic Car disponible solo para fotografía y video; contacta a Concierge.'],
  chooseTip:['Choose chauffeur gratuity','Elige la propina del chofer'],
  routeUnavailable:['Google Maps unavailable. Concierge must confirm the route.','Google Maps no disponible. Concierge debe confirmar el recorrido.'],
  routePending:['Calculating route…','Calculando recorrido…'],
@@ -87,7 +91,7 @@ const copy = {
   stepOne:['01 — Select your vehicle','01 — Elige tu vehículo'],
   stepTwo:['02 — Your journey','02 — Tu viaje'],
   changeVehicle:['Change vehicle','Cambiar vehículo'],
-  occasion: ['Purpose of your reservation','Motivo de la reserva'],
+  occasion: ['Service description (optional)','Descripción del servicio (opcional)'],
   privateRide: ['Private chauffeur','Chofer privado'],
   specialEvents: ['Special events','Eventos especiales'],
   photoVideo: ['Photo & video','Foto y video'],
@@ -129,7 +133,7 @@ const copy = {
   requestSaving: ['Sending your request…', 'Enviando tu solicitud…'],
   requestSaved: ['Request received. B1 will confirm availability and payment.', 'Solicitud recibida. B1 confirmará la disponibilidad y el pago.'],
   requestUnavailable: ['Online requests are unavailable. You can continue on WhatsApp.', 'La solicitud en línea no está disponible. Puedes continuar por WhatsApp.'],
-  requestRoute: ['The hourly service area is limited to 30 miles from pickup. Check the destination or select a transfer.', 'El servicio por hora se limita a 30 millas desde la recogida. Revisa el destino o selecciona un traslado.'],
+  requestRoute: ['The hourly service area is limited to 50 miles from pickup. Check the destination or select a transfer.', 'El servicio por hora se limita a 50 millas desde la recogida. Revisa el destino o selecciona un traslado.'],
   requestCapacity: ['Contact B1 on WhatsApp to confirm this vehicle’s capacity.', 'Contacta a B1 por WhatsApp para confirmar la capacidad de este vehículo.'],
   requestDetails: ['Check your trip date, passenger count and contact details.', 'Revisa la fecha, la cantidad de pasajeros y tus datos de contacto.'],
   reviewTitle: ['Review your reservation', 'Revisa tu reserva'],
@@ -159,7 +163,7 @@ const copy = {
   transfer: ['Transfer', 'Traslado'],
   destination: ['Drop-off location', 'Destino'],
   routeMap: ['View route map', 'Ver ruta en el mapa'],
-  hourlyNote: ['Hourly service stays within a 30-mile radius of pickup.', 'El servicio por hora se limita a un radio de 30 millas desde la recogida.'],
+  hourlyNote: ['Hourly service stays within a 50-mile radius of pickup.', 'El servicio por hora se limita a un radio de 50 millas desde la recogida.'],
   transferNote: [
     'We quote the transfer using driving distance and time, including the vehicle’s return to the pickup point.',
     'Cotizamos el traslado según las millas y el tiempo de conducción, incluido el regreso del vehículo al punto de recogida.',
@@ -235,6 +239,7 @@ function refreshPrice() {
  const selected=inquiry.querySelector('input[name="tip"]:checked');
  const tipBps=selected?Number(selected.value):null;
  const rows=[];
+ if(vehicle?.id==='classic-car'&&isTransfer() || metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344){const message=t(vehicle?.id==='classic-car'?'classicOnly':'privateQuote');live.textContent=message;quote.textContent=message;return;}
  if(isTransfer()){live.textContent=t('transferPending');quote.textContent=t('transferPending');return;}
  if(!vehicle||!hours.value||!hours.validity.valid){live.replaceChildren();quote.replaceChildren();return;}
  const rate=rates.vehicles[vehicle.id];
@@ -254,7 +259,7 @@ function money(cents) {
 function refreshRoute() {
   const origin = pickup.value.trim();
   const end = destination.value.trim();
-  const showMap = isTransfer() && origin && end;
+  const showMap = origin && end;
   routeMap.hidden = !showMap;
   if (!showMap) {
     routeMap.removeAttribute('href');
@@ -262,7 +267,7 @@ function refreshRoute() {
   }
   const map = new URL('https://www.google.com/maps/dir/');
   map.search = new URLSearchParams({
-    api: '1', origin, destination: origin, waypoints: end, travelmode: 'driving',
+    api: '1', origin, destination: end, travelmode: 'driving',
   }).toString();
   routeMap.href = map;
 }
@@ -283,7 +288,7 @@ function chooseVehicle(vehicle) {
   refreshConcierge();
   location.hash='#availability';
   showPage();
-  inquiry.elements.namedItem('occasion').focus({preventScroll:true});
+  inquiry.elements.namedItem('service').focus({preventScroll:true});
 }
 
 function openGallery(vehicle, photo) {
@@ -523,7 +528,7 @@ function bookingDetails() {
   return [
     ['vehicle', currentVehicle().name],
     ['serviceType', t(isTransfer() ? 'transfer' : 'hourly')],
-    ['occasion', t(data.get('occasion'))],
+    ['occasion', data.get('occasion')?.trim() || '—'],
     ['pickupDate', data.get('date')],
     ['pickupTime', data.get('time')],
     ['pickup', pickup.value.trim()],
@@ -556,7 +561,7 @@ inquiry.addEventListener('submit', event => {
     detail.textContent = value;
     summary.append(label, detail);
   }
-  document.querySelector('#review-note').textContent = t(isTransfer() ? 'transferReview' : 'reviewNote');
+  document.querySelector('#review-note').textContent = t(metrics?.distanceMeters>rates.maximumRadiusMiles*1609.344?'privateQuote':isTransfer()?'transferReview':'validateRoute');
   requestStatus.textContent = '';
   sendRequestButton.hidden = true;
   sendRequestButton.disabled = false;
@@ -694,10 +699,10 @@ showPage();
 /* Existing server-side Google Places and Routes endpoints; no keys exposed to browser. */
 let routeTimer,routeSerial=0;
 const routeStatus=document.querySelector('#route-metrics');
-let metrics=null;
+
 async function postMaps(path,body,signal){const res=await fetch('/one/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});if(!res.ok)throw Error('maps unavailable');return res.json();}
 function showMetrics(){if(!metrics)return;routeStatus.textContent=t('distanceLabel')+': '+(metrics.distanceMeters/1609.344).toFixed(1)+' mi · '+t('durationLabel')+': '+Math.ceil(metrics.durationSeconds/60)+' min';}
-function scheduleMetrics(){clearTimeout(routeTimer);const serial=++routeSerial;metrics=null;const from=pickup.value.trim(),to=destination.value.trim();routeStatus.textContent='';if(from.length<3||to.length<3)return;routeTimer=setTimeout(async()=>{routeStatus.textContent=t('routePending');try{const result=await postMaps('route',{pickup:from,dropoff:to});if(serial!==routeSerial)return;if(!Number.isFinite(result.distanceMeters)||!Number.isFinite(result.durationSeconds))throw Error();metrics=result;showMetrics();}catch{if(serial===routeSerial)routeStatus.textContent=t('routeUnavailable');}},700);}
+function scheduleMetrics(){clearTimeout(routeTimer);const serial=++routeSerial;metrics=null;const from=pickup.value.trim(),to=destination.value.trim();routeStatus.textContent='';if(from.length<3||to.length<3)return;routeTimer=setTimeout(async()=>{routeStatus.textContent=t('routePending');try{const result=await postMaps('route',{pickup:from,dropoff:to});if(serial!==routeSerial)return;if(!Number.isFinite(result.distanceMeters)||!Number.isFinite(result.durationSeconds))throw Error();metrics=result;showMetrics();refreshPrice();}catch{if(serial===routeSerial)routeStatus.textContent=t('routeUnavailable');}},700);}
 for(const field of [pickup,destination]){
  let timer,controller,version=0;
  const list=document.createElement('div');list.className='places-results';list.hidden=true;field.after(list);field.autocomplete='off';
@@ -705,6 +710,7 @@ for(const field of [pickup,destination]){
  field.addEventListener('keydown',e=>{if(e.key==='Escape')list.hidden=true;});
  document.addEventListener('pointerdown',e=>{if(e.target!==field&&!list.contains(e.target))list.hidden=true;});
  field.addEventListener('change',scheduleMetrics);
+ field.addEventListener('input',()=>{clearTimeout(routeTimer);routeSerial++;metrics=null;routeStatus.textContent='';refreshPrice();});
 }
 inquiry.addEventListener('input',refreshPrice);
 inquiry.addEventListener('change',refreshPrice);
