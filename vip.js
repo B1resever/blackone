@@ -69,10 +69,11 @@ const fleet = [
 ];
 
 const copy = {
+  backHome: ['Back to B1','Volver a B1'],
   heroKicker: ['PRIVATE CHAUFFEUR · SOUTH FLORIDA','CHOFER PRIVADO · SUR DE FLORIDA'],
   heroTitle: ['Exceptional by design.','Excepcional por naturaleza.'],
   heroDescription: ['A private journey, shaped around you.','Un viaje privado, diseñado para ti.'],
-  heroReserve: ['Reserve your experience','Reserva tu experiencia'],
+  heroReserve: ['Reserve','Reservar'],
   heroFleet: ['Discover the collection','Descubre la colección'],
   title: ['B1 Black One VIP | Private Chauffeur Service', 'B1 Black One VIP | Servicio privado con chofer'],
   fleet: ['Fleet', 'Flota'],
@@ -623,3 +624,19 @@ for(const event of ['play','pause'])fleetVideo.addEventListener(event,syncFilm);
 language.addEventListener('change',syncFilm);
 if(matchMedia('(prefers-reduced-motion: reduce)').matches)fleetVideo.pause();
 syncFilm();
+
+const bookingScreen=document.querySelector('#booking-screen');
+const hero=document.querySelector('.vip-hero');
+fleetVideo.defaultPlaybackRate=.75;
+fleetVideo.playbackRate=.75;
+fleetVideo.addEventListener('loadedmetadata',()=>{fleetVideo.playbackRate=.75;});
+function showPage(){
+ const booking=location.hash==='#availability'||location.hash==='#fleet';
+ const wasBooking=!bookingScreen.hidden;
+ bookingScreen.hidden=!booking;hero.hidden=booking;
+ document.body.classList.toggle('landing-mode',!booking);
+ if(booking){fleetVideo.pause();if(!wasBooking)window.scrollTo(0,0);if(location.hash==='#availability')requestAnimationFrame(()=>document.querySelector('#availability').scrollIntoView({block:'start'}));}
+ else{window.scrollTo(0,0);if(wasBooking&&!matchMedia('(prefers-reduced-motion: reduce)').matches)fleetVideo.play().catch(()=>{});}
+}
+window.addEventListener('hashchange',showPage);
+showPage();
