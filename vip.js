@@ -10,7 +10,7 @@ const fleet = [
     name: 'Maybach Tifanni',
     capacity: 10,
     edition: ['Turquoise Edition', 'Edición turquesa'],
-    choicePhoto: ['door-illustration', 'illustration'],
+    choicePhoto: ['exterior', null],
     description: [
       'Mercedes Sprinter Maybach Style. 9 VIP seats in the rear and 1 beside the chauffeur.',
       'Mercedes Sprinter Maybach Style. 9 asientos VIP atrás y 1 junto al chofer.',
@@ -75,6 +75,7 @@ const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","r
 fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
+ paymentPendingButton:['Payment unavailable — quote confirmation required','Pago no disponible — falta confirmar cotización'],
  mileageEstimate:['Mileage estimate (outbound only)','Estimación por millas (solo ida)'],
  tollEstimate:['Estimated tolls','Peajes estimados'],
  tollUnknown:['Tolls pending confirmation','Peajes pendientes de confirmación'],
@@ -562,6 +563,8 @@ inquiry.addEventListener('submit', event => {
     missing.focus();
     return;
   }
+  renderSelectedVehicle();
+  document.querySelector('#review-vehicle').replaceChildren(...Array.from(document.querySelector('#selected-vehicle').children).map(node=>node.cloneNode(true)));
   const summary = document.querySelector('#booking-summary');
   summary.replaceChildren();
   for (const [key, value] of bookingDetails()) {
@@ -653,13 +656,6 @@ fetch('/one/api/vip-hourly-request')
     // Manual concierge confirmation until supplier inventory and server pricing are synchronized.
   })
   .catch(() => {});
-document.querySelector('#request-confirmation').addEventListener('click', () => {
-  const details = bookingDetails();
-  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ...Array.from(quote.children).filter(node=>node.tagName==='SPAN').map(node=>node.classList.contains('quote-note')?node.textContent:node.textContent+': '+(node.nextElementSibling?.textContent??''))].join('\n');
-  const link = new URL('https://wa.me/13058501737');
-  link.searchParams.set('text', message);
-  location.assign(link);
-});
 updateCapacity();
 renderLanguage();
 

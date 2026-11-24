@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Choose your B1 Black One VIP vehicle for hourly chauffeur service or a private transfer.">
   <title>B1 Black One VIP | Private Chauffeur Service</title>
-  <link rel="stylesheet" href="/vip.css?v=94">
-  <script type="module" src="/vip.js?v=94"></script>
+  <link rel="stylesheet" href="/vip.css?v=95">
+  <script type="module" src="/vip.js?v=95"></script>
 </head>
 <body>
   <header class="site-header">
@@ -105,7 +105,7 @@
       <h2 id="review-title" data-copy="reviewTitle">Review your reservation</h2>
       <form method="dialog"><button class="secondary" data-copy="edit">Edit</button></form>
     </div>
-    <dl id="booking-summary" class="quote"></dl>
+    <div id="review-vehicle" class="selected-vehicle"></div><dl id="booking-summary" class="quote"></dl>
     <div class="quote" id="hourly-price"></div>
     <details class="booking-note">
       <summary data-copy="paymentTerms">Payment and vehicle care</summary>
@@ -126,7 +126,7 @@
     <p class="booking-note" id="review-note"></p>
     <p id="vip-request-status" role="status"></p>
     <button class="action" id="submit-vip-request" type="button" data-copy="sendRequest" hidden>Send reservation request</button>
-    <button class="action" id="request-confirmation" type="button" data-copy="whatsapp">Confirm details on WhatsApp</button>
+    <button class="action" id="request-confirmation" type="button" data-copy="paymentPendingButton" disabled>Payment unavailable</button>
   </dialog>
 
   <footer class="site-footer page-width">
