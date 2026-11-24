@@ -72,6 +72,9 @@ const fleet = [
 ];
 
 const copy = {
+  stepOne:['01 — Select your vehicle','01 — Elige tu vehículo'],
+  stepTwo:['02 — Your journey','02 — Tu viaje'],
+  changeVehicle:['Change vehicle','Cambiar vehículo'],
   occasion: ['Purpose of your reservation','Motivo de la reserva'],
   privateRide: ['Private chauffeur','Chofer privado'],
   specialEvents: ['Special events','Eventos especiales'],
@@ -269,7 +272,9 @@ function chooseVehicle(vehicle) {
   updateCapacity();
   guiding = true;
   refreshConcierge();
-  inquiry.elements.namedItem('occasion').focus();
+  location.hash='#availability';
+  showPage();
+  inquiry.elements.namedItem('occasion').focus({preventScroll:true});
 }
 
 function openGallery(vehicle, photo) {
@@ -434,6 +439,7 @@ function renderLanguage() {
   if (galleryDialog.open) galleryRender();
   refreshService();
   refreshConcierge();
+  renderSelectedVehicle();
 }
 
 const requestedLanguage = new URLSearchParams(location.search).get('lang') || (()=>{try{return localStorage.getItem('b1-language')}catch{return null}})();
@@ -641,13 +647,29 @@ const hero=document.querySelector('.vip-hero');
 fleetVideo.defaultPlaybackRate=.5;
 fleetVideo.playbackRate=.5;
 fleetVideo.addEventListener('loadedmetadata',()=>{fleetVideo.playbackRate=.5;});
+function renderSelectedVehicle(){
+ const target=document.querySelector('#selected-vehicle');
+ const v=currentVehicle();
+ target.replaceChildren();
+ if(!v)return;
+ const img=document.createElement('img');
+ if(v.photos.length)img.src='/images/vip/'+v.id+'/'+(v.choicePhoto?.[0]||v.photos[0][0])+'.webp';
+ else if(v.id==='cadillac-escalade')img.src='/images/fleet/Escalade.png';
+ if(img.hasAttribute('src')){img.alt=v.name;target.append(img);}
+ const name=document.createElement('h3');name.textContent=v.name;target.append(name);
+ const note=document.createElement('p');note.textContent=v.description[localeIndex];target.append(note);
+}
 function showPage(){
  const booking=location.hash==='#availability'||location.hash==='#fleet';
+ const details=location.hash==='#availability'&&!!currentVehicle();
  const wasBooking=!bookingScreen.hidden;
  bookingScreen.hidden=!booking;hero.hidden=booking;
+ document.querySelector('#fleet').hidden=details;
+ document.querySelector('#availability').hidden=!details;
  document.body.classList.toggle('landing-mode',!booking);
- if(booking){fleetVideo.pause();if(!wasBooking)window.scrollTo(0,0);if(location.hash==='#availability')requestAnimationFrame(()=>document.querySelector('#availability').scrollIntoView({block:'start'}));}
+ if(booking){fleetVideo.pause();renderSelectedVehicle();window.scrollTo(0,0);}
  else{window.scrollTo(0,0);if(wasBooking&&!matchMedia('(prefers-reduced-motion: reduce)').matches)fleetVideo.play().catch(()=>{});}
 }
+language.addEventListener('change',renderSelectedVehicle);
 window.addEventListener('hashchange',showPage);
 showPage();
