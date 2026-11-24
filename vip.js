@@ -67,9 +67,14 @@ const fleet = [
 ];
 
 const copy = {
+  heroKicker: ['PRIVATE CHAUFFEUR · SOUTH FLORIDA','CHOFER PRIVADO · SUR DE FLORIDA'],
+  heroTitle: ['Exceptional by design.','Excepcional por naturaleza.'],
+  heroDescription: ['A private journey, shaped around you.','Un viaje privado, diseñado para ti.'],
+  heroReserve: ['Reserve your experience','Reserva tu experiencia'],
+  heroFleet: ['Discover the collection','Descubre la colección'],
   title: ['B1 Black One VIP | Private Chauffeur Service', 'B1 Black One VIP | Servicio privado con chofer'],
   fleet: ['Fleet', 'Flota'],
-  fleetTitle: ['The VIP fleet', 'La flota VIP'],
+  fleetTitle: ['The private collection', 'La colección privada'],
   inquire: ['Book now', 'Reservar ahora'],
   language: ['Language', 'Idioma'],
   headline: ['Book a private chauffeur', 'Reserva un chofer privado'],
@@ -358,6 +363,14 @@ function createVehicleCard(vehicle) {
       </details>` : ''}
     <a class="action" href="#availability" data-copy="inquire"></a>`;
   if (vehicle.photos.length) card.append(createGallery(vehicle));
+  else if (vehicle.id === 'cadillac-escalade') {
+    const image = document.createElement('img');
+    image.className = 'collection-escalade';
+    image.src = '/images/fleet/Escalade.png';
+    image.alt = 'Black Cadillac Escalade';
+    image.loading = 'lazy';
+    card.append(image);
+  }
   card.append(body);
   body.querySelector('a').addEventListener('click', event => {
     event.preventDefault();
@@ -370,7 +383,7 @@ for (const vehicle of fleet) {
   document.querySelector('#fleet-details').append(createVehicleCard(vehicle));
   vehicleOptions.append(createVehicleOption(vehicle));
 }
-vehicleOptions.lastElementChild.before(fleetVideo);
+
 
 function renderLanguage() {
   const locale = language.value === 'es' ? 'es' : 'en';
