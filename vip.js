@@ -72,6 +72,7 @@ const fleet = [
 ];
 
 const copy = {
+  referenceImage:['Reference image · actual vehicle may vary','Imagen de referencia · la unidad puede variar'],
   stepOne:['01 — Select your vehicle','01 — Elige tu vehículo'],
   stepTwo:['02 — Your journey','02 — Tu viaje'],
   changeVehicle:['Change vehicle','Cambiar vehículo'],
@@ -363,6 +364,8 @@ function createGallery(vehicle, initialPhoto) {
   return figure;
 }
 
+const referencePhotos={"rolls-royce-cullinan":["Rolls-Royce Cullinan Black (26).jpg","Damian B Oh","4.0"],"range-rover-sv":["2024 Land Rover Range Rover SV SCD24.jpg","MrWalkr","4.0"],"classic-car":["1936 Plymouth Coupe 2.jpg","Stephen Foskett","3.0"]};
+function referencePhoto(vehicle){const ref=referencePhotos[vehicle.id];if(!ref)return null;const fig=document.createElement('figure');fig.className='reference-photo';const img=document.createElement('img');img.src='https://commons.wikimedia.org/wiki/Special:FilePath/'+encodeURIComponent(ref[0])+'?width=1280';img.alt=vehicle.name;img.loading='lazy';const cap=document.createElement('figcaption');const label=document.createElement('span');label.dataset.copy='referenceImage';label.textContent=t('referenceImage');const credit=document.createElement('a');credit.href='https://commons.wikimedia.org/wiki/File:'+encodeURIComponent(ref[0]);credit.textContent=ref[1];credit.target='_blank';credit.rel='noopener';const license=document.createElement('a');license.href='https://creativecommons.org/licenses/by-sa/'+ref[2]+'/';license.textContent='CC BY-SA '+ref[2];license.target='_blank';license.rel='noopener';cap.append(label,document.createTextNode(' · '),credit,document.createTextNode(' · '),license);fig.append(img,cap);return fig;}
 function createVehicleCard(vehicle) {
   const card = document.createElement('article');
   card.className = 'vehicle';
@@ -388,6 +391,7 @@ function createVehicleCard(vehicle) {
     image.loading = 'lazy';
     card.append(image);
   }
+  else if(referencePhotos[vehicle.id])card.append(referencePhoto(vehicle));
   card.append(body);
   body.querySelector('a').addEventListener('click', event => {
     event.preventDefault();
@@ -655,7 +659,7 @@ function renderSelectedVehicle(){
  const img=document.createElement('img');
  if(v.photos.length)img.src='/images/vip/'+v.id+'/'+(v.choicePhoto?.[0]||v.photos[0][0])+'.webp';
  else if(v.id==='cadillac-escalade')img.src='/images/fleet/Escalade.png';
- if(img.hasAttribute('src')){img.alt=v.name;target.append(img);}
+ if(img.hasAttribute('src')){img.alt=v.name;target.append(img);}else if(referencePhotos[v.id])target.append(referencePhoto(v));
  const name=document.createElement('h3');name.textContent=v.name;target.append(name);
  const note=document.createElement('p');note.textContent=v.description[localeIndex];target.append(note);
 }
