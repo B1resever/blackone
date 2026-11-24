@@ -1,4 +1,6 @@
-import rates from "./config/b1-vip-hourly-rates.json" with { type: "json" };
+// Shared pricing snapshot from config/b1-vip-hourly-rates.json; keep in sync with server configuration.
+const rates = {"currency":"USD","minimumHours":3,"maximumRadiusMiles":30,"vehicles":{"maybach-tifanni":{"minimumPackageCents":100000,"additionalHourCents":40000,"gratuityBasisPoints":1500},"desert-sand":{"minimumPackageCents":100000,"additionalHourCents":40000,"gratuityBasisPoints":1500},"cadillac-escalade":{"minimumPackageCents":60000,"additionalHourCents":26000,"gratuityBasisPoints":1500}}};
+
 
 const fleet = [
   {
@@ -424,9 +426,10 @@ function renderLanguage() {
   refreshConcierge();
 }
 
-const requestedLanguage = new URLSearchParams(location.search).get('lang');
+const requestedLanguage = new URLSearchParams(location.search).get('lang') || (()=>{try{return localStorage.getItem('b1-language')}catch{return null}})();
 language.value = requestedLanguage === 'es' ? 'es' : 'en';
 language.addEventListener('change', () => {
+  try { localStorage.setItem('b1-language', language.value); } catch {}
   renderLanguage();
   const url = new URL(location.href);
   if (language.value === 'es') {
@@ -612,60 +615,11 @@ updateCapacity();
 renderLanguage();
 
 
-/* B1 VIP immersive mobile video viewer. Uses the approved original clip only. */
-(() => {
-  const video = document.querySelector('#fleet-video');
-  if (!video) return;
-  const originalParent = video.parentNode;
-  const originalNext = video.nextSibling;
-  const style = document.createElement('style');
-  style.textContent = `
-    .b1-video-open { overflow: hidden !important; }
-    .b1-video-viewer { position: fixed; inset: 0; width: 100vw; height: 100dvh; z-index: 100000; background: #050505; display: flex; align-items: center; justify-content: center; }
-    .b1-video-viewer[hidden] { display: none !important; }
-    .b1-video-viewer #fleet-video { width: 100%; height: 100%; max-width: none; max-height: none; aspect-ratio: auto; object-fit: contain; border-radius: 0; background: #050505; }
-    .b1-video-brand { position: absolute; top: max(20px, env(safe-area-inset-top)); left: 18px; z-index: 3; color: #fff; background: rgba(0,0,0,.62); border: 1px solid rgba(255,255,255,.55); border-radius: 8px; padding: 11px 16px; font: 900 20px/1 Arial,sans-serif; letter-spacing: 3px; text-decoration: none; }
-    .b1-video-close { position: absolute; top: max(20px, env(safe-area-inset-top)); right: 18px; z-index: 3; color: #fff; background: rgba(0,0,0,.62); border: 1px solid rgba(255,255,255,.55); border-radius: 50%; width: 44px; height: 44px; font: 28px/1 Arial,sans-serif; cursor: pointer; }
-    #fleet-video { cursor: pointer; }
-  `;
-  document.head.appendChild(style);
-  const viewer = document.createElement('div');
-  viewer.className = 'b1-video-viewer';
-  viewer.hidden = true;
-  viewer.setAttribute('role', 'dialog');
-  viewer.setAttribute('aria-modal', 'true');
-  viewer.setAttribute('aria-label', 'B1 video');
-  const brand = document.createElement('a');
-  brand.className = 'b1-video-brand';
-  brand.href = '#availability';
-  brand.textContent = 'B1';
-  brand.setAttribute('aria-label', 'B1 - Go to reservation');
-  const close = document.createElement('button');
-  close.type = 'button';
-  close.className = 'b1-video-close';
-  close.textContent = '×';
-  close.setAttribute('aria-label', 'Close video');
-  viewer.append(brand, close);
-  document.body.appendChild(viewer);
-  const open = () => {
-    if (!viewer.hidden) return;
-    viewer.hidden = false;
-    document.body.classList.add('b1-video-open');
-    viewer.appendChild(video);
-    video.controls = true;
-    video.play().catch(() => {});
-    close.focus();
-  };
-  const dismiss = () => {
-    if (viewer.hidden) return;
-    video.pause();
-    viewer.hidden = true;
-    document.body.classList.remove('b1-video-open');
-    originalParent.insertBefore(video, originalNext);
-    video.focus();
-  };
-  video.addEventListener('click', open);
-  close.addEventListener('click', dismiss);
-  brand.addEventListener('click', dismiss);
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') dismiss(); });
-})();
+
+const filmToggle = document.querySelector('#film-toggle');
+const syncFilm = () => {filmToggle.textContent=fleetVideo.paused?'▶':'Ⅱ';filmToggle.setAttribute('aria-label',language.value==='es'?(fleetVideo.paused?'Reproducir video':'Pausar video'):(fleetVideo.paused?'Play video':'Pause video'));};
+filmToggle.addEventListener('click',()=>{if(fleetVideo.paused)fleetVideo.play().catch(syncFilm);else fleetVideo.pause();});
+for(const event of ['play','pause'])fleetVideo.addEventListener(event,syncFilm);
+language.addEventListener('change',syncFilm);
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)fleetVideo.pause();
+syncFilm();
