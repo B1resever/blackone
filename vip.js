@@ -252,11 +252,12 @@ function refreshPrice() {
  const subtotal=isTransfer()?Math.round(metrics.distanceMeters/1609.344*607.5):rate.minimumPackageCents+(Number(hours.value)-rates.minimumHours)*rate.additionalHourCents;
  const toll=Number.isFinite(metrics?.tollCents)&&metrics.tollCents>=0?metrics.tollCents:null;
  rows.push([t(isTransfer()?'mileageEstimate':'servicePrice'),money(subtotal)]);
+ if(metrics){rows.push([t('distanceLabel'),(metrics.distanceMeters/1609.344).toFixed(1)+' mi'],[t('durationLabel'),Math.ceil(metrics.durationSeconds/60)+' min']);}
  rows.push([t('tollEstimate'),toll===null?t('tollUnknown'):money(toll)]);
  if(tipBps!==null){const tip=Math.round(subtotal*tipBps/10000);rows.push([t('gratuity')+' ('+(tipBps/100)+'%)',money(tip)],[t('estimateTotal'),money(subtotal+tip+(toll??0))]);}
  else rows.push([t('selectTip'),'']);
  rows.push([t(isTransfer()?'transferEstimateNotice':'hourlyTollNotice'),'']);
- for(const node of [live,quote]){node.replaceChildren();for(const [label,value] of rows){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;node.append(l,v);}}
+ for(const node of [live,quote]){node.replaceChildren();for(const [label,value] of rows){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=node===quote&&label.startsWith(t('gratuity')+' (')?t('gratuity'):label;v.textContent=value;if(!value){l.className='quote-note';node.append(l);}else{node.append(l,v);}}}
 }
 
 function money(cents) {
@@ -544,7 +545,7 @@ function bookingDetails() {
     ['destination', destination.value.trim()],
     ...(!isTransfer() ? [['hours', data.get('hours')]] : []),
     ['passengers', data.get('passengers')],
-    ['gratuity', (Number(data.get('tip'))/100)+'%'],
+
     ['fullName', data.get('fullName').trim()],
     ['email', data.get('email').trim()],
     ['phone', data.get('phone').trim()],
@@ -654,7 +655,7 @@ fetch('/one/api/vip-hourly-request')
   .catch(() => {});
 document.querySelector('#request-confirmation').addEventListener('click', () => {
   const details = bookingDetails();
-  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ... (Array.from(quote.children).reduce((a,node,i)=>{if(i%2===0)a.push(node.textContent+': '+(node.nextElementSibling?.textContent??''));return a;},[]))].join('\n');
+  const message = [t('inquiryGreeting'), '', ...details.map(([key, value]) => `${t(key)}: ${value}`), ...Array.from(quote.children).filter(node=>node.tagName==='SPAN').map(node=>node.classList.contains('quote-note')?node.textContent:node.textContent+': '+(node.nextElementSibling?.textContent??''))].join('\n');
   const link = new URL('https://wa.me/13058501737');
   link.searchParams.set('text', message);
   location.assign(link);
