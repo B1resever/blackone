@@ -74,6 +74,14 @@ const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","r
 fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
+ chooseTip:['Choose chauffeur gratuity','Elige la propina del chofer'],
+ routeUnavailable:['Google Maps unavailable. Concierge must confirm the route.','Google Maps no disponible. Concierge debe confirmar el recorrido.'],
+ routePending:['Calculating route…','Calculando recorrido…'],
+ transferPending:['Transfer fare requires concierge confirmation.','La tarifa del traslado requiere confirmación de Concierge.'],
+ selectTip:['Select your gratuity to see the total.','Selecciona la propina para ver el total.'],
+ distanceLabel:['Distance (one way)','Distancia (ida)'],
+ durationLabel:['Estimated driving time','Tiempo estimado de viaje'],
+ placesUnavailable:['Address suggestions unavailable. Enter the full address.','Sugerencias no disponibles. Ingresa la dirección completa.'],
   photoPending:['Vehicle photography pending confirmation','Fotografía de la unidad pendiente de confirmación'],
   referenceImage:['Reference image · actual vehicle may vary','Imagen de referencia · la unidad puede variar'],
   stepOne:['01 — Select your vehicle','01 — Elige tu vehículo'],
@@ -163,7 +171,7 @@ const copy = {
   ],
   inactiveMethods: ['Unavailable payment methods', 'Métodos de pago no disponibles'],
   servicePrice: ['Service price', 'Precio del servicio'],
-  gratuity: ['Gratuity (15%)', 'Propina (15%)'],
+  gratuity: ['Gratuity', 'Propina'],
   total: ['Total payable', 'Total a pagar'],
   hold: ['Separate card hold', 'Bloqueo separado en la tarjeta'],
   paymentTerms: ['Payment, cancellations and vehicle care', 'Pago, cancelaciones y cuidado del vehículo'],
@@ -222,22 +230,19 @@ function updateCapacity() {
 }
 
 function refreshPrice() {
-  quote.replaceChildren();
-  if (!reviewDialog.open || isTransfer() || !hours.value || !hours.validity.valid) return;
-  const vehicle = currentVehicle();
-  if (!vehicle) return;
-  const rate = rates.vehicles[vehicle.id];
-  const subtotal = rate.minimumPackageCents + (Number(hours.value) - rates.minimumHours) * rate.additionalHourCents;
-  const tip = Math.round(subtotal * rate.gratuityBasisPoints / 10000);
-  for (const [key, cents] of [
-    ['servicePrice', subtotal], ['gratuity', tip], ['total', subtotal + tip], ['hold', subtotal],
-  ]) {
-    const label = document.createElement('span');
-    const value = document.createElement('strong');
-    label.textContent = t(key);
-    value.textContent = money(cents);
-    quote.append(label, value);
-  }
+ const live=document.querySelector('#live-price');
+ const vehicle=currentVehicle();
+ const selected=inquiry.querySelector('input[name="tip"]:checked');
+ const tipBps=selected?Number(selected.value):null;
+ const rows=[];
+ if(isTransfer()){live.textContent=t('transferPending');quote.textContent=t('transferPending');return;}
+ if(!vehicle||!hours.value||!hours.validity.valid){live.replaceChildren();quote.replaceChildren();return;}
+ const rate=rates.vehicles[vehicle.id];
+ const subtotal=rate.minimumPackageCents+(Number(hours.value)-rates.minimumHours)*rate.additionalHourCents;
+ rows.push([t('servicePrice'),money(subtotal)]);
+ if(tipBps!==null){const tip=Math.round(subtotal*tipBps/10000);rows.push([t('gratuity')+' ('+(tipBps/100)+'%)',money(tip)],[t('total'),money(subtotal+tip)]);}
+ else rows.push([t('selectTip'),'']);
+ for(const node of [live,quote]){node.replaceChildren();for(const [label,value] of rows){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=label;v.textContent=value;node.append(l,v);}if(node===quote){const l=document.createElement('span'),v=document.createElement('strong');l.textContent=t('hold');v.textContent=money(subtotal);node.append(l,v);}}
 }
 
 function money(cents) {
@@ -525,6 +530,7 @@ function bookingDetails() {
     ['destination', destination.value.trim()],
     ...(!isTransfer() ? [['hours', data.get('hours')]] : []),
     ['passengers', data.get('passengers')],
+    ['gratuity', (Number(data.get('tip'))/100)+'%'],
     ['fullName', data.get('fullName').trim()],
     ['email', data.get('email').trim()],
     ['phone', data.get('phone').trim()],
@@ -533,7 +539,7 @@ function bookingDetails() {
 
 inquiry.addEventListener('submit', event => {
   event.preventDefault();
-  if (!currentVehicle()) return;
+  if (!currentVehicle() || !inquiry.reportValidity()) return;
   const missing = nextField();
   if (missing) {
     guiding = true;
@@ -684,3 +690,24 @@ language.addEventListener('change',renderSelectedVehicle);
 document.querySelectorAll('[data-book-featured]').forEach(button=>button.addEventListener('click',()=>chooseVehicle(fleet.find(v=>v.id===button.dataset.bookFeatured))));
 window.addEventListener('hashchange',showPage);
 showPage();
+
+/* Existing server-side Google Places and Routes endpoints; no keys exposed to browser. */
+let routeTimer,routeSerial=0;
+const routeStatus=document.querySelector('#route-metrics');
+let metrics=null;
+async function postMaps(path,body,signal){const res=await fetch('/one/api/'+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});if(!res.ok)throw Error('maps unavailable');return res.json();}
+function showMetrics(){if(!metrics)return;routeStatus.textContent=t('distanceLabel')+': '+(metrics.distanceMeters/1609.344).toFixed(1)+' mi · '+t('durationLabel')+': '+Math.ceil(metrics.durationSeconds/60)+' min';}
+function scheduleMetrics(){clearTimeout(routeTimer);const serial=++routeSerial;metrics=null;const from=pickup.value.trim(),to=destination.value.trim();routeStatus.textContent='';if(from.length<3||to.length<3)return;routeTimer=setTimeout(async()=>{routeStatus.textContent=t('routePending');try{const result=await postMaps('route',{pickup:from,dropoff:to});if(serial!==routeSerial)return;if(!Number.isFinite(result.distanceMeters)||!Number.isFinite(result.durationSeconds))throw Error();metrics=result;showMetrics();}catch{if(serial===routeSerial)routeStatus.textContent=t('routeUnavailable');}},700);}
+for(const field of [pickup,destination]){
+ let timer,controller,version=0;
+ const list=document.createElement('div');list.className='places-results';list.hidden=true;field.after(list);field.autocomplete='off';
+ field.addEventListener('input',()=>{clearTimeout(timer);controller?.abort();const seq=++version;list.replaceChildren();list.hidden=true;const input=field.value.trim();if(input.length<3)return;timer=setTimeout(async()=>{controller=new AbortController();try{const result=await postMaps('places',{input,marketId:'south-florida'},controller.signal);if(seq!==version)return;for(const suggestion of result.suggestions||[]){const b=document.createElement('button');b.type='button';b.textContent=suggestion.label;b.addEventListener('click',()=>{field.value=suggestion.label;list.hidden=true;version++;refreshRoute();scheduleMetrics();refreshConcierge();});list.append(b);}list.hidden=!list.children.length;}catch(e){if(seq!==version||e.name==='AbortError')return;list.textContent=t('placesUnavailable');list.hidden=false;}},350);});
+ field.addEventListener('keydown',e=>{if(e.key==='Escape')list.hidden=true;});
+ document.addEventListener('pointerdown',e=>{if(e.target!==field&&!list.contains(e.target))list.hidden=true;});
+ field.addEventListener('change',scheduleMetrics);
+}
+inquiry.addEventListener('input',refreshPrice);
+inquiry.addEventListener('change',refreshPrice);
+language.addEventListener('change',()=>{refreshPrice();showMetrics();});
+document.querySelectorAll('[data-book-featured],#fleet-details .action').forEach(b=>b.addEventListener('click',refreshPrice));
+refreshPrice();
