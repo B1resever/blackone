@@ -178,3 +178,43 @@ nav a { text-decoration:none; }
 #fleet-dialog { width:min(960px,calc(100% - 2rem)); }
 #fleet-dialog .gallery img { height:min(65dvh,650px); }
 @media(max-width:740px) { .vip-hero { grid-template-columns:1fr; gap:1rem; min-height:0; padding-block:1.5rem; } .hero-copy { padding-block:.5rem; } .hero-copy h1 { font-size:clamp(3rem,12vw,5rem); } .hero-film #fleet-video { max-height:65vh; } .site-header { position:relative; } #fleet { padding-block:2rem; } }
+
+/* Single immersive composition: preserve the vertical source without stretching it. */
+.site-header {position:relative;min-height:76px;padding:14px clamp(20px,5vw,76px);background:#faf8f3;}
+.site-header .wordmark {width:clamp(170px,20vw,260px);}
+.site-header nav {gap:clamp(12px,2vw,30px);}
+.site-header nav .action {background:transparent;color:var(--ink);border:1px solid #9c9483;}
+.site-header nav select {border:0;background:transparent;}
+.vip-hero {position:relative;isolation:isolate;display:flex;align-items:flex-end;width:100%;height:calc(100svh - 76px);min-height:480px;max-height:1040px;padding:0;overflow:hidden;background:#b9b2a5;color:#fff;}
+.hero-film {position:absolute;inset:0;display:block;padding:0;background:none;z-index:-2;}
+.hero-film #fleet-video {display:block;width:100%;height:100%;max-width:none;max-height:none;aspect-ratio:auto;object-fit:cover;object-position:center 52%;border:0;border-radius:0;margin:0;}
+.vip-hero::before {content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(14,20,19,.65),rgba(14,20,19,.08) 72%),linear-gradient(0deg,rgba(14,20,19,.55),transparent 65%);pointer-events:none;}
+.hero-copy {position:relative;padding:clamp(32px,7vw,104px);max-width:850px;}
+.hero-copy h1 {font-size:clamp(3rem,6.7vw,7.2rem);line-height:.98;letter-spacing:-.045em;max-width:11ch;}
+.hero-kicker {font-size:.72rem;letter-spacing:.23em;color:#fff;margin-bottom:1.25rem;}
+.hero-description {color:#fff;font-size:clamp(1rem,1.5vw,1.3rem);margin:1.2rem 0 1.8rem;}
+.hero-cta {background:#faf8f3;color:#172d2c;border:1px solid #faf8f3;padding:1rem 1.6rem;font-weight:600;}
+.hero-cta:hover {background:#e6dfd1;color:#172d2c;}
+.film-control {position:absolute;bottom:28px;right:clamp(20px,4vw,60px);width:48px;height:48px;border-radius:50%;background:#171b1940;color:white;border:1px solid #ffffffb0;font-size:20px;}
+.hero-explore {position:absolute;right:clamp(20px,4vw,60px);top:30px;text-decoration:none;color:white;font-size:.8rem;letter-spacing:.06em;border-bottom:1px solid #ffffffa0;padding-bottom:6px;}
+@media(min-width:900px){.hero-film #fleet-video{object-position:center 48%;}}
+@media(max-width:740px){.site-header{min-height:100px;gap:8px;padding:12px 18px;}.site-header nav{width:100%;justify-content:space-between;}.site-header nav .action{min-height:38px;}.vip-hero{height:calc(100svh - 108px);min-height:480px;}.hero-copy{padding:24px 24px 74px;}.hero-copy h1{font-size:clamp(2.8rem,12vw,4.7rem);}.vip-hero::before{background:linear-gradient(0deg,rgba(14,20,19,.82),rgba(14,20,19,.06) 75%);}.hero-explore{top:20px;}.film-control{bottom:16px;right:20px;}}
+
+/* One screen only. No upscaling or clipping of the portrait master on desktop. */
+body.landing-mode {height:100svh;overflow:hidden;display:grid;grid-template-rows:auto minmax(0,1fr);}
+body.landing-mode main {min-height:0;display:flex;}
+.site-header {min-height:0;padding:12px clamp(18px,4vw,64px);flex-wrap:nowrap;}
+.site-header nav {width:auto;flex-shrink:0;}
+.site-header .wordmark {width:clamp(145px,24vw,260px);}
+body.landing-mode .vip-hero {height:100%;min-height:0;max-height:none;flex:1;}
+.vip-hero {background:#e8e3d9;color:#172d2c;}
+.hero-film {inset:0 0 0 auto;width:56%;display:flex;align-items:center;justify-content:center;}
+.hero-film #fleet-video {width:auto;height:100%;max-width:100%;max-height:910px;object-fit:contain;aspect-ratio:512/910;}
+.vip-hero::before {background:none;}
+.hero-copy {align-self:center;max-width:44%;padding:clamp(20px,5vw,90px);}
+.hero-kicker,.hero-description {color:#172d2c;}
+.hero-copy h1 {font-size:clamp(2.8rem,5.6vw,6rem);}
+.hero-cta {background:#172d2c;color:white;border-color:#172d2c;min-width:160px;letter-spacing:.12em;text-transform:uppercase;}
+.film-control {background:#172d2c80;}
+.booking-top {padding-top:24px;}
+@media(max-width:740px){.site-header {padding:10px 16px;}.site-header nav {width:auto;}.hero-film {inset:0;width:100%;align-items:flex-start;}.hero-film #fleet-video {height:100%;width:100%;max-width:512px;object-fit:contain;}.vip-hero {align-items:flex-end;}.vip-hero::before {background:linear-gradient(0deg,rgba(14,20,19,.88),rgba(14,20,19,.05) 58%);}.hero-copy {align-self:flex-end;max-width:100%;padding:20px 24px 28px;color:#fff;}.hero-copy h1 {font-size:clamp(2rem,8vw,3.8rem);}.hero-kicker,.hero-description {color:white;}.hero-description {margin:.6rem 0 1rem;}.hero-cta {background:#faf8f3;color:#172d2c;border-color:#faf8f3;}.film-control {bottom:25px;right:18px;}}
