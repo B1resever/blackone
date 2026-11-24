@@ -26,19 +26,24 @@
   </header>
 
   <main id="home">
+    <section class="vip-hero page-width" aria-labelledby="hero-title"><div class="hero-copy"><p class="hero-kicker" data-copy="heroKicker">PRIVATE CHAUFFEUR · SOUTH FLORIDA</p><h1 id="hero-title" data-copy="heroTitle">Exceptional by design.</h1><p class="hero-description" data-copy="heroDescription">A private journey, shaped around you.</p><div class="hero-actions"><a class="action" href="#availability" data-copy="heroReserve">Reserve your experience</a><a class="secondary" href="#fleet" data-copy="heroFleet">Discover the collection</a></div></div><div class="hero-film"><video id="fleet-video" controls autoplay muted loop playsinline preload="metadata" poster="/images/vip/b1-tifanni-video-poster.webp">
+              <source src="/images/vip/B1_Tifanni.mp4" type="video/mp4">
+            </video></div></section>
+    <section id="fleet" class="section page-width" aria-labelledby="fleet-title">
+      <h2 id="fleet-title" data-copy="fleetTitle">The VIP fleet</h2>
+      <div id="fleet-details" class="fleet-grid"></div>
+    </section>
     <section id="availability" class="section availability" aria-labelledby="availability-title">
       <div class="page-width request-layout">
         <div class="booking-heading">
-          <h1 id="availability-title" data-copy="headline">Book a private chauffeur</h1>
+          <h2 id="availability-title" data-copy="headline">Book a private chauffeur</h2>
           <p data-copy="requestIntro">Choose your vehicle, date and time.</p>
         </div>
         <form id="inquiry">
           <fieldset class="picker">
             <legend data-copy="vehicle">Vehicle</legend>
             <div id="vehicle-options" class="vehicle-options"></div>
-            <video id="fleet-video" controls playsinline preload="none" poster="/images/vip/b1-tifanni-video-poster.webp">
-              <source src="/images/vip/B1_Tifanni.mp4" type="video/mp4">
-            </video>
+            
           </fieldset>
           <div class="booking-fields" id="booking-fields">
             <label class="wide"><span data-copy="serviceType">Service</span>
@@ -69,10 +74,7 @@
       </div>
     </section>
 
-    <section id="fleet" class="section page-width" aria-labelledby="fleet-title">
-      <h2 id="fleet-title" data-copy="fleetTitle">The VIP fleet</h2>
-      <div id="fleet-details" class="fleet-grid"></div>
-    </section>
+
 
     <section class="section page-width services" aria-labelledby="services-title">
       <h2 id="services-title" data-copy="services">Services</h2>
