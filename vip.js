@@ -71,8 +71,8 @@ const fleet = [
 const copy = {
   backHome: ['Back to B1','Volver a B1'],
   heroKicker: ['PRIVATE CHAUFFEUR · SOUTH FLORIDA','CHOFER PRIVADO · SUR DE FLORIDA'],
-  heroTitle: ['Exceptional by design.','Excepcional por naturaleza.'],
-  heroDescription: ['A private journey, shaped around you.','Un viaje privado, diseñado para ti.'],
+  heroTitle: ['Luxury Private Transportation','Transportación Privada de Lujo'],
+  heroDescription: ['Private chauffeurs. Exceptional service.','Choferes privados. Servicio excepcional.'],
   heroReserve: ['Reserve','Reservar'],
   heroFleet: ['Discover the collection','Descubre la colección'],
   title: ['B1 Black One VIP | Private Chauffeur Service', 'B1 Black One VIP | Servicio privado con chofer'],
