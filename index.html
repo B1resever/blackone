@@ -596,7 +596,8 @@
       input[type="time"]:before { content: attr(aria-label); color: #98a0ab; }
       input[type="time"]:valid:before { content: ""; }
     }
-  </style>
+  @media(max-width:700px){#b1-hero-video{object-fit:contain!important;object-position:center top}.hero-bg{background:#0a1c30!important}.hero-overlay{background:linear-gradient(0deg,rgba(10,28,48,.96) 0%,rgba(10,28,48,.65) 28%,transparent 75%)}.hero{align-items:flex-end;min-height:85svh}.hero-inner{padding:28px 0}.hero h1{font-size:clamp(26px,7vw,38px)}}
+</style>
 </head>
 
 <body>
@@ -720,15 +721,16 @@
 
   <!-- ===== Hero ===== -->
   <main id="home" class="hero">
-    <div class="hero-bg"></div>
+    <div class="hero-bg" style="background:#0a1c30;transform:none"><video id="b1-hero-video" autoplay muted loop playsinline preload="metadata" poster="/images/vip/b1-tifanni-video-poster.webp" aria-label="B1 VIP fleet" style="width:100%;height:100%;object-fit:cover"><source src="/images/vip/B1_Tifanni.mp4" type="video/mp4"></video></div>
     <div class="hero-overlay"></div>
     <div class="wrap hero-inner">
       <div class="hero-copy">
         <h1>Ultra-Luxury Rentals &amp; Private Chauffeur Transportation</h1>
         <p class="lead">Exceptional vehicles and white-glove private transportation across South Florida.</p>
         <div class="hero-cta">
-          <a class="btn btn-light" href="#reserve">Reserve Now</a>
-          <a class="btn btn-outline-light" href="#fleet">Explore Fleet</a>
+          <a class="btn btn-light" href="/vip#availability">Reserve Now</a>
+          <a class="btn btn-outline-light" href="/vip#fleet">Explore Fleet</a>
+          <button type="button" class="btn btn-outline-light" id="b1-video-toggle" aria-label="Pause video">Pause video</button>
         </div>
       </div>
     </div>
@@ -1797,5 +1799,17 @@
       });
     })();
   </script>
+<script>
+(() => {
+  const video = document.getElementById('b1-hero-video');
+  const toggle = document.getElementById('b1-video-toggle');
+  if (!video || !toggle) return;
+  const sync = () => { const label = video.paused ? 'Play video' : 'Pause video'; toggle.textContent = label; toggle.setAttribute('aria-label', label); };
+  video.addEventListener('play', sync); video.addEventListener('pause', sync);
+  toggle.addEventListener('click', () => { if (video.paused) video.play().catch(sync); else video.pause(); });
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { video.autoplay = false; video.pause(); }
+  sync();
+})();
+</script>
 </body>
 </html>
