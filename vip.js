@@ -70,6 +70,8 @@ const fleet = [
   {id:'range-rover-sv',name:'Range Rover SV',capacity:null,edition:['Executive SUV · On request','SUV ejecutivo · Bajo solicitud'],description:['Availability subject to confirmation.','Disponibilidad sujeta a confirmación.'],features:[],photos:[]},
   {id:'classic-car',name:'Classic Car',capacity:null,edition:['Photo & video · On request','Foto y video · Bajo solicitud'],description:['Photo and video sessions only; availability subject to confirmation.','Solo sesiones de foto y video; disponibilidad sujeta a confirmación.'],features:[],photos:[]},
 ];
+const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","rolls-royce-cullinan","range-rover-sv","classic-car"];
+fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
   photoPending:['Vehicle photography pending confirmation','Fotografía de la unidad pendiente de confirmación'],
