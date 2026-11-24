@@ -218,3 +218,19 @@ body.landing-mode .vip-hero {height:100%;min-height:0;max-height:none;flex:1;}
 .film-control {background:#172d2c80;}
 .booking-top {padding-top:24px;}
 @media(max-width:740px){.site-header {padding:10px 16px;}.site-header nav {width:auto;}.hero-film {inset:0;width:100%;align-items:flex-start;}.hero-film #fleet-video {height:100%;width:100%;max-width:512px;object-fit:contain;}.vip-hero {align-items:flex-end;}.vip-hero::before {background:linear-gradient(0deg,rgba(14,20,19,.88),rgba(14,20,19,.05) 58%);}.hero-copy {align-self:flex-end;max-width:100%;padding:20px 24px 28px;color:#fff;}.hero-copy h1 {font-size:clamp(2rem,8vw,3.8rem);}.hero-kicker,.hero-description {color:white;}.hero-description {margin:.6rem 0 1rem;}.hero-cta {background:#faf8f3;color:#172d2c;border-color:#faf8f3;}.film-control {bottom:25px;right:18px;}}
+
+/* Restore approved VIP palette and use existing vehicle photography to fill the landscape frame. */
+body.landing-mode .site-header {background:#c5f0ed;}
+body.landing-mode .vip-hero {background:#d0f3ef;}
+body.landing-mode .hero-cta {background:#a83a0a;border-color:#a83a0a;color:white;}
+body.landing-mode .hero-cta:hover {background:#873009;}
+@media(min-width:741px){
+.hero-film {width:60%;background:url('/images/vip/maybach-tifanni/cabin.webp') center/cover no-repeat;}
+.hero-film::before {content:"";position:absolute;inset:0;background:linear-gradient(90deg,#d0f3ef 0%,transparent 45%);}
+.hero-film #fleet-video {position:relative;max-width:100%;max-height:100%;height:100%;width:auto;object-fit:contain;}
+.hero-copy {max-width:40%;padding:clamp(20px,4vw,70px);}
+}
+@media(max-width:740px){
+.hero-film {background:url('/images/vip/maybach-tifanni/cabin.webp') center/cover no-repeat;}
+.hero-film #fleet-video {max-width:100%;height:100%;object-fit:contain;}
+}
