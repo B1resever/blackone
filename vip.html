@@ -5,17 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Choose your B1 Black One VIP vehicle for hourly chauffeur service or a private transfer.">
   <title>B1 Black One VIP | Private Chauffeur Service</title>
-  <link rel="stylesheet" href="/vip.css?v=81">
-  <script type="module" src="/vip.js?v=81"></script>
+  <link rel="stylesheet" href="/vip.css?v=82">
+  <script type="module" src="/vip.js?v=82"></script>
 </head>
 <body>
   <header class="site-header">
-    <a href="#home" aria-label="B1 Black One VIP">
+    <a href="#home" id="home-link" aria-label="B1 Black One VIP">
       <img class="wordmark" src="/images/vip/black-one-vip.png" alt="B1 | Black One VIP" width="357" height="63">
     </a>
     <nav>
-      <a href="#fleet" data-copy="fleet">Fleet</a>
-      <a class="action" href="#availability" data-copy="inquire">Book now</a>
+      
+      
       <label class="language"><span class="sr-only" data-copy="language">Language</span>
         <select id="language">
           <option value="en">English</option>
@@ -28,7 +28,8 @@
   <main id="home">
     <section class="vip-hero" aria-labelledby="hero-title"><div class="hero-film"><video id="fleet-video" autoplay muted loop playsinline preload="metadata" poster="/images/vip/b1-tifanni-video-poster.webp">
               <source src="/images/vip/B1_Tifanni.mp4" type="video/mp4">
-            </video></div><div class="hero-copy"><p class="hero-kicker" data-copy="heroKicker">PRIVATE CHAUFFEUR · SOUTH FLORIDA</p><h1 id="hero-title" data-copy="heroTitle">Exceptional by design.</h1><p class="hero-description" data-copy="heroDescription">A private journey, shaped around you.</p><a class="action hero-cta" href="#availability" data-copy="heroReserve">Reserve your experience</a></div><button class="film-control" id="film-toggle" type="button" aria-label="Pause video">Ⅱ</button><a class="hero-explore" href="#fleet" data-copy="heroFleet">Discover the collection</a></section>
+            </video></div><div class="hero-copy"><p class="hero-kicker" data-copy="heroKicker">PRIVATE CHAUFFEUR · SOUTH FLORIDA</p><h1 id="hero-title" data-copy="heroTitle">Exceptional by design.</h1><p class="hero-description" data-copy="heroDescription">A private journey, shaped around you.</p><a class="action hero-cta" href="#availability" data-copy="heroReserve">Reserve your experience</a></div><button class="film-control" id="film-toggle" type="button" aria-label="Pause video">Ⅱ</button></section>
+    <div id="booking-screen" hidden><div class="page-width booking-top"><a href="#home" class="secondary" data-copy="backHome">Back to B1</a></div>
     <section id="fleet" class="section page-width" aria-labelledby="fleet-title">
       <h2 id="fleet-title" data-copy="fleetTitle">The VIP fleet</h2>
       <div id="fleet-details" class="fleet-grid"></div>
@@ -84,6 +85,8 @@
         <details><summary data-copy="airports">Airport Transfers</summary><p data-copy="airportsDetail">Ask B1 about flight monitoring and luggage assistance.</p></details>
       </div>
     </section>
+
+  </div>
   </main>
 
   <dialog id="fleet-dialog" aria-labelledby="gallery-title">
