@@ -75,6 +75,13 @@ const reservationOrder = ["maybach-tifanni","desert-sand","cadillac-escalade","r
 fleet.sort((a,b)=>reservationOrder.indexOf(a.id)-reservationOrder.indexOf(b.id));
 
 const copy = {
+ consentTitle:['Payment authorizations','Autorizaciones de pago'],
+ consentService:['I authorize the confirmed full transportation service charge.','Autorizo el cobro completo del importe confirmado del servicio.'],
+ consentHold:['I authorize secure card storage by Stripe and a separate temporary security hold equal to the confirmed service total before gratuity. Documented damage or extraordinary cleaning may be charged against this hold.','Autorizo el almacenamiento seguro de la tarjeta en Stripe y una retención temporal independiente igual al total confirmado antes de propina. Los daños documentados o la limpieza extraordinaria podrán cobrarse de esta garantía.'],
+ consentTerms:['I accept the cancellation and vehicle care policy stated above.','Acepto la política de cancelaciones y cuidado del vehículo indicada arriba.'],
+ consentIncomplete:['Accept all three conditions to complete the authorization step.','Acepta las tres condiciones para completar el paso de autorización.'],
+ consentComplete:['Conditions selected. Payment is not yet available. No charge or card hold has been made.','Condiciones seleccionadas. El pago aún no está disponible. No se ha realizado ningún cobro ni retención.'],
+
  paymentPendingButton:['Payment unavailable — quote confirmation required','Pago no disponible — falta confirmar cotización'],
  mileageEstimate:['Mileage estimate (outbound only)','Estimación por millas (solo ida)'],
  tollEstimate:['Estimated tolls','Peajes estimados'],
@@ -187,8 +194,8 @@ const copy = {
   hold: ['Separate card hold', 'Bloqueo separado en la tarjeta'],
   paymentTerms: ['Payment, cancellations and vehicle care', 'Pago, cancelaciones y cuidado del vehículo'],
   care: [
-    'Confirmed reservations are non-cancelable by the customer. Completed trips are non-refundable except when required by law or when B1 approves a refund for a service issue. Contact B1 about a service problem. Your rights regarding billing errors or unauthorized charges are preserved. The separate card hold is based on the service price before gratuity. A signed agreement covers care of the cabin, seats and cleanliness.',
-    'El cliente no puede cancelar una reserva confirmada. Los viajes completados no son reembolsables, salvo cuando la ley lo exija o B1 apruebe un reembolso por un problema del servicio. Contacta a B1 si hubo un inconveniente. Conservas tus derechos ante errores de facturación o cargos no autorizados. La retención separada se calcula sobre el precio del servicio antes de la propina. Se firma un acuerdo de cuidado de la cabina, los asientos y la limpieza.',
+    'Customer cancellation: 48 hours or more before pickup: 100% refund; 24 to less than 48 hours: 30% cancellation charge and 70% refund; less than 24 hours, no-show or completed service: no cancellation refund. Statutory rights and claims for unauthorized charges or service failures are preserved. The separate security hold is released when the service closes without documented damage or extraordinary cleaning, subject to issuer processing. No hold is charged permanently unless justified under the accepted agreement.',
+    'Cancelación del cliente: 48 horas o más antes de la recogida: devolución del 100%; desde 24 hasta menos de 48 horas: cargo definitivo del 30% y devolución del 70%; menos de 24 horas, ausencia o servicio completado: sin devolución por cancelación. Se conservan los derechos legales y reclamaciones por cargos no autorizados o incumplimiento del servicio. La garantía independiente se libera al cerrar el servicio sin daños documentados ni limpieza extraordinaria, sujeto al procesamiento del emisor. No se cobra definitivamente la garantía salvo justificación conforme al acuerdo aceptado.',
   ],
   illustration: ['Illustration', 'Ilustración'],
   concierge: ['Contact B1 Concierge', 'Contactar a B1 Concierge'],
@@ -438,6 +445,7 @@ function renderLanguage() {
   localeIndex = locale === 'es' ? 1 : 0;
   document.documentElement.lang = locale;
   document.title = t('title');
+  updateVipConsent();
   fleetVideo.setAttribute('aria-label', t('fleetVideo'));
 
   document.querySelectorAll('[data-copy]').forEach(element => {
@@ -578,6 +586,8 @@ inquiry.addEventListener('submit', event => {
   requestStatus.textContent = '';
   sendRequestButton.hidden = true;
   sendRequestButton.disabled = false;
+  document.querySelectorAll('#vip-consents input').forEach(el=>el.checked=false);
+  updateVipConsent();
   reviewDialog.showModal();
   refreshPrice();
 });
@@ -724,3 +734,6 @@ inquiry.addEventListener('change',refreshPrice);
 language.addEventListener('change',()=>{refreshPrice();showMetrics();});
 document.querySelectorAll('[data-book-featured],#fleet-details .action').forEach(b=>b.addEventListener('click',refreshPrice));
 refreshPrice();
+
+function updateVipConsent(){const fields=Array.from(document.querySelectorAll('#vip-consents input'));const complete=fields.length===3&&fields.every(el=>el.checked);document.querySelector('#consent-status').textContent=t(complete?'consentComplete':'consentIncomplete');document.querySelector('#request-confirmation').disabled=true;}
+document.querySelector('#vip-consents').addEventListener('change',updateVipConsent);
