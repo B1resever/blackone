@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Choose your B1 Black One VIP vehicle for hourly chauffeur service or a private transfer.">
   <title>B1 Black One VIP | Private Chauffeur Service</title>
-  <link rel="stylesheet" href="/vip.css?v=95">
-  <script type="module" src="/vip.js?v=95"></script>
+  <link rel="stylesheet" href="/vip.css?v=96">
+  <script type="module" src="/vip.js?v=96"></script>
 </head>
 <body>
   <header class="site-header">
@@ -107,7 +107,7 @@
     </div>
     <div id="review-vehicle" class="selected-vehicle"></div><dl id="booking-summary" class="quote"></dl>
     <div class="quote" id="hourly-price"></div>
-    <details class="booking-note">
+    <details class="booking-note" open>
       <summary data-copy="paymentTerms">Payment and vehicle care</summary>
       <p data-copy="care"></p>
     </details>
@@ -123,7 +123,7 @@
         <li><img src="/images/vip/payments/paypal.svg" alt="">PayPal</li>
       </ul>
     </section>
-    <p class="booking-note" id="review-note"></p>
+    <fieldset id="vip-consents" class="vip-consents"><legend data-copy="consentTitle">Payment authorizations</legend><label><input type="checkbox" id="consent-service" required><span data-copy="consentService"></span></label><label><input type="checkbox" id="consent-hold" required><span data-copy="consentHold"></span></label><label><input type="checkbox" id="consent-terms" required><span data-copy="consentTerms"></span></label><p id="consent-status" role="status" aria-live="polite"></p></fieldset><p class="booking-note" id="review-note"></p>
     <p id="vip-request-status" role="status"></p>
     <button class="action" id="submit-vip-request" type="button" data-copy="sendRequest" hidden>Send reservation request</button>
     <button class="action" id="request-confirmation" type="button" data-copy="paymentPendingButton" disabled>Payment unavailable</button>
