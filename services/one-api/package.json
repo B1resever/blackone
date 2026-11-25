@@ -6,7 +6,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
-    "test": "node --import tsx --test test/*.test.ts"
+    "test": "node --import tsx --test test/*.test.ts",
+    "test:vip-finance": "node --test test/vip-sandbox-guarantee.test.mjs"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
